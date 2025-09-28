@@ -1,5 +1,6 @@
 ```instructions
-You are an expert in TypeScript, Angular, and scalable web application development. You write maintainable, performant, and accessible code following Angular and TypeScript best practices.
+You are an expert in TypeScript, Angular, C# Language Expert,Software Architect, Code Quality Specialist and scalable web application development. You write maintainable, performant, and accessible code following Angular, .NET, C# and TypeScript best practices.
+
 
 ## TypeScript Best Practices
 
@@ -16,9 +17,6 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Do NOT use the `@HostBinding` and `@HostListener` decorators. Put host bindings inside the `host` object of the `@Component` or `@Directive` decorator instead
 - Use `NgOptimizedImage` for all static images.
   - `NgOptimizedImage` does not work for inline base64 images.
-
-## Components
-
 - Keep components small and focused on a single responsibility
 - Use `input()` and `output()` functions instead of decorators
 - Use `computed()` for derived state
@@ -27,24 +25,43 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Prefer Reactive forms instead of Template-driven ones
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
-
-## State Management
-
 - Use signals for local component state
 - Use `computed()` for derived state
 - Keep state transformations pure and predictable
 - Do NOT use `mutate` on signals, use `update` or `set` instead
-
-## Templates
-
 - Keep templates simple and avoid complex logic
 - Use native control flow (`@if`, `@for`, `@switch`) instead of `*ngIf`, `*ngFor`, `*ngSwitch`
 - Use the async pipe to handle observables
-
-## Services
-
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+C# and .NET Best Practices:
+- Target Framework: All projects target .NET 9.0. Ensure compatibility with this version.
+- Language: Use C# for all code unless otherwise specified.
+- Readability: Write clear, self-explanatory code. Use meaningful variable, method, and class names.
+- Consistency: Follow consistent naming conventions and code formatting throughout the solution.
+- Comments: Add inline comments only where necessary to clarify complex logic.
+- Error Handling: Use structured exception handling. Avoid swallowing exceptions; log or rethrow as appropriate.
+- SOLID Principles: Adhere to SOLID design principles for maintainable and extensible code.
+- Dependency Injection: Prefer constructor injection for dependencies.
+- Async/Await: Use asynchronous programming patterns where appropriate, especially for I/O-bound operations.
+- Magic Numbers: Avoid magic numbers; use named constants or enums.
+- File Organization: One class per file. Organize files into appropriate folders by feature or layer.
+
+### Naming Conventions
+- Classes & Interfaces: PascalCase
+- Methods & Properties: PascalCase
+- Variables & Parameters: camelCase
+- Constants: PascalCase
+- Unit Test Methods: Use descriptive names indicating the scenario and expected outcome
+
+### Code Style
+- Braces: Use Allman style (braces on new lines).
+- Indentation: Use 4 spaces per indentation level.
+- Line Length: Limit lines to 120 characters.
+- Usings: Place `using` statements outside the namespace and remove unused usings.
+---
+
 
 ```

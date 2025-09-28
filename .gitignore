@@ -1,0 +1,57 @@
+# --- Root Ignore File ---
+# Backend (.NET) build artifacts
+**/bin/
+**/obj/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+
+# User-specific / IDE
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# JetBrains Rider
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# Coverage / test results
+coverage/
+TestResult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# Publish / temp
+**/publish/
+.nuget/packages/
+
+# Frontend (Angular / Node)
+node_modules/
+dist/
+out-tsc/
+.angular/cache/
+
+# Environment files (add patterns if used; commit only templates)
+.env
+.env.*
+!.env.example
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Misc
+*.swp
+*.tmp
+*.orig
+
+# Local tooling
+.git-local/
