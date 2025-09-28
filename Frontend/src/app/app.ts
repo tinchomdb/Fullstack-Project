@@ -1,6 +1,8 @@
 import { Component, signal, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { ChangeDetectionStrategy } from '@angular/core';
+import { environment } from '../environments/environment';
 
 interface WeatherForecast {
   date: string;
@@ -14,6 +16,7 @@ interface WeatherForecast {
   imports: [CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App implements OnInit {
   protected readonly title = signal('app');
@@ -21,8 +24,7 @@ export class App implements OnInit {
   protected readonly loading = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  // Backend base URL - matches Api.http
-  private readonly apiBase = 'http://localhost:5099';
+  private readonly apiBase = environment.apiBase;
 
   constructor(private http: HttpClient) {
     // optional: log changes to forecasts during development
