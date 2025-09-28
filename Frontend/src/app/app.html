@@ -1,0 +1,19 @@
+<div style="width: 100%; margin-top: 1.5rem">
+  <section aria-labelledby="weather-heading">
+    <h2 id="weather-heading">Weather Forecast</h2>
+    @if (loading()) {
+    <div>Loading weather...</div>
+    } @if (error()) {
+    <div style="color: crimson">Error: {{ error() }}</div>
+    } @if (forecasts()) {
+    <ul>
+      @for (f of forecasts(); track f.date) {
+      <li>
+        <strong>{{ f.date }}</strong
+        >: {{ f.summary }} — {{ f.temperatureC }} °C ({{ f.temperatureF }} °F)
+      </li>
+      }
+    </ul>
+    }
+  </section>
+</div>
