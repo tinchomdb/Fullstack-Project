@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "lTMDppdcD+E=",
+  "dgSpecHash": "tdvUS29grt8=",
   "success": true,
-  "projectFilePath": "C:\\Proyectos\\Fullstack Project\\backend\\api\\Api.csproj",
+  "projectFilePath": "C:\\Proyectos\\Fullstack Project\\backend\\Api\\Api.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\tinch\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.9\\microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
     "C:\\Users\\tinch\\.nuget\\packages\\microsoft.extensions.apidescription.server\\9.0.0\\microsoft.extensions.apidescription.server.9.0.0.nupkg.sha512",
