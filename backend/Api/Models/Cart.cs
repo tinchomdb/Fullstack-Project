@@ -12,8 +12,6 @@ public sealed record class Cart
 
     public decimal Subtotal { get; init; }
 
-    public decimal CurrencyConversionRate { get; init; } = 1m;
-
     public string Currency { get; init; } = "USD";
 
     public decimal Total { get; init; }
