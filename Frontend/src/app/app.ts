@@ -20,6 +20,11 @@ export class App {
       ariaLabel: 'Browse products',
     },
     {
+      label: 'Cart',
+      path: '/cart',
+      ariaLabel: 'View your shopping cart',
+    },
+    {
       label: 'Sign In',
       path: '/sign-in',
       ariaLabel: 'Sign in to your account',
