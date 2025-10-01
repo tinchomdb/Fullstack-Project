@@ -2,6 +2,12 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.3.3.
 
+## Features
+
+- Dynamic products page fed by the backend API defined in `src/environments/environment.ts`.
+- Responsive layout with featured product highlight and catalog grid.
+- Centralized design tokens in `src/styles/_tokens.scss` for consistent spacing, typography, colors, shadows, and radii.
+
 ## Development server
 
 To start a local development server, run:

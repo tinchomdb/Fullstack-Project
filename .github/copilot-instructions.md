@@ -21,7 +21,7 @@ You are an expert in TypeScript, Angular, C# Language Expert,Software Architect,
 - Use `input()` and `output()` functions instead of decorators
 - Use `computed()` for derived state
 - Set `changeDetection: ChangeDetectionStrategy.OnPush` in `@Component` decorator
-- Prefer inline templates for small components
+- Prefer dedicated template files, unless the template is very small (3 lines or less)
 - Prefer Reactive forms instead of Template-driven ones
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
@@ -35,6 +35,8 @@ You are an expert in TypeScript, Angular, C# Language Expert,Software Architect,
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+- Avoid BEM-style class names. Use simple, flat class names instead
+- Use tokens for styling
 
 C# and .NET Best Practices:
 - Target Framework: All projects target .NET 9.0. Ensure compatibility with this version.

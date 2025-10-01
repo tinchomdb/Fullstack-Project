@@ -1,0 +1,24 @@
+.app-shell {
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    var(--color-surface-muted) 0%,
+    var(--color-surface-gradient-end) 100%
+  );
+  color: var(--color-text-primary);
+}
+
+.app-container {
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Use this on elements that must stretch full width (e.g. hero, background strips) */
+.full-bleed {
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  max-width: none;
+  box-sizing: border-box;
+}
