@@ -1,0 +1,18 @@
+@if (showError()) {
+  <div class="state state--error" role="alert">
+    <strong>Could not load products.</strong>
+    <p>{{ error() }}</p>
+    <app-button size="sm" type="button" (click)="onRetry()">Try again</app-button>
+  </div>
+}
+@if (showLoading()) {
+  <div class="state state--loading">
+    <span class="loader" aria-hidden="true"></span>
+    Loading the latest catalog…
+  </div>
+}
+@if (showEmpty()) {
+  <div class="state">
+    <p>No products are available yet. Check back soon!</p>
+  </div>
+}

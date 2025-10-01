@@ -78,8 +78,8 @@ public sealed class InMemoryMarketplaceRepository : IMarketplaceRepository
                 Seller = sellers[0],
                 ImageUrls =
                 [
-                    "https://cdn.example.com/products/headphones-front.jpg",
-                    "https://cdn.example.com/products/headphones-side.jpg"
+                    "https://cf-images.dustin.eu/cdn-cgi/image/fit=contain,format=auto,quality=75,width=828,fit=contain/image/d2000010011144383/sennheiser-accentum-wireless-plus-sort.jpg",
+                    "https://images.unsplash.com/photo-1519669556878-63bdad8a9faa?auto=format&fit=crop&w=960&q=80"
                 ],
                 CreatedAt = now.AddDays(-30),
                 UpdatedAt = now.AddDays(-7)
@@ -95,7 +95,7 @@ public sealed class InMemoryMarketplaceRepository : IMarketplaceRepository
                 Seller = sellers[0],
                 ImageUrls =
                 [
-                    "https://cdn.example.com/products/smart-speaker-front.jpg"
+                    "https://i.rtings.com/assets/pages/TTBDyuVj/best-smart-speakers-20231026-1-medium.jpg?format=auto"
                 ],
                 CreatedAt = now.AddDays(-45),
                 UpdatedAt = now.AddDays(-3)
@@ -111,8 +111,8 @@ public sealed class InMemoryMarketplaceRepository : IMarketplaceRepository
                 Seller = sellers[1],
                 ImageUrls =
                 [
-                    "https://cdn.example.com/products/hoodie-front.jpg",
-                    "https://cdn.example.com/products/hoodie-back.jpg"
+                    "https://cdn.billig-arbejdstoj.dk/media/r4znsuyq/5935165/124455-13380_10.jpg?width=1500&height=1500&bgcolor=ffffff&format=webp&quality=75",
+                    "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&w=960&q=80"
                 ],
                 CreatedAt = now.AddDays(-20),
                 UpdatedAt = now.AddDays(-1)
@@ -128,7 +128,7 @@ public sealed class InMemoryMarketplaceRepository : IMarketplaceRepository
                 Seller = sellers[0],
                 ImageUrls =
                 [
-                    "https://cdn.example.com/products/skillet-main.jpg"
+                    "https://cdn.shopify.com/s/files/1/0017/2471/0989/files/372618169_1024x1024.jpg?v=1720463498"
                 ],
                 CreatedAt = now.AddDays(-12),
                 UpdatedAt = now.AddDays(-2)

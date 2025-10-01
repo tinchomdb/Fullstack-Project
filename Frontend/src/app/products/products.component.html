@@ -1,0 +1,26 @@
+<section class="products-page" [attr.aria-labelledby]="headingId">
+  <app-section-header
+    [headingId]="headingId"
+    heading="Featured products"
+    headingLevel="h1"
+    subtitle="Discover curated items from our top sellers. Updated in real time from the backend API."
+    eyebrow="Marketplace"
+  />
+
+  <app-data-state
+    [loading]="productsResource.loading()"
+    [error]="productsResource.error()"
+    [hasData]="productsResource.hasData()"
+    loadingMessage="Loading the latest catalog…"
+    emptyMessage="No products are available yet. Check back soon!"
+    errorTitle="Could not load products."
+    (retry)="reload()"
+  />
+
+  @if (featuredProduct(); as featured) {
+    <app-product-featured-card [product]="featured" />
+  }
+  @if (remainingProducts().length) {
+    <app-product-grid [products]="remainingProducts()" />
+  }
+</section>

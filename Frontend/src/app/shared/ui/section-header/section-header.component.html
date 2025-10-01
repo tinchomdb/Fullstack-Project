@@ -1,0 +1,17 @@
+<header class="section-header" [attr.aria-labelledby]="ariaLabelledBy()">
+  <div class="content">
+    @if (eyebrow(); as eyebrowText) {
+    <p class="eyebrow">{{ eyebrowText }}</p>
+    }
+
+    <app-heading [level]="headingLevel()" [headingId]="headingId()" [content]="heading()">
+      {{ heading() }}
+    </app-heading>
+
+    @if (subtitle(); as subtitleText) {
+    <p class="subtitle">{{ subtitleText }}</p>
+    } @if (description(); as descriptionText) {
+    <p class="description">{{ descriptionText }}</p>
+    }
+  </div>
+</header>
