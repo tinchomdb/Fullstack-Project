@@ -7,29 +7,24 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class OrdersController : ControllerBase
+public sealed class OrdersController(IOrdersRepository repository) : ControllerBase
 {
-    private readonly IMarketplaceRepository repository;
+    private readonly IOrdersRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-    public OrdersController(IMarketplaceRepository repository)
-    {
-        this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
-    }
-
-    [HttpGet]
+    [HttpGet("by-user/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<IReadOnlyList<Order>> GetOrders()
+    public async Task<ActionResult<IReadOnlyList<Order>>> GetOrdersByUser(string userId, CancellationToken cancellationToken)
     {
-        var orders = repository.GetOrders();
+        var orders = await repository.GetOrdersByUserAsync(userId, cancellationToken);
         return Ok(orders);
     }
 
-    [HttpGet("{orderId:guid}")]
+    [HttpGet("{orderId}/user/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Order> GetOrder(Guid orderId)
+    public async Task<ActionResult<Order>> GetOrder(string orderId, string userId, CancellationToken cancellationToken)
     {
-        var order = repository.GetOrder(orderId);
+        var order = await repository.GetOrderAsync(orderId, userId, cancellationToken);
 
         if (order is null)
         {
@@ -39,11 +34,24 @@ public sealed class OrdersController : ControllerBase
         return Ok(order);
     }
 
-    [HttpGet("by-user/{userId:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<IReadOnlyList<Order>> GetOrdersByUser(Guid userId)
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult<Order>> CreateOrder([FromBody] Order order, CancellationToken cancellationToken)
     {
-        var orders = repository.GetOrdersByUser(userId);
-        return Ok(orders);
+        var createdOrder = await repository.CreateOrderAsync(order, cancellationToken);
+        return CreatedAtAction(nameof(GetOrder), new { orderId = createdOrder.Id, userId = createdOrder.UserId }, createdOrder);
+    }
+
+    [HttpPut("{orderId}/user/{userId}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<Order>> UpdateOrder(string orderId, string userId, [FromBody] Order order, CancellationToken cancellationToken)
+    {
+        if (order.Id != orderId || order.UserId != userId)
+        {
+            return BadRequest("Order ID and UserId must match route parameters");
+        }
+
+        var updatedOrder = await repository.UpdateOrderAsync(order, cancellationToken);
+        return Ok(updatedOrder);
     }
 }

@@ -6,69 +6,53 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class CartsController(IMarketplaceRepository repository) : ControllerBase
+public sealed class CartsController(ICartsRepository repository) : ControllerBase
 {
-    private readonly IMarketplaceRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    private readonly ICartsRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
-    [HttpGet]
+    [HttpGet("by-user/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<IReadOnlyList<Cart>> GetCarts()
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Cart>> GetCartByUser(string userId, CancellationToken cancellationToken)
     {
-        var carts = repository.GetCarts();
-        return Ok(carts);
-    }
+        var cart = await repository.GetCartByUserAsync(userId, cancellationToken);
 
-    [HttpGet("current")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<Cart> GetCurrentCart()
-    {
-        var carts = repository.GetCarts();
-        var defaultCart = carts.Count > 0 ? carts[0] : null;
-
-        if (defaultCart is null)
+        if (cart is null)
         {
+            // Return empty cart for user
             return Ok(new Cart
             {
-                Id = Guid.NewGuid(),
-                UserId = Guid.Empty,
+                Id = userId,
+                UserId = userId,
+                Items = [],
                 LastUpdatedAt = DateTime.UtcNow,
-                Currency = "USD",
                 Subtotal = 0m,
                 Total = 0m,
-                Items = []
+                Currency = "USD"
             });
         }
 
-        return Ok(defaultCart);
-    }
-
-    [HttpGet("{cartId:guid}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Cart> GetCart(Guid cartId)
-    {
-        var cart = repository.GetCart(cartId);
-
-        if (cart is null)
-        {
-            return NotFound();
-        }
-
         return Ok(cart);
     }
 
-    [HttpGet("by-user/{userId:guid}")]
+    [HttpPut("by-user/{userId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Cart> GetCartByUser(Guid userId)
+    public async Task<ActionResult<Cart>> UpsertCart(string userId, [FromBody] Cart cart, CancellationToken cancellationToken)
     {
-        var cart = repository.GetCartByUser(userId);
-
-        if (cart is null)
+        if (cart.UserId != userId)
         {
-            return NotFound();
+            return BadRequest("Cart userId must match route parameter");
         }
 
-        return Ok(cart);
+        var upsertedCart = await repository.UpsertCartAsync(cart, cancellationToken);
+        return Ok(upsertedCart);
+    }
+
+    [HttpDelete("by-user/{userId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> DeleteCart(string userId, CancellationToken cancellationToken)
+    {
+        await repository.DeleteCartAsync(userId, cancellationToken);
+        return NoContent();
     }
 }

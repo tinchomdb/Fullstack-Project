@@ -1,5 +1,6 @@
 using Api.Configuration;
 using Api.Repositories;
+using Api.Services;
 using Azure.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
 
@@ -25,8 +26,6 @@ if (builder.Environment.IsProduction())
         {
             Console.WriteLine($"⚠️ Warning: Could not connect to Key Vault: {ex.Message}");
             Console.WriteLine("Application will continue using configuration from App Settings as fallback.");
-            // Application continues with App Settings configuration
-            // This allows the app to start even if Key Vault is not properly configured
         }
     }
     else
@@ -39,17 +38,41 @@ var allowedOrigins = builder.Configuration.GetValue<string>("AllowedOrigins")?
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
     ?? [];
 
-// Configure Cosmos DB settings from configuration
 builder.Services.Configure<CosmosDbSettings>(
     builder.Configuration.GetSection("CosmosDb"));
 
-// Add services to the container.
+// Register CosmosClient as singleton
+builder.Services.AddSingleton(serviceProvider =>
+{
+    var cosmosDbSettings = builder.Configuration.GetSection("CosmosDb").Get<CosmosDbSettings>();
+    return new Microsoft.Azure.Cosmos.CosmosClient(
+        cosmosDbSettings!.Account,
+        cosmosDbSettings.Key,
+        new Microsoft.Azure.Cosmos.CosmosClientOptions
+        {
+            SerializerOptions = new Microsoft.Azure.Cosmos.CosmosSerializationOptions
+            {
+                PropertyNamingPolicy = Microsoft.Azure.Cosmos.CosmosPropertyNamingPolicy.CamelCase
+            }
+        });
+});
+
+// Register individual repository implementations
+builder.Services.AddSingleton<IProductsRepository, CosmosDbProductsRepository>();
+builder.Services.AddSingleton<ICategoriesRepository, CosmosDbCategoriesRepository>();
+builder.Services.AddSingleton<ICartsRepository, CosmosDbCartsRepository>();
+builder.Services.AddSingleton<IOrdersRepository, CosmosDbOrdersRepository>();
+builder.Services.AddSingleton<IUsersRepository, CosmosDbUsersRepository>();
+
+// Register services
+builder.Services.AddSingleton<CosmosDbInitializationService>();
+builder.Services.AddSingleton<DataSeedingService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddAuthorization();
-builder.Services.AddSingleton<IMarketplaceRepository, InMemoryMarketplaceRepository>();
-// Enable CORS for local development (allow Angular dev server)
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowConfiguredOrigins", policy =>
@@ -72,7 +95,21 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Initialize Cosmos DB and seed data
+try
+{
+    var initService = app.Services.GetRequiredService<CosmosDbInitializationService>();
+    await initService.InitializeAsync();
+    
+    var seedService = app.Services.GetRequiredService<DataSeedingService>();
+    await seedService.SeedDataAsync();
+}
+catch (Exception ex)
+{
+    app.Logger.LogError(ex, "An error occurred while initializing the database");
+    throw;
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

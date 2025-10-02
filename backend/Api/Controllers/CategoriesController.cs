@@ -7,29 +7,24 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class CategoriesController : ControllerBase
+public sealed class CategoriesController(ICategoriesRepository repository) : ControllerBase
 {
-    private readonly IMarketplaceRepository repository;
-
-    public CategoriesController(IMarketplaceRepository repository)
-    {
-        this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
-    }
+    private readonly ICategoriesRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<IReadOnlyList<Category>> GetCategories()
+    public async Task<ActionResult<IReadOnlyList<Category>>> GetCategories(CancellationToken cancellationToken)
     {
-        var categories = repository.GetCategories();
+        var categories = await repository.GetCategoriesAsync(cancellationToken);
         return Ok(categories);
     }
 
-    [HttpGet("{categoryId:guid}")]
+    [HttpGet("{categoryId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<Category> GetCategory(Guid categoryId)
+    public async Task<ActionResult<Category>> GetCategory(string categoryId, CancellationToken cancellationToken)
     {
-        var category = repository.GetCategory(categoryId);
+        var category = await repository.GetCategoryAsync(categoryId, cancellationToken);
 
         if (category is null)
         {
@@ -37,5 +32,13 @@ public sealed class CategoriesController : ControllerBase
         }
 
         return Ok(category);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult<Category>> CreateCategory([FromBody] Category category, CancellationToken cancellationToken)
+    {
+        var createdCategory = await repository.CreateCategoryAsync(category, cancellationToken);
+        return CreatedAtAction(nameof(GetCategory), new { categoryId = createdCategory.Id }, createdCategory);
     }
 }
