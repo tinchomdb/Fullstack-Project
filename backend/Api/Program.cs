@@ -12,9 +12,26 @@ if (builder.Environment.IsProduction())
     
     if (!string.IsNullOrEmpty(keyVaultEndpoint))
     {
-        builder.Configuration.AddAzureKeyVault(
-            new Uri(keyVaultEndpoint),
-            new DefaultAzureCredential());
+        try
+        {
+            builder.Configuration.AddAzureKeyVault(
+                new Uri(keyVaultEndpoint),
+                new DefaultAzureCredential());
+            
+            builder.Logging.AddConsole().AddDebug();
+            Console.WriteLine($"✅ Successfully connected to Azure Key Vault: {keyVaultEndpoint}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"⚠️ Warning: Could not connect to Key Vault: {ex.Message}");
+            Console.WriteLine("Application will continue using configuration from App Settings as fallback.");
+            // Application continues with App Settings configuration
+            // This allows the app to start even if Key Vault is not properly configured
+        }
+    }
+    else
+    {
+        Console.WriteLine("ℹ️ Key Vault endpoint not configured. Using App Settings for configuration.");
     }
 }
 
