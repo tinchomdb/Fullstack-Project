@@ -1,11 +1,30 @@
+using Api.Configuration;
 using Api.Repositories;
+using Azure.Identity;
 using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add Azure Key Vault configuration in Production
+if (builder.Environment.IsProduction())
+{
+    var keyVaultEndpoint = builder.Configuration["KeyVault:Endpoint"];
+    
+    if (!string.IsNullOrEmpty(keyVaultEndpoint))
+    {
+        builder.Configuration.AddAzureKeyVault(
+            new Uri(keyVaultEndpoint),
+            new DefaultAzureCredential());
+    }
+}
+
 var allowedOrigins = builder.Configuration.GetValue<string>("AllowedOrigins")?
     .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
     ?? [];
+
+// Configure Cosmos DB settings from configuration
+builder.Services.Configure<CosmosDbSettings>(
+    builder.Configuration.GetSection("CosmosDb"));
 
 // Add services to the container.
 builder.Services.AddEndpointsApiExplorer();
