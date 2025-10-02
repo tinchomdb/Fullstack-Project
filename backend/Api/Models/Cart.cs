@@ -1,12 +1,16 @@
+using System.Text.Json.Serialization;
+
 namespace Api.Models;
 
 public sealed record class Cart
 {
-    public Guid Id { get; init; }
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = string.Empty;
 
-    public Guid UserId { get; init; }
+    [JsonPropertyName("userId")]
+    public string UserId { get; init; } = string.Empty;
 
-    public DateTime LastUpdatedAt { get; init; }
+    public DateTime LastUpdatedAt { get; init; } = DateTime.UtcNow;
 
     public IReadOnlyList<CartItem> Items { get; init; } = [];
 
@@ -15,4 +19,7 @@ public sealed record class Cart
     public string Currency { get; init; } = "USD";
 
     public decimal Total { get; init; }
+
+    [JsonPropertyName("type")]
+    public string Type { get; init; } = "Cart";
 }

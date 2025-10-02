@@ -6,4 +6,5 @@ public class ContainerNames
     public string Carts { get; set; } = string.Empty;
     public string Orders { get; set; } = string.Empty;
     public string Categories { get; set; } = string.Empty;
+    public string Users { get; set; } = string.Empty;
 }

@@ -1,12 +1,16 @@
+using System.Text.Json.Serialization;
+
 namespace Api.Models;
 
 public sealed record class Order
 {
-    public Guid Id { get; init; }
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = Guid.NewGuid().ToString();
 
-    public Guid UserId { get; init; }
+    [JsonPropertyName("userId")]
+    public string UserId { get; init; } = string.Empty;
 
-    public DateTime OrderDate { get; init; }
+    public DateTime OrderDate { get; init; } = DateTime.UtcNow;
 
     public OrderStatus Status { get; init; }
 
@@ -19,4 +23,7 @@ public sealed record class Order
     public decimal Total { get; init; }
 
     public string Currency { get; init; } = "USD";
+
+    [JsonPropertyName("type")]
+    public string Type { get; init; } = "Order";
 }

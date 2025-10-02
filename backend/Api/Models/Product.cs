@@ -1,8 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace Api.Models;
 
 public sealed record class Product
 {
-    public Guid Id { get; init; }
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = Guid.NewGuid().ToString();
 
     public string Name { get; init; } = string.Empty;
 
@@ -12,13 +15,22 @@ public sealed record class Product
 
     public string Currency { get; init; } = "USD";
 
-    public Guid CategoryId { get; init; }
+    public int Stock { get; init; }
+
+    [JsonPropertyName("sellerId")]
+    public string SellerId { get; init; } = string.Empty;
+
+    public IReadOnlyList<string> CategoryIds { get; init; } = [];
 
     public Seller Seller { get; init; } = new();
 
     public IReadOnlyList<string> ImageUrls { get; init; } = [];
 
-    public DateTime CreatedAt { get; init; }
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
-    public DateTime UpdatedAt { get; init; }
+    public DateTime UpdatedAt { get; init; } = DateTime.UtcNow;
+
+    // Cosmos DB discriminator for container shared models (optional)
+    [JsonPropertyName("type")]
+    public string Type { get; init; } = "Product";
 }
