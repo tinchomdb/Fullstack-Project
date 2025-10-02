@@ -91,7 +91,12 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
 });
 
-app.UseHttpsRedirection();
+// HTTPS redirection is handled by Azure App Service in production
+// Only use it in development to avoid warnings
+if (app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAuthorization();
 
