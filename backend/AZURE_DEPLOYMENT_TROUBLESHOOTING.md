@@ -14,7 +14,7 @@ The error occurs because your `Program.cs` tries to connect to Azure Key Vault i
 if (builder.Environment.IsProduction())
 {
     var keyVaultEndpoint = builder.Configuration["KeyVault:Endpoint"];
-    
+
     if (!string.IsNullOrEmpty(keyVaultEndpoint))
     {
         builder.Configuration.AddAzureKeyVault(
@@ -280,7 +280,7 @@ Consider updating `Program.cs` to handle Key Vault errors gracefully:
 if (builder.Environment.IsProduction())
 {
     var keyVaultEndpoint = builder.Configuration["KeyVault:Endpoint"];
-    
+
     if (!string.IsNullOrEmpty(keyVaultEndpoint))
     {
         try
@@ -288,7 +288,7 @@ if (builder.Environment.IsProduction())
             builder.Configuration.AddAzureKeyVault(
                 new Uri(keyVaultEndpoint),
                 new DefaultAzureCredential());
-            
+
             Console.WriteLine("✅ Successfully connected to Azure Key Vault");
         }
         catch (Exception ex)
@@ -345,13 +345,13 @@ After adding these, restart and check **Log Stream** for detailed credential flo
 
 ## Quick Reference: Configuration Key Formats
 
-| Location            | Format                           | Example                  |
-| ------------------- | -------------------------------- | ------------------------ |
-| **appsettings.json**    | Colon (`:`)                      | `CosmosDb:Account`       |
-| **User Secrets**        | Colon (`:`)                      | `CosmosDb:Account`       |
-| **App Settings**        | Double underscore (`__`)         | `CosmosDb__Account`      |
-| **Key Vault Secrets**   | Double dash (`--`)               | `CosmosDb--Account`      |
-| **Environment Vars**    | Double underscore (`__`) or `:` | `CosmosDb__Account`      |
+| Location              | Format                          | Example             |
+| --------------------- | ------------------------------- | ------------------- |
+| **appsettings.json**  | Colon (`:`)                     | `CosmosDb:Account`  |
+| **User Secrets**      | Colon (`:`)                     | `CosmosDb:Account`  |
+| **App Settings**      | Double underscore (`__`)        | `CosmosDb__Account` |
+| **Key Vault Secrets** | Double dash (`--`)              | `CosmosDb--Account` |
+| **Environment Vars**  | Double underscore (`__`) or `:` | `CosmosDb__Account` |
 
 > 💡 **Tip**: ASP.NET Core automatically converts all formats to the same internal representation.
 
