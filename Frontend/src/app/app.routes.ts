@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { MsalGuard } from '@azure/msal-angular';
 
 export const routes: Routes = [
   {
@@ -23,6 +24,7 @@ export const routes: Routes = [
   {
     path: 'checkout',
     loadComponent: () => import('./checkout/checkout.component').then((m) => m.CheckoutComponent),
+    canActivate: [MsalGuard],
     data: {
       title: 'Checkout',
     },
