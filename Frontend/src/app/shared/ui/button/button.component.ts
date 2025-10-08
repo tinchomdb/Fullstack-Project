@@ -2,7 +2,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 type ButtonType = 'button' | 'submit' | 'reset';
 type ButtonVariant = 'primary';
-type ButtonSize = 'sm' | 'md';
+type ButtonSize = 'sm' | 'md' | 'full';
+type ButtonShape = 'rounded' | 'pill';
 
 @Component({
   selector: 'app-button',
@@ -12,6 +13,7 @@ type ButtonSize = 'sm' | 'md';
   host: {
     '[attr.data-size]': 'size()',
     '[attr.data-variant]': 'variant()',
+    '[attr.data-shape]': 'shape()',
     '[attr.aria-disabled]': 'disabled() ? "true" : null',
   },
 })
@@ -20,4 +22,5 @@ export class ButtonComponent {
   readonly disabled = input(false);
   readonly variant = input<ButtonVariant>('primary');
   readonly size = input<ButtonSize>('md');
+  readonly shape = input<ButtonShape>('pill');
 }

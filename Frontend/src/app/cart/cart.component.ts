@@ -1,28 +1,53 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 import { CartService } from './cart.service';
-import { Cart } from '../models/cart.model';
-import { Resource } from '../shared/utils/resource';
 import { DataStateComponent } from '../shared/ui/data-state/data-state.component';
+import { ButtonComponent } from '../shared/ui/button/button.component';
 
 @Component({
   selector: 'app-cart',
-  imports: [CommonModule, DataStateComponent],
+  imports: [CommonModule, DataStateComponent, ButtonComponent],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CartComponent implements OnInit {
+export class CartComponent {
   private readonly cartService = inject(CartService);
+  private readonly router = inject(Router);
 
-  protected readonly cartResource = new Resource<Cart | null>(null);
-
-  ngOnInit(): void {
-    this.reload();
-  }
+  // Reactive state from service
+  protected readonly cart = this.cartService.cart;
+  protected readonly loading = this.cartService.loading;
+  protected readonly error = this.cartService.error;
+  protected readonly isEmpty = this.cartService.isEmpty;
+  protected readonly itemCount = this.cartService.itemCount;
+  protected readonly totalAmount = this.cartService.totalAmount;
 
   reload(): void {
-    this.cartResource.load(this.cartService.getCurrentCart());
+    this.cartService.loadCart();
+  }
+
+  checkout(): void {
+    this.router.navigate(['/checkout']);
+  }
+
+  updateQuantity(productId: string, quantity: number): void {
+    this.cartService.updateQuantity(productId, quantity).subscribe({
+      error: (error) => console.error('Failed to update quantity:', error),
+    });
+  }
+
+  removeItem(productId: string): void {
+    this.cartService.removeFromCart(productId).subscribe({
+      error: (error) => console.error('Failed to remove item:', error),
+    });
+  }
+
+  clearCart(): void {
+    this.cartService.clearCart().subscribe({
+      error: (error) => console.error('Failed to clear cart:', error),
+    });
   }
 }

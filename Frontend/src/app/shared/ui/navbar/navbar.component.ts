@@ -1,5 +1,7 @@
-import { Component, ChangeDetectionStrategy, signal, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+
+import { CartService } from '../../../cart/cart.service';
 
 export interface NavItem {
   label: string;
@@ -15,6 +17,10 @@ export interface NavItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NavbarComponent {
+  private readonly cartService = inject(CartService);
+
   title = input.required<string>();
   navigation = input.required<readonly NavItem[]>();
+
+  protected readonly cartItemCount = this.cartService.itemCount;
 }

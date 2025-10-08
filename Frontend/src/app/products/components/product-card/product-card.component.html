@@ -13,5 +13,20 @@
       <span>{{ product().price | currency: product().currency : 'symbol' : '1.2-2' }}</span>
       <span class="seller">{{ product().seller.displayName }}</span>
     </div>
+    <div class="actions">
+      <app-button
+        [disabled]="isAdding()"
+        (click)="onAddToCart()"
+        type="button"
+        shape="rounded"
+        size="full"
+      >
+        @if (isAdding()) {
+          <span class="loading-text">Adding...</span>
+        } @else {
+          <span>Add to Cart</span>
+        }
+      </app-button>
+    </div>
   </div>
 </article>
