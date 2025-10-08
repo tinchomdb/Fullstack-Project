@@ -26,6 +26,7 @@
 </nav>
 
 <div class="navbar-actions">
+  <app-auth-button></app-auth-button>
   <app-theme-toggle></app-theme-toggle>
 
   <!-- Mobile Hamburger Button -->
@@ -90,6 +91,9 @@
           </li>
         }
       </ul>
+      <div class="mobile-auth">
+        <app-auth-button [additionalClick]="closeMobileMenu"></app-auth-button>
+      </div>
     </nav>
   </div>
 }

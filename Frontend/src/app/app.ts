@@ -25,11 +25,6 @@ export class App {
       ariaLabel: 'View your shopping cart',
     },
     {
-      label: 'Sign In',
-      path: '/sign-in',
-      ariaLabel: 'Sign in to your account',
-    },
-    {
       label: 'Contact',
       path: '/contact',
       ariaLabel: 'Get in touch with us',

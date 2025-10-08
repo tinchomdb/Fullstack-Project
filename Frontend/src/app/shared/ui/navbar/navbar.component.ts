@@ -2,7 +2,8 @@ import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angu
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { CartService } from '../../../cart/cart.service';
-import { ThemeToggleComponent } from '../../components/theme-toggle.component';
+import { AuthButtonComponent } from '../auth-button/auth-button.component';
+import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 
 export interface NavItem {
   label: string;
@@ -12,7 +13,7 @@ export interface NavItem {
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, ThemeToggleComponent],
+  imports: [RouterLink, RouterLinkActive, AuthButtonComponent, ThemeToggleComponent],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
