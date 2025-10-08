@@ -21,6 +21,13 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'checkout',
+    loadComponent: () => import('./checkout/checkout.component').then((m) => m.CheckoutComponent),
+    data: {
+      title: 'Checkout',
+    },
+  },
+  {
     path: '**',
     redirectTo: 'products',
   },

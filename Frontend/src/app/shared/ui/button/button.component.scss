@@ -27,8 +27,21 @@ button {
   line-height: inherit;
 }
 
+:host([data-shape='rounded']) button {
+  border-radius: var(--radius-md);
+}
+
 :host([data-size='sm']) button {
   padding: var(--ui-button-padding-y-sm) var(--ui-button-padding-x-sm);
+}
+
+:host([data-size='full']) {
+  width: 100%;
+}
+
+:host([data-size='full']) button {
+  width: 100%;
+  justify-content: center;
 }
 
 button:hover {

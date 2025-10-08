@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace Api.Models;
 
@@ -10,8 +11,11 @@ public sealed record class Order
     [JsonPropertyName("userId")]
     public string UserId { get; init; } = string.Empty;
 
+    public string? OriginalCartId { get; init; }
+
     public DateTime OrderDate { get; init; } = DateTime.UtcNow;
 
+    [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
     public OrderStatus Status { get; init; }
 
     public IReadOnlyList<OrderItem> Items { get; init; } = [];

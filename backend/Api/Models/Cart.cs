@@ -1,16 +1,24 @@
 using System.Text.Json.Serialization;
+using Newtonsoft.Json.Converters;
 
 namespace Api.Models;
 
 public sealed record class Cart
 {
     [JsonPropertyName("id")]
-    public string Id { get; init; } = string.Empty;
+    public string Id { get; init; } = Guid.NewGuid().ToString();
 
     [JsonPropertyName("userId")]
     public string UserId { get; init; } = string.Empty;
 
+    [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
+    public CartStatus Status { get; init; } = CartStatus.Active;
+
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
+
     public DateTime LastUpdatedAt { get; init; } = DateTime.UtcNow;
+
+    public DateTime? ExpiresAt { get; init; } = DateTime.UtcNow.AddDays(30);
 
     public IReadOnlyList<CartItem> Items { get; init; } = [];
 

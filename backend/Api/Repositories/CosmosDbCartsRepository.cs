@@ -18,23 +18,50 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
         _container = database.GetContainer(settings.ContainersNames.Carts);
     }
 
-    public async Task<Cart?> GetCartByUserAsync(
+    public async Task<Cart?> GetActiveCartByUserAsync(
         string userId,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            // Ultra-efficient point read - 1 RU (id = userId)
-            var response = await _container.ReadItemAsync<Cart>(
-                userId,
-                new PartitionKey(userId),
-                cancellationToken: cancellationToken);
+            var query = new QueryDefinition(
+                "SELECT * FROM c WHERE c.userId = @userId AND c.status = @status ORDER BY c.lastUpdatedAt DESC")
+                .WithParameter("@userId", userId)
+                .WithParameter("@status", CartStatus.Active.ToString());
 
-            return response.Resource;
+            var iterator = _container.GetItemQueryIterator<Cart>(query);
+            var results = await iterator.ReadNextAsync(cancellationToken);
+
+            return results.FirstOrDefault();
         }
         catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
         {
             return null;
+        }
+    }
+
+    public async Task<IReadOnlyList<Cart>> GetAllCartsAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var carts = new List<Cart>();
+
+        try
+        {
+            var query = new QueryDefinition("SELECT * FROM c ORDER BY c.lastUpdatedAt DESC");
+
+            var iterator = _container.GetItemQueryIterator<Cart>(query);
+
+            while (iterator.HasMoreResults)
+            {
+                var results = await iterator.ReadNextAsync(cancellationToken);
+                carts.AddRange(results);
+            }
+
+            return carts.AsReadOnly();
+        }
+        catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return carts.AsReadOnly();
         }
     }
 
@@ -54,9 +81,15 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
         string userId,
         CancellationToken cancellationToken = default)
     {
-        await _container.DeleteItemAsync<Cart>(
-            userId,
-            new PartitionKey(userId),
-            cancellationToken: cancellationToken);
+        // Get active cart for user and delete it
+        var activeCart = await GetActiveCartByUserAsync(userId, cancellationToken);
+        
+        if (activeCart is not null)
+        {
+            await _container.DeleteItemAsync<Cart>(
+                activeCart.Id,
+                new PartitionKey(activeCart.UserId),
+                cancellationToken: cancellationToken);
+        }
     }
 }

@@ -68,3 +68,32 @@
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
 }
+
+.actions {
+  margin-top: auto;
+  padding-top: var(--space-2);
+}
+
+.loading-text {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: calc(-1 * var(--space-4));
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--space-3);
+    height: var(--space-3);
+    border: var(--border-width-thick) solid transparent;
+    border-top: var(--border-width-thick) solid currentColor;
+    border-radius: var(--radius-pill);
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
+}

@@ -12,6 +12,11 @@
           [attr.aria-label]="item.ariaLabel"
         >
           {{ item.label }}
+          @if (item.path === '/cart' && cartItemCount() > 0) {
+            <span class="cart-badge" [attr.aria-label]="cartItemCount() + ' items in cart'">
+              {{ cartItemCount() }}
+            </span>
+          }
         </a>
       </li>
     }
