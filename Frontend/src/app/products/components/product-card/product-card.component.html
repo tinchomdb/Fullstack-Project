@@ -15,17 +15,13 @@
     </div>
     <div class="actions">
       <app-button
-        [disabled]="isAdding()"
+        [disabled]="isAddingToCart()"
         (click)="onAddToCart()"
         type="button"
         shape="rounded"
         size="full"
       >
-        @if (isAdding()) {
-          <span class="loading-text">Adding...</span>
-        } @else {
-          <span>Add to Cart</span>
-        }
+        <span>Add to Cart</span>
       </app-button>
     </div>
   </div>

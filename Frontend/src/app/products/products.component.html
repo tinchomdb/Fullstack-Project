@@ -8,9 +8,9 @@
   />
 
   <app-data-state
-    [loading]="productsResource.loading()"
-    [error]="productsResource.error()"
-    [hasData]="productsResource.hasData()"
+    [loading]="loading()"
+    [error]="error()"
+    [hasData]="(products()?.length ?? 0) > 0"
     loadingMessage="Loading the latest catalog…"
     emptyMessage="No products are available yet. Check back soon!"
     errorTitle="Could not load products."

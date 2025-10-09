@@ -34,20 +34,14 @@ export class CartComponent {
   }
 
   updateQuantity(productId: string, quantity: number): void {
-    this.cartService.updateQuantity(productId, quantity).subscribe({
-      error: (error) => console.error('Failed to update quantity:', error),
-    });
+    this.cartService.updateQuantity(productId, quantity);
   }
 
   removeItem(productId: string): void {
-    this.cartService.removeFromCart(productId).subscribe({
-      error: (error) => console.error('Failed to remove item:', error),
-    });
+    this.cartService.removeFromCart(productId);
   }
 
   clearCart(): void {
-    this.cartService.clearCart().subscribe({
-      error: (error) => console.error('Failed to clear cart:', error),
-    });
+    this.cartService.clearCart();
   }
 }

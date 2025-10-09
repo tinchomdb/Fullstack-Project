@@ -13,27 +13,14 @@ public sealed class CartsController(ICartsRepository cartsRepository, IOrdersRep
 
     [HttpGet("by-user/{userId}/active")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Cart>> GetActiveCartByUser(string userId, CancellationToken cancellationToken)
     {
         var activeCart = await cartsRepository.GetActiveCartByUserAsync(userId, cancellationToken);
 
         if (activeCart is null)
         {
-            // Create new active cart
-            activeCart = new Cart
-            {
-                Id = Guid.NewGuid().ToString(),
-                UserId = userId,
-                Status = CartStatus.Active,
-                Items = [],
-                CreatedAt = DateTime.UtcNow,
-                LastUpdatedAt = DateTime.UtcNow,
-                Subtotal = 0m,
-                Total = 0m,
-                Currency = "USD"
-            };
-
-            activeCart = await cartsRepository.UpsertCartAsync(activeCart, cancellationToken);
+            return NotFound();
         }
 
         return Ok(activeCart);
@@ -126,10 +113,89 @@ public sealed class CartsController(ICartsRepository cartsRepository, IOrdersRep
 
     [HttpDelete("by-user/{userId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteCart(string userId, CancellationToken cancellationToken)
     {
-        await cartsRepository.DeleteCartAsync(userId, cancellationToken);
-        return NoContent();
+        try
+        {
+            await cartsRepository.DeleteCartAsync(userId, cancellationToken);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return NotFound($"Could not delete cart for user {userId}: {ex.Message}");
+        }
+    }
+
+    [HttpPost("migrate")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> MigrateGuestCart([FromBody] MigrateCartRequest request, CancellationToken cancellationToken)
+    {        
+        var guestCart = await cartsRepository.GetActiveCartByUserAsync(request.GuestId, cancellationToken);
+        
+        if (guestCart is null || guestCart.Items.Count == 0)
+        {            
+            return Ok();
+        }
+
+        var userCart = await cartsRepository.GetActiveCartByUserAsync(request.UserId, cancellationToken);
+        
+        if (userCart is null)
+        {            
+            userCart = guestCart with 
+            { 
+                Id = Guid.NewGuid().ToString(),
+                UserId = request.UserId,
+                LastUpdatedAt = DateTime.UtcNow
+            };
+        }
+        else
+        {            
+            var mergedItems = userCart.Items.ToList();
+            
+            foreach (var guestItem in guestCart.Items)
+            {
+                var existingItem = mergedItems.FirstOrDefault(i => i.ProductId == guestItem.ProductId);
+                
+                if (existingItem is not null)
+                {                    
+                    var index = mergedItems.IndexOf(existingItem);
+                    var newQuantity = existingItem.Quantity + guestItem.Quantity;
+                    mergedItems[index] = existingItem with 
+                    { 
+                        Quantity = newQuantity,
+                        LineTotal = existingItem.UnitPrice * newQuantity
+                    };
+                }
+                else
+                {                   
+                    mergedItems.Add(guestItem);
+                }
+            }
+            
+            var subtotal = mergedItems.Sum(item => item.LineTotal);
+            userCart = userCart with 
+            { 
+                Items = mergedItems,
+                Subtotal = subtotal,
+                Total = subtotal,
+                LastUpdatedAt = DateTime.UtcNow
+            };
+        }
+
+        await cartsRepository.UpsertCartAsync(userCart, cancellationToken);
+       
+        try
+        {
+            await cartsRepository.DeleteCartAsync(request.GuestId, cancellationToken);
+        }
+        catch
+        {
+            // Ignore errors when deleting guest cart
+        }
+
+        return Ok();
     }
 }
 
@@ -137,4 +203,10 @@ public sealed record CheckoutRequest
 {
     public string CartId { get; init; } = string.Empty;
     public decimal ShippingCost { get; init; } = 0m;
+}
+
+public sealed record MigrateCartRequest
+{
+    public string GuestId { get; init; } = string.Empty;
+    public string UserId { get; init; } = string.Empty;
 }
