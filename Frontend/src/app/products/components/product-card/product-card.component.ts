@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 
 import { Product } from '../../../models/product.model';
 import { CartService } from '../../../cart/cart.service';
@@ -17,25 +17,13 @@ export class ProductCardComponent {
 
   private readonly cartService = inject(CartService);
 
-  // Local loading state for this specific product
-  protected readonly isAdding = signal(false);
+  // Access loading state from cart service
+  protected readonly isAddingToCart = this.cartService.loading;
 
   onAddToCart(): void {
     const product = this.product();
-    if (!product || this.isAdding()) return;
+    if (!product) return;
 
-    this.isAdding.set(true);
-
-    this.cartService.addToCart(product, 1).subscribe({
-      next: () => {
-        // Successfully added to cart
-        this.isAdding.set(false);
-      },
-      error: (error) => {
-        console.error('Failed to add product to cart:', error);
-        // TODO: Show error message to user
-        this.isAdding.set(false);
-      },
-    });
+    this.cartService.addToCart(product, 1);
   }
 }

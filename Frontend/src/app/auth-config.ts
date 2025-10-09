@@ -26,5 +26,10 @@ export const msalConfig: Configuration = {
 };
 
 export const loginRequest = {
-  scopes: [],
+  scopes: ['openid', 'profile', 'email'],
 };
+
+export const protectedResourceMap = new Map<string, Array<string>>([
+  [`${environment.apiBase}/api/carts/migrate`, ['openid', 'profile', 'email']],
+  [`${environment.apiBase}/api/orders`, ['openid', 'profile', 'email']],
+]);

@@ -5,26 +5,28 @@ import {
   provideAppInitializer,
   inject,
 } from '@angular/core';
-import { provideHttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import {
   MSAL_INSTANCE,
   MSAL_GUARD_CONFIG,
+  MSAL_INTERCEPTOR_CONFIG,
   MsalService,
   MsalBroadcastService,
   MsalGuard,
   MsalInterceptor,
+  MsalInterceptorConfiguration,
 } from '@azure/msal-angular';
 import { PublicClientApplication, InteractionType } from '@azure/msal-browser';
-import { msalConfig, loginRequest } from './auth-config';
+import { msalConfig, loginRequest, protectedResourceMap } from './auth-config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideHttpClient(),
+    provideHttpClient(withInterceptorsFromDi()),
     provideRouter(routes),
     {
       provide: HTTP_INTERCEPTORS,
@@ -40,6 +42,13 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => ({
         interactionType: InteractionType.Redirect,
         authRequest: loginRequest,
+      }),
+    },
+    {
+      provide: MSAL_INTERCEPTOR_CONFIG,
+      useFactory: (): MsalInterceptorConfiguration => ({
+        interactionType: InteractionType.Redirect,
+        protectedResourceMap,
       }),
     },
     provideAppInitializer(() => {

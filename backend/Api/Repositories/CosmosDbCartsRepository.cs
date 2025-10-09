@@ -86,10 +86,17 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
         
         if (activeCart is not null)
         {
-            await _container.DeleteItemAsync<Cart>(
-                activeCart.Id,
-                new PartitionKey(activeCart.UserId),
-                cancellationToken: cancellationToken);
+            try
+            {
+                await _container.DeleteItemAsync<Cart>(
+                    activeCart.Id,
+                    new PartitionKey(activeCart.UserId),
+                    cancellationToken: cancellationToken);
+            }
+            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                // Item already deleted, ignore
+            }
         }
     }
 }

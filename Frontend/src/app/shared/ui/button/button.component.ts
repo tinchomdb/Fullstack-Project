@@ -15,6 +15,7 @@ type ButtonShape = 'rounded' | 'pill';
     '[attr.data-variant]': 'variant()',
     '[attr.data-shape]': 'shape()',
     '[attr.aria-disabled]': 'disabled() ? "true" : null',
+    '[style.pointer-events]': 'disabled() ? "none" : null',
   },
 })
 export class ButtonComponent {

@@ -1,4 +1,4 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal, inject, computed } from '@angular/core';
 import {
   MsalService,
   MsalBroadcastService,
@@ -24,8 +24,15 @@ export class AuthService {
   private readonly msalGuardConfig = inject(MSAL_GUARD_CONFIG) as unknown as MsalGuardConfiguration;
 
   private readonly _destroying$ = new Subject<void>();
+  private readonly GUEST_SESSION_KEY = 'guestSessionId';
 
   readonly loginDisplay = signal(false);
+
+  readonly userId = computed(() => {
+    this.loginDisplay();
+    const account = this.getActiveAccount();
+    return account?.localAccountId ?? this.getOrCreateGuestSession();
+  });
 
   constructor() {
     this.authService.instance.enableAccountStorageEvents();
@@ -34,6 +41,7 @@ export class AuthService {
       if (response) {
         this.authService.instance.setActiveAccount(response.account);
       }
+      this.setLoginDisplay();
     });
 
     this.msalBroadcastService.inProgress$
@@ -64,6 +72,7 @@ export class AuthService {
       .subscribe((result: EventMessage) => {
         const payload = result.payload as AuthenticationResult;
         this.authService.instance.setActiveAccount(payload.account);
+        this.setLoginDisplay();
       });
   }
 
@@ -98,5 +107,28 @@ export class AuthService {
     this.authService.logoutRedirect({
       postLogoutRedirectUri: '/',
     });
+  }
+
+  getUserId(): string {
+    return this.userId();
+  }
+
+  getGuestSessionId(): string | null {
+    return localStorage.getItem(this.GUEST_SESSION_KEY);
+  }
+
+  clearGuestSession(): void {
+    localStorage.removeItem(this.GUEST_SESSION_KEY);
+  }
+
+  private getOrCreateGuestSession(): string {
+    let guestId = localStorage.getItem(this.GUEST_SESSION_KEY);
+
+    if (!guestId) {
+      guestId = `guest-${crypto.randomUUID()}`;
+      localStorage.setItem(this.GUEST_SESSION_KEY, guestId);
+    }
+
+    return guestId;
   }
 }
