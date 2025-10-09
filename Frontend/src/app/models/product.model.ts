@@ -6,7 +6,10 @@ export interface Product {
   readonly description: string;
   readonly price: number;
   readonly currency: string;
+  readonly stock?: number;
+  readonly sellerId: string;
   readonly categoryId: string;
+  readonly categoryIds?: readonly string[];
   readonly seller: Seller;
   readonly imageUrls: readonly string[];
   readonly createdAt: string;

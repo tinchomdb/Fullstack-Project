@@ -1,0 +1,159 @@
+<div class="admin-products">
+  <div class="products-header">
+    <h2>Products Management</h2>
+    <app-button (click)="openCreateForm()" shape="rounded">Add New Product</app-button>
+  </div>
+
+  @if (error()) {
+    <div class="alert alert-error">{{ error() }}</div>
+  }
+
+  @if (loading() && !showForm()) {
+    <div class="loading">Loading products...</div>
+  }
+
+  @if (showForm()) {
+    <div class="product-form-overlay" (click)="closeForm()">
+      <div class="product-form" (click)="$event.stopPropagation()">
+        <div class="form-header">
+          <h3>{{ editingProduct() ? 'Edit Product' : 'Create New Product' }}</h3>
+          <button type="button" class="btn-close" (click)="closeForm()">×</button>
+        </div>
+
+        <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
+          @if (formError()) {
+            <div class="form-error-banner">{{ formError() }}</div>
+          }
+
+          <div class="form-group">
+            <label for="name">Product Name *</label>
+            <input id="name" type="text" formControlName="name" placeholder="Enter product name" />
+            @if (productForm.controls.name.invalid && productForm.controls.name.touched) {
+              <span class="error-text">Product name is required (min 3 characters)</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="description">Description *</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              placeholder="Enter product description"
+              rows="4"
+            ></textarea>
+            @if (
+              productForm.controls.description.invalid && productForm.controls.description.touched
+            ) {
+              <span class="error-text">Description is required</span>
+            }
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="price">Price *</label>
+              <input
+                id="price"
+                type="number"
+                formControlName="price"
+                placeholder="0.00"
+                step="0.01"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="currency">Currency *</label>
+              <select id="currency" formControlName="currency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="stock">Stock *</label>
+              <input id="stock" type="number" formControlName="stock" placeholder="0" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="categoryId">Category *</label>
+            <select id="categoryId" formControlName="categoryId">
+              <option value="">Select a category</option>
+              @for (category of categories(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sellerId">Seller ID *</label>
+            <input
+              id="sellerId"
+              type="text"
+              formControlName="sellerId"
+              placeholder="Enter seller ID"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="imageUrls">Image URLs (comma-separated)</label>
+            <input
+              id="imageUrls"
+              type="text"
+              formControlName="imageUrls"
+              placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg"
+            />
+          </div>
+
+          <div class="form-actions">
+            <app-button type="button" (click)="closeForm()" variant="secondary" shape="rounded"
+              >Cancel</app-button
+            >
+            <app-button type="submit" [disabled]="productForm.invalid || loading()" shape="rounded">
+              {{ editingProduct() ? 'Update' : 'Create' }} Product
+            </app-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+
+  <div class="products-list">
+    @if ((products()?.length ?? 0) === 0 && !loading()) {
+      <p class="no-products">No products found. Create your first product!</p>
+    }
+
+    @for (product of products() ?? []; track product.id) {
+      <div class="product-card">
+        <div class="product-image">
+          @if (product.imageUrls.length > 0) {
+            <img [src]="product.imageUrls[0]" [alt]="product.name" />
+          } @else {
+            <div class="no-image">No Image</div>
+          }
+        </div>
+
+        <div class="product-info">
+          <h3>{{ product.name }}</h3>
+          <p class="product-description">{{ product.description }}</p>
+          <div class="product-meta">
+            <span class="price">{{ product.price }} {{ product.currency }}</span>
+            <span class="stock">Stock: {{ product.stock ?? 0 }}</span>
+          </div>
+          <div class="product-details">
+            <span>Seller: {{ product.seller.displayName }}</span>
+          </div>
+        </div>
+
+        <div class="product-actions">
+          <app-button (click)="openEditForm(product)" variant="secondary" size="sm" shape="rounded"
+            >Edit</app-button
+          >
+          <app-button (click)="deleteProduct(product)" variant="danger" size="sm" shape="rounded"
+            >Delete</app-button
+          >
+        </div>
+      </div>
+    }
+  </div>
+</div>

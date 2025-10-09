@@ -3,7 +3,7 @@ import { OrderItem } from '../models/order-item.model';
 import { OrderStatus } from '../models/order-status.model';
 import { OrderApiModel } from '../models/api/order-api.model';
 import { OrderItemApiModel } from '../models/api/order-item-api.model';
-import { ensureString, ensureNumber } from '../utils/normalization.utils';
+import { ensureString, ensureNumber } from '../shared/utils/normalization.utils';
 
 export function mapOrderFromApi(dto: OrderApiModel): Order {
   return {

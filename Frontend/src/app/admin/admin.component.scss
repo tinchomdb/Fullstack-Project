@@ -1,0 +1,44 @@
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8);
+}
+
+.admin-header {
+  margin-bottom: var(--space-8);
+
+  h1 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2);
+  }
+
+  p {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+  }
+}
+
+.admin-nav {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-8);
+  border-bottom: var(--border-width-thick) solid var(--color-border-subtle);
+}
+
+.tab-button {
+  border-bottom: var(--border-width-thick) solid transparent;
+  transition: border-color 0.2s ease;
+
+  &.active {
+    border-bottom-color: var(--color-accent-interactive);
+  }
+}
+
+.admin-content {
+  background: var(--color-surface-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-md);
+}

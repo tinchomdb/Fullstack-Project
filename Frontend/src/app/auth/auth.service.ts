@@ -1,16 +1,11 @@
 import { Injectable, signal, inject, computed } from '@angular/core';
-import {
-  MsalService,
-  MsalBroadcastService,
-  MSAL_GUARD_CONFIG,
-  MsalGuardConfiguration,
-} from '@azure/msal-angular';
+import { MsalService, MsalBroadcastService } from '@azure/msal-angular';
 import {
   AuthenticationResult,
   InteractionStatus,
-  RedirectRequest,
   EventMessage,
   EventType,
+  AccountInfo,
 } from '@azure/msal-browser';
 import { Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
@@ -19,14 +14,14 @@ import { filter, takeUntil } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class AuthService {
-  private readonly authService = inject(MsalService);
+  private readonly msalService = inject(MsalService);
   private readonly msalBroadcastService = inject(MsalBroadcastService);
-  private readonly msalGuardConfig = inject(MSAL_GUARD_CONFIG) as unknown as MsalGuardConfiguration;
+  private readonly destroy$ = new Subject<void>();
 
-  private readonly _destroying$ = new Subject<void>();
   private readonly GUEST_SESSION_KEY = 'guestSessionId';
 
   readonly isLoggedIn = signal(false);
+  readonly isAdmin = signal(false);
 
   readonly userId = computed(() => {
     this.isLoggedIn();
@@ -35,90 +30,120 @@ export class AuthService {
   });
 
   constructor() {
-    this.authService.instance.enableAccountStorageEvents();
+    this.initializeAuth();
+    this.subscribeToAuthEvents();
+  }
 
-    // Handle redirect promise to process the authentication response
-    // This runs after MSAL initialization (handled in app.config.ts)
-    this.authService.instance
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  private initializeAuth(): void {
+    this.msalService.instance
       .handleRedirectPromise()
-      .then((response) => {
-        if (response) {
-          this.authService.instance.setActiveAccount(response.account);
+      .then((response: AuthenticationResult | null) => {
+        if (response?.account) {
+          this.msalService.instance.setActiveAccount(response.account);
         }
-        this.updateLoginStatus();
+        this.syncAuthState();
       })
-      .catch((error) => {
+      .catch((error: Error) => {
         console.error('Error handling redirect:', error);
-        this.updateLoginStatus();
+        this.syncAuthState();
       });
+  }
 
+  private subscribeToAuthEvents(): void {
     this.msalBroadcastService.inProgress$
       .pipe(
         filter((status: InteractionStatus) => status === InteractionStatus.None),
-        takeUntil(this._destroying$),
+        takeUntil(this.destroy$),
       )
-      .subscribe(() => {
-        this.updateLoginStatus();
-        this.checkAndSetActiveAccount();
-      });
+      .subscribe(() => this.syncAuthState());
 
     this.msalBroadcastService.msalSubject$
       .pipe(
-        filter((msg: EventMessage) => msg.eventType === EventType.LOGOUT_SUCCESS),
-        takeUntil(this._destroying$),
+        filter((msg: EventMessage) => {
+          const relevantEvents: EventType[] = [
+            EventType.LOGIN_SUCCESS,
+            EventType.LOGOUT_SUCCESS,
+            EventType.ACCOUNT_ADDED,
+            EventType.ACCOUNT_REMOVED,
+          ];
+          return relevantEvents.includes(msg.eventType);
+        }),
+        takeUntil(this.destroy$),
       )
-      .subscribe(() => {
-        this.updateLoginStatus();
-        this.checkAndSetActiveAccount();
-      });
-
-    this.msalBroadcastService.msalSubject$
-      .pipe(
-        filter((msg: EventMessage) => msg.eventType === EventType.LOGIN_SUCCESS),
-        takeUntil(this._destroying$),
-      )
-      .subscribe((result: EventMessage) => {
-        const payload = result.payload as AuthenticationResult;
-        this.authService.instance.setActiveAccount(payload.account);
-        this.updateLoginStatus();
+      .subscribe((event: EventMessage) => {
+        if (event.eventType === EventType.LOGIN_SUCCESS) {
+          const payload = event.payload as AuthenticationResult;
+          this.msalService.instance.setActiveAccount(payload.account);
+        }
+        this.syncAuthState();
       });
   }
 
-  private updateLoginStatus() {
-    this.isLoggedIn.set(this.authService.instance.getAllAccounts().length > 0);
-  }
+  private syncAuthState(): void {
+    this.ensureActiveAccount();
+    const account = this.msalService.instance.getActiveAccount();
 
-  getActiveAccount() {
-    return this.authService.instance.getActiveAccount();
-  }
-
-  private checkAndSetActiveAccount() {
-    let activeAccount = this.authService.instance.getActiveAccount();
-
-    if (!activeAccount && this.authService.instance.getAllAccounts().length > 0) {
-      let accounts = this.authService.instance.getAllAccounts();
-      this.authService.instance.setActiveAccount(accounts[0]);
-    }
-  }
-
-  login(redirectUrl?: string) {
-    const redirectStartPage = redirectUrl || window.location.pathname;
-
-    if (this.msalGuardConfig.authRequest) {
-      this.authService.loginRedirect({
-        ...this.msalGuardConfig.authRequest,
-        redirectStartPage,
-      } as RedirectRequest);
+    if (account) {
+      this.isLoggedIn.set(true);
+      this.refreshTokenClaims(account);
     } else {
-      this.authService.loginRedirect({
-        scopes: ['openid', 'profile', 'email'],
-        redirectStartPage,
-      } as RedirectRequest);
+      this.isLoggedIn.set(false);
+      this.isAdmin.set(false);
     }
   }
 
-  logout() {
-    this.authService.logoutRedirect({
+  private ensureActiveAccount(): void {
+    const accounts = this.msalService.instance.getAllAccounts();
+    if (accounts.length > 0 && !this.msalService.instance.getActiveAccount()) {
+      this.msalService.instance.setActiveAccount(accounts[0]);
+    }
+  }
+
+  private refreshTokenClaims(account: AccountInfo): void {
+    this.msalService
+      .acquireTokenSilent({
+        scopes: ['openid', 'profile', 'email'],
+        account,
+      })
+      .subscribe({
+        next: (result: AuthenticationResult) => {
+          if (result.account) {
+            this.msalService.instance.setActiveAccount(result.account);
+            this.updateAdminStatus(result.account);
+          }
+        },
+        error: (error: Error) => {
+          console.error('Error refreshing token claims:', error);
+          this.updateAdminStatus(account);
+        },
+      });
+  }
+
+  private updateAdminStatus(account: AccountInfo): void {
+    const claims = account.idTokenClaims as Record<string, any> | undefined;
+    const roles = (claims?.['roles'] as string[]) || [];
+    this.isAdmin.set(roles.includes('admin'));
+  }
+
+  getActiveAccount(): AccountInfo | null {
+    return this.msalService.instance.getActiveAccount();
+  }
+
+  login(redirectUrl?: string): void {
+    this.msalService.loginRedirect({
+      scopes: ['openid', 'profile', 'email'],
+      redirectStartPage: redirectUrl || window.location.pathname,
+    });
+  }
+
+  logout(): void {
+    this.msalService.logoutRedirect({
+      account: this.getActiveAccount(),
       postLogoutRedirectUri: '/',
     });
   }

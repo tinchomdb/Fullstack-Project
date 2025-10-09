@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 
-import { ProductsService } from './products.service';
+import { ProductsService } from '../shared/services/products.service';
 import { DataStateComponent } from '../shared/ui/data-state/data-state.component';
 import { ProductFeaturedCardComponent } from './components/product-featured-card/product-featured-card.component';
 import { ProductGridComponent } from './components/product-grid/product-grid.component';
