@@ -67,4 +67,34 @@ public sealed class CosmosDbCategoriesRepository : ICategoriesRepository
 
         return response.Resource;
     }
+
+    public async Task<Category?> UpdateCategoryAsync(
+        Category category,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await _container.ReplaceItemAsync(
+                category,
+                category.Id,
+                new PartitionKey(category.Id),
+                cancellationToken: cancellationToken);
+
+            return response.Resource;
+        }
+        catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
+    }
+
+    public async Task DeleteCategoryAsync(
+        string categoryId,
+        CancellationToken cancellationToken = default)
+    {
+        await _container.DeleteItemAsync<Category>(
+            categoryId,
+            new PartitionKey(categoryId),
+            cancellationToken: cancellationToken);
+    }
 }

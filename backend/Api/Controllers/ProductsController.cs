@@ -1,6 +1,6 @@
 using Api.Models;
 using Api.Repositories;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -12,6 +12,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     private readonly IProductsRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetAllProducts(CancellationToken cancellationToken)
     {
@@ -20,6 +21,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     }
 
     [HttpGet("by-seller/{sellerId}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetProductsBySeller(string sellerId, CancellationToken cancellationToken)
     {
@@ -28,6 +30,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     }
 
     [HttpGet("by-category/{categoryId}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetProductsByCategory(string categoryId, CancellationToken cancellationToken)
     {
@@ -36,6 +39,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     }
 
     [HttpGet("{productId}/seller/{sellerId}")]
+    [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Product>> GetProduct(string productId, string sellerId, CancellationToken cancellationToken)
@@ -51,7 +55,10 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     }
 
     [HttpPost]
+    [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product, CancellationToken cancellationToken)
     {
         var createdProduct = await repository.CreateProductAsync(product, cancellationToken);
@@ -59,7 +66,10 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     }
 
     [HttpPut("{productId}/seller/{sellerId}")]
+    [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<Product>> UpdateProduct(string productId, string sellerId, [FromBody] Product product, CancellationToken cancellationToken)
     {
         if (product.Id != productId || product.SellerId != sellerId)
@@ -72,7 +82,10 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     }
 
     [HttpDelete("{productId}/seller/{sellerId}")]
+    [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteProduct(string productId, string sellerId, CancellationToken cancellationToken)
     {
         await repository.DeleteProductAsync(productId, sellerId, cancellationToken);

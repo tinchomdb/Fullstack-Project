@@ -3,7 +3,7 @@ import { CartItem } from '../models/cart-item.model';
 import { CartStatus } from '../models/cart-status.model';
 import { CartApiModel } from '../models/api/cart-api.model';
 import { CartItemApiModel } from '../models/api/cart-item-api.model';
-import { ensureString, ensureNumber } from '../utils/normalization.utils';
+import { ensureString, ensureNumber } from '../shared/utils/normalization.utils';
 
 export function mapCartFromApi(dto: CartApiModel): Cart {
   return {

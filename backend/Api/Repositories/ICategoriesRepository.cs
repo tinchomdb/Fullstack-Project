@@ -9,4 +9,8 @@ public interface ICategoriesRepository
     Task<Category?> GetCategoryAsync(string categoryId, CancellationToken cancellationToken = default);
 
     Task<Category> CreateCategoryAsync(Category category, CancellationToken cancellationToken = default);
+
+    Task<Category?> UpdateCategoryAsync(Category category, CancellationToken cancellationToken = default);
+
+    Task DeleteCategoryAsync(string categoryId, CancellationToken cancellationToken = default);
 }

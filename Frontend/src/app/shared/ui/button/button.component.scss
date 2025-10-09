@@ -69,6 +69,17 @@ button:disabled {
 }
 
 :host([data-variant='secondary']) button {
-  background: var(--color-surface);
-  color: var(--color-text);
+  background: var(--color-surface-muted);
+  color: var(--color-text-primary);
+  border: var(--border-subtle);
+  box-shadow: none;
+}
+
+:host([data-variant='secondary']) button:hover {
+  background: var(--color-surface-primary);
+}
+
+:host([data-variant='danger']) button {
+  background: var(--color-border-critical);
+  color: var(--color-button-text);
 }
