@@ -17,7 +17,6 @@ export class ProductCardComponent {
 
   private readonly cartService = inject(CartService);
 
-  // Access loading state from cart service
   protected readonly isAddingToCart = this.cartService.loading;
 
   onAddToCart(): void {

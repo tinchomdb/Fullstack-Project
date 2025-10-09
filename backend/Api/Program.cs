@@ -2,7 +2,9 @@ using Api.Configuration;
 using Api.Repositories;
 using Api.Services;
 using Azure.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +70,10 @@ builder.Services.AddSingleton<IUsersRepository, CosmosDbUsersRepository>();
 builder.Services.AddSingleton<CosmosDbInitializationService>();
 builder.Services.AddSingleton<DataSeedingService>();
 
+// Configure JWT Bearer Authentication with Microsoft.Identity.Web
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"));
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddControllers()
@@ -76,6 +82,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
         options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
     });
+
+// Configure authorization
 builder.Services.AddAuthorization();
 
 builder.Services.AddCors(options =>
@@ -140,6 +148,8 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+// Authentication must come before Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

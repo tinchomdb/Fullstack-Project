@@ -1,12 +1,13 @@
 using Api.Models;
 using Api.Repositories;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize] // All order endpoints require authentication
 public sealed class OrdersController(IOrdersRepository repository) : ControllerBase
 {
     private readonly IOrdersRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));

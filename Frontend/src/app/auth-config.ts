@@ -29,7 +29,12 @@ export const loginRequest = {
   scopes: ['openid', 'profile', 'email'],
 };
 
+// Map API endpoints that require authentication
+// MSAL will automatically attach JWT token to requests matching these patterns
 export const protectedResourceMap = new Map<string, Array<string>>([
+  // Cart checkout and migration require authentication
   [`${environment.apiBase}/api/carts/migrate`, ['openid', 'profile', 'email']],
+  [`${environment.apiBase}/api/carts/*/checkout`, ['openid', 'profile', 'email']],
+  // All order operations require authentication
   [`${environment.apiBase}/api/orders`, ['openid', 'profile', 'email']],
 ]);

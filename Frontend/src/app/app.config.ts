@@ -42,6 +42,7 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => ({
         interactionType: InteractionType.Redirect,
         authRequest: loginRequest,
+        loginFailedRoute: '/products',
       }),
     },
     {
