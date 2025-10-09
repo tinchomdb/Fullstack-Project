@@ -11,7 +11,7 @@ import { AuthService } from '../../../auth/auth.service';
 export class AuthButtonComponent {
   private readonly authService = inject(AuthService);
 
-  protected readonly loginDisplay = this.authService.loginDisplay;
+  protected readonly isLoggedIn = this.authService.isLoggedIn;
 
   additionalClick = input<() => void>();
 

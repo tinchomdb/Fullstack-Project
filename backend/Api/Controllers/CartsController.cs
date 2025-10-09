@@ -1,5 +1,6 @@
 using Api.Models;
 using Api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -49,6 +50,7 @@ public sealed class CartsController(ICartsRepository cartsRepository, IOrdersRep
         return Ok(upsertedCart);
     }
 
+    [Authorize] // Checkout requires authentication
     [HttpPost("by-user/{userId}/checkout")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -127,6 +129,7 @@ public sealed class CartsController(ICartsRepository cartsRepository, IOrdersRep
         }
     }
 
+    [Authorize] // Cart migration requires authentication (user must be logged in)
     [HttpPost("migrate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

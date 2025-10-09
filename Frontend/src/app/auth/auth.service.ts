@@ -26,10 +26,10 @@ export class AuthService {
   private readonly _destroying$ = new Subject<void>();
   private readonly GUEST_SESSION_KEY = 'guestSessionId';
 
-  readonly loginDisplay = signal(false);
+  readonly isLoggedIn = signal(false);
 
   readonly userId = computed(() => {
-    this.loginDisplay();
+    this.isLoggedIn();
     const account = this.getActiveAccount();
     return account?.localAccountId ?? this.getOrCreateGuestSession();
   });
@@ -37,12 +37,20 @@ export class AuthService {
   constructor() {
     this.authService.instance.enableAccountStorageEvents();
 
-    this.authService.instance.handleRedirectPromise().then((response) => {
-      if (response) {
-        this.authService.instance.setActiveAccount(response.account);
-      }
-      this.setLoginDisplay();
-    });
+    // Handle redirect promise to process the authentication response
+    // This runs after MSAL initialization (handled in app.config.ts)
+    this.authService.instance
+      .handleRedirectPromise()
+      .then((response) => {
+        if (response) {
+          this.authService.instance.setActiveAccount(response.account);
+        }
+        this.updateLoginStatus();
+      })
+      .catch((error) => {
+        console.error('Error handling redirect:', error);
+        this.updateLoginStatus();
+      });
 
     this.msalBroadcastService.inProgress$
       .pipe(
@@ -50,7 +58,7 @@ export class AuthService {
         takeUntil(this._destroying$),
       )
       .subscribe(() => {
-        this.setLoginDisplay();
+        this.updateLoginStatus();
         this.checkAndSetActiveAccount();
       });
 
@@ -60,7 +68,7 @@ export class AuthService {
         takeUntil(this._destroying$),
       )
       .subscribe(() => {
-        this.setLoginDisplay();
+        this.updateLoginStatus();
         this.checkAndSetActiveAccount();
       });
 
@@ -72,12 +80,12 @@ export class AuthService {
       .subscribe((result: EventMessage) => {
         const payload = result.payload as AuthenticationResult;
         this.authService.instance.setActiveAccount(payload.account);
-        this.setLoginDisplay();
+        this.updateLoginStatus();
       });
   }
 
-  private setLoginDisplay() {
-    this.loginDisplay.set(this.authService.instance.getAllAccounts().length > 0);
+  private updateLoginStatus() {
+    this.isLoggedIn.set(this.authService.instance.getAllAccounts().length > 0);
   }
 
   getActiveAccount() {
@@ -93,13 +101,19 @@ export class AuthService {
     }
   }
 
-  login() {
+  login(redirectUrl?: string) {
+    const redirectStartPage = redirectUrl || window.location.pathname;
+
     if (this.msalGuardConfig.authRequest) {
       this.authService.loginRedirect({
         ...this.msalGuardConfig.authRequest,
+        redirectStartPage,
       } as RedirectRequest);
     } else {
-      this.authService.loginRedirect();
+      this.authService.loginRedirect({
+        scopes: ['openid', 'profile', 'email'],
+        redirectStartPage,
+      } as RedirectRequest);
     }
   }
 

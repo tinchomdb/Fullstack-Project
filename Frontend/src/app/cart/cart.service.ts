@@ -132,7 +132,7 @@ export class CartService {
 
   private initializeCart(): void {
     const hasGuestSession = !!this.authService.getGuestSessionId();
-    const isLoggedIn = this.authService.loginDisplay();
+    const isLoggedIn = this.authService.isLoggedIn();
 
     if (isLoggedIn || hasGuestSession) {
       this.loadCart();
@@ -141,7 +141,7 @@ export class CartService {
 
   private setupLoginEffect(): void {
     effect(() => {
-      const isLoggedIn = this.authService.loginDisplay();
+      const isLoggedIn = this.authService.isLoggedIn();
       if (isLoggedIn) {
         this.mergeGuestAndUserCarts();
       }

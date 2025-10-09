@@ -1,4 +1,4 @@
-@if (loginDisplay()) {
+@if (isLoggedIn()) {
   <button (click)="logout()" class="auth-button" aria-label="Logout">
     <svg
       width="20"

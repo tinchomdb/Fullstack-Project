@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 
 import { CartService } from './cart.service';
+import { AuthService } from '../auth/auth.service';
 import { DataStateComponent } from '../shared/ui/data-state/data-state.component';
 import { ButtonComponent } from '../shared/ui/button/button.component';
 
@@ -16,6 +17,7 @@ import { ButtonComponent } from '../shared/ui/button/button.component';
 export class CartComponent {
   private readonly cartService = inject(CartService);
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
 
   // Reactive state from service
   protected readonly cart = this.cartService.cart;
@@ -30,7 +32,11 @@ export class CartComponent {
   }
 
   checkout(): void {
-    this.router.navigate(['/checkout']);
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/checkout']);
+    } else {
+      this.authService.login('/checkout');
+    }
   }
 
   updateQuantity(productId: string, quantity: number): void {
