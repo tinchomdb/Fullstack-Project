@@ -12,6 +12,7 @@ export interface Product {
   readonly categoryIds?: readonly string[];
   readonly seller: Seller;
   readonly imageUrls: readonly string[];
+  readonly featured?: boolean;
   readonly createdAt: string;
   readonly updatedAt: string;
 }

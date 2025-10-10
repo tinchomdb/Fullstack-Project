@@ -35,6 +35,8 @@ export class AdminCategoriesComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(2)]],
       slug: ['', [Validators.required, Validators.pattern(/^[a-z0-9-]+$/)]],
       description: [''],
+      image: [''],
+      featured: [false],
       parentCategoryId: [''],
     });
   }
@@ -51,6 +53,8 @@ export class AdminCategoriesComponent implements OnInit {
       name: category.name,
       slug: category.slug,
       description: category.description ?? '',
+      image: category.image ?? '',
+      featured: category.featured ?? false,
       parentCategoryId: category.parentCategoryId ?? '',
     });
     this.showForm.set(true);
@@ -73,6 +77,8 @@ export class AdminCategoriesComponent implements OnInit {
       name: formValue.name,
       slug: formValue.slug,
       description: formValue.description || undefined,
+      image: formValue.image || undefined,
+      featured: formValue.featured ?? false,
       parentCategoryId: formValue.parentCategoryId || undefined,
       subcategoryIds: [],
       type: 'Category',
