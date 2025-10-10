@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { MsalGuard } from '@azure/msal-angular';
-import { adminGuard } from './auth/admin.guard';
+import { adminGuard } from './core/auth/admin.guard';
 
 export const routes: Routes = [
   {
@@ -10,21 +10,23 @@ export const routes: Routes = [
   },
   {
     path: 'products',
-    loadComponent: () => import('./products/products.component').then((m) => m.ProductsComponent),
+    loadComponent: () =>
+      import('./features/marketplace/marketplace.component').then((m) => m.ProductsComponent),
     data: {
       title: 'Products',
     },
   },
   {
     path: 'cart',
-    loadComponent: () => import('./cart/cart.component').then((m) => m.CartComponent),
+    loadComponent: () => import('./features/cart/cart.component').then((m) => m.CartComponent),
     data: {
       title: 'Shopping Cart',
     },
   },
   {
     path: 'checkout',
-    loadComponent: () => import('./checkout/checkout.component').then((m) => m.CheckoutComponent),
+    loadComponent: () =>
+      import('./features/checkout/checkout.component').then((m) => m.CheckoutComponent),
     canActivate: [MsalGuard],
     data: {
       title: 'Checkout',
@@ -32,7 +34,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    loadComponent: () => import('./admin/admin.component').then((m) => m.AdminComponent),
+    loadComponent: () => import('./features/admin/admin.component').then((m) => m.AdminComponent),
     canActivate: [adminGuard],
     data: {
       title: 'Admin Panel',
@@ -46,7 +48,7 @@ export const routes: Routes = [
       {
         path: 'products',
         loadComponent: () =>
-          import('./admin/admin-products/admin-products.component').then(
+          import('./features/admin/admin-products/admin-products.component').then(
             (m) => m.AdminProductsComponent,
           ),
         data: {
@@ -56,7 +58,7 @@ export const routes: Routes = [
       {
         path: 'categories',
         loadComponent: () =>
-          import('./admin/admin-categories/admin-categories.component').then(
+          import('./features/admin/admin-categories/admin-categories.component').then(
             (m) => m.AdminCategoriesComponent,
           ),
         data: {

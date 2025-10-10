@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, computed, inject } from '@angular/c
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './shared/ui/navbar/navbar.component';
 import { FooterComponent } from './shared/ui/footer/footer.component';
-import { AuthService } from './auth/auth.service';
+import { AuthService } from './core/auth/auth.service';
 
 @Component({
   selector: 'app-root',

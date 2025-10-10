@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, input, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
-import { CartService } from '../../../cart/cart.service';
+import { CartService } from '../../../core/services/cart.service';
 import { AuthButtonComponent } from '../auth-button/auth-button.component';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 
