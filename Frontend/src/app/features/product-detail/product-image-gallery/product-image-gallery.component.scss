@@ -1,28 +1,33 @@
+@use '../../../../styles/tokens' as tokens;
+
 .gallery {
   display: flex;
+  flex-direction: column-reverse;
   gap: var(--space-4);
   width: 100%;
 
-  @media (max-width: 768px) {
-    flex-direction: column-reverse;
+  @include tokens.media-md {
+    flex-direction: row;
   }
 }
 
 .thumbnails {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  overflow-x: auto;
+  padding: var(--space-2) 0;
   gap: var(--space-2);
 
-  @media (max-width: 768px) {
-    flex-direction: row;
-    overflow-x: auto;
-    padding: var(--space-2) 0;
+  @include tokens.media-md {
+    flex-direction: column;
+    overflow-x: visible;
+    padding: 0;
   }
 }
 
 .thumbnail {
-  width: 60px;
-  height: 60px;
+  width: 70px;
+  height: 70px;
   border: var(--border-width-thin) solid var(--color-border-subtle);
   border-radius: var(--radius-sm);
   padding: var(--space-1);
@@ -30,6 +35,11 @@
   cursor: pointer;
   transition: all 0.2s ease;
   flex-shrink: 0;
+
+  @include tokens.media-md {
+    width: 60px;
+    height: 60px;
+  }
 
   &:hover {
     border-color: var(--color-accent-primary);
@@ -47,11 +57,6 @@
     object-fit: contain;
     display: block;
   }
-
-  @media (max-width: 768px) {
-    width: 70px;
-    height: 70px;
-  }
 }
 
 .main-image {
@@ -61,23 +66,23 @@
   justify-content: center;
   border: var(--border-width-thin) solid var(--color-border-subtle);
   border-radius: var(--radius-md);
-  padding: var(--space-6);
+  padding: var(--space-4);
   background: var(--color-surface-primary);
-  min-height: 400px;
+  min-height: 300px;
+
+  @include tokens.media-md {
+    min-height: 400px;
+    padding: var(--space-6);
+  }
 
   img {
     max-width: 100%;
-    max-height: 500px;
+    max-height: 350px;
     object-fit: contain;
     display: block;
-  }
 
-  @media (max-width: 768px) {
-    min-height: 300px;
-    padding: var(--space-4);
-
-    img {
-      max-height: 350px;
+    @include tokens.media-md {
+      max-height: 500px;
     }
   }
 }

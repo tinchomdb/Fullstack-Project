@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens' as tokens;
+
 .featured {
   display: flex;
   flex-direction: row;
@@ -22,13 +24,13 @@
   text-decoration: none;
   color: inherit;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   gap: clamp(var(--space-6), 4vw, var(--space-10));
   align-items: stretch;
   flex: 1;
 
-  @media (max-width: 960px) {
-    flex-direction: column;
+  @include tokens.media-lg {
+    flex-direction: row;
   }
 }
 

@@ -1,11 +1,17 @@
+@use '../../../../styles/tokens' as tokens;
+
 .order-summary-panel {
   background-color: var(--color-surface-muted);
   border: var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: var(--space-5);
-  position: sticky;
-  top: var(--space-4);
+  position: static;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  @include tokens.media-md {
+    position: sticky;
+    top: var(--space-4);
+  }
 }
 
 .panel-header {
@@ -32,12 +38,16 @@
 
 /* Items Preview */
 .items-preview {
-  max-height: 300px;
+  max-height: 200px;
   overflow-y: auto;
   margin-bottom: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+
+  @include tokens.media-md {
+    max-height: 300px;
+  }
 }
 
 .preview-item {
@@ -183,15 +193,4 @@
 
 .items-preview::-webkit-scrollbar-thumb:hover {
   background: var(--color-border-default);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .order-summary-panel {
-    position: static;
-  }
-
-  .items-preview {
-    max-height: 200px;
-  }
 }
