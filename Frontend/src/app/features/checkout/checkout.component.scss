@@ -1,3 +1,5 @@
+@use '../../../styles/tokens' as tokens;
+
 .checkout-container {
   max-width: 1400px;
   margin: 0 auto;
@@ -5,10 +7,14 @@
 }
 
 .checkout-container h1 {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin-bottom: var(--space-6);
+
+  @include tokens.media-md {
+    font-size: var(--font-size-2xl);
+  }
 }
 
 /* Error Banner */
@@ -25,20 +31,12 @@
 /* Actions */
 .checkout-actions {
   display: flex;
+  flex-direction: column-reverse;
   gap: var(--space-4);
   justify-content: flex-start;
   margin-top: var(--space-6);
-}
 
-/* Responsive */
-@media (max-width: 768px) {
-  .checkout-container h1 {
-    font-size: var(--font-size-xl);
-  }
-}
-
-@media (max-width: 480px) {
-  .checkout-actions {
-    flex-direction: column-reverse;
+  @include tokens.media-xs {
+    flex-direction: row;
   }
 }

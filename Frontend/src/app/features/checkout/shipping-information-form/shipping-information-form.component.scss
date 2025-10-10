@@ -1,9 +1,11 @@
+@use '../../../../styles/tokens' as tokens;
+
 .form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--space-4);
 
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+  @include tokens.media-xs {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
 }

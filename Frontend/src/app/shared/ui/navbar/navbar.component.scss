@@ -1,3 +1,5 @@
+@use '../../../../styles/tokens' as tokens;
+
 :host {
   display: flex;
   border-bottom: var(--border-subtle);
@@ -23,8 +25,12 @@ nav {
 
 .desktop-nav {
   flex: 1;
-  display: flex;
+  display: none;
   justify-content: flex-end;
+
+  @include tokens.media-md {
+    display: flex;
+  }
 }
 
 nav ul {
@@ -80,7 +86,7 @@ nav a.is-active {
 
 // Mobile menu styles
 .mobile-menu-toggle {
-  display: none;
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -92,6 +98,10 @@ nav a.is-active {
   cursor: pointer;
   transition: all 0.2s ease;
   gap: 0.25rem;
+
+  @include tokens.media-md {
+    display: none;
+  }
 
   &:hover {
     background: var(--color-surface-muted);
@@ -126,7 +136,7 @@ nav a.is-active {
 }
 
 .mobile-nav-overlay {
-  display: none;
+  display: block;
   position: fixed;
   top: 0;
   left: 0;
@@ -135,6 +145,10 @@ nav a.is-active {
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
   backdrop-filter: blur(4px);
+
+  @include tokens.media-md {
+    display: none;
+  }
 }
 
 .mobile-nav {
@@ -203,19 +217,5 @@ nav a.is-active {
       background-color: var(--color-accent-interactive-subtle);
       color: var(--color-accent-interactive);
     }
-  }
-}
-
-@media (max-width: 720px) {
-  .desktop-nav {
-    display: none;
-  }
-
-  .mobile-menu-toggle {
-    display: flex;
-  }
-
-  .mobile-nav-overlay {
-    display: block;
   }
 }
