@@ -20,7 +20,7 @@ import {
   MsalInterceptorConfiguration,
 } from '@azure/msal-angular';
 import { PublicClientApplication, InteractionType } from '@azure/msal-browser';
-import { msalConfig, loginRequest, protectedResourceMap } from './auth-config';
+import { msalConfig, loginRequest, protectedResourceMap } from './core/auth/auth-config';
 
 export const appConfig: ApplicationConfig = {
   providers: [
