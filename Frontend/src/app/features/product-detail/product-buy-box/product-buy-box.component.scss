@@ -1,0 +1,61 @@
+.buy-box {
+  position: sticky;
+  top: var(--space-6);
+  border: var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-primary);
+  padding: var(--space-6);
+
+  @media (max-width: 768px) {
+    position: static;
+  }
+}
+
+.buy-box-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.price-box {
+  .price {
+    font-size: 1.5rem;
+    font-weight: var(--font-weight-normal);
+    color: var(--color-price);
+  }
+}
+
+.delivery-info {
+  .delivery-text {
+    color: var(--color-accent-success);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+.stock-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-base);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+
+  &.success {
+    color: var(--color-accent-success);
+    background: var(--color-accent-success-subtle);
+
+    .icon {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &.out-of-stock {
+    color: var(--color-text-critical);
+    background: var(--color-surface-critical);
+    padding: var(--space-4);
+    text-align: center;
+    justify-content: center;
+    font-weight: var(--font-weight-medium);
+  }
+}

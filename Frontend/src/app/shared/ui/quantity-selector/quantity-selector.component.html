@@ -1,0 +1,31 @@
+<div class="quantity-selector">
+  <label for="quantity" class="quantity-label">Quantity:</label>
+  <div class="quantity-controls">
+    <button
+      type="button"
+      class="qty-btn"
+      (click)="decrease()"
+      [disabled]="disabled() || currentQuantity() <= 1"
+      aria-label="Decrease quantity"
+    >
+      -
+    </button>
+    <input
+      id="quantity"
+      type="number"
+      [value]="currentQuantity()"
+      readonly
+      class="qty-input"
+      aria-label="Quantity"
+    />
+    <button
+      type="button"
+      class="qty-btn"
+      (click)="increase()"
+      [disabled]="disabled() || (maxStock() !== undefined && currentQuantity() >= maxStock()!)"
+      aria-label="Increase quantity"
+    >
+      +
+    </button>
+  </div>
+</div>

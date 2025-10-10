@@ -1,0 +1,17 @@
+<div class="form-field" [class.full-width]="fullWidth()">
+  <label [attr.for]="id()">{{ label() }}</label>
+
+  @if (type() === 'select') {
+    <select [id]="id()" [formControl]="control()" [class.error]="hasError">
+      <ng-content />
+    </select>
+  } @else if (type() === 'textarea') {
+    <textarea [id]="id()" [formControl]="control()" [class.error]="hasError"></textarea>
+  } @else {
+    <input [id]="id()" [type]="type()" [formControl]="control()" [class.error]="hasError" />
+  }
+
+  @if (showError) {
+    <span class="error-message">{{ errorMessage() }}</span>
+  }
+</div>

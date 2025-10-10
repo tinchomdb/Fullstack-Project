@@ -1,0 +1,15 @@
+.option-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.option-name {
+  color: var(--color-text-primary);
+}
+
+.option-cost {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent-primary);
+}

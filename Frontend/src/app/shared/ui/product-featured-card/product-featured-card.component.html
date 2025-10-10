@@ -1,27 +1,34 @@
 <article class="featured" aria-label="Featured product">
-  <div class="media">
-    @if (product().imageUrls.length) {
-      <img
-        [ngSrc]="product().imageUrls[0]"
-        [alt]="product().name"
-        width="720"
-        height="480"
-        priority
-      />
-    } @else {
-      <div class="placeholder" aria-hidden="true">No image</div>
-    }
-  </div>
+  <a
+    class="featured-link"
+    [routerLink]="productLink()"
+    [queryParams]="productQueryParams()"
+    [attr.aria-label]="'View details for featured product: ' + product().name"
+  >
+    <div class="media">
+      @if (product().imageUrls.length) {
+        <img
+          [ngSrc]="product().imageUrls[0]"
+          [alt]="product().name"
+          width="720"
+          height="480"
+          priority
+        />
+      } @else {
+        <div class="placeholder" aria-hidden="true">No image</div>
+      }
+    </div>
 
-  <div class="body">
-    <p class="seller">Sold by {{ product().seller.displayName }}</p>
-    <h2>{{ product().name }}</h2>
-    <p class="description">{{ product().description }}</p>
-    <dl class="meta">
-      <div>
-        <dt>Price</dt>
-        <dd>{{ product().price | currency: product().currency : 'symbol' : '1.2-2' }}</dd>
-      </div>
-    </dl>
-  </div>
+    <div class="body">
+      <p class="seller">Sold by {{ product().seller.displayName }}</p>
+      <h2>{{ product().name }}</h2>
+      <p class="description">{{ product().description }}</p>
+      <dl class="meta">
+        <div>
+          <dt>Price</dt>
+          <dd>{{ product().price | currency: product().currency : 'symbol' : '1.2-2' }}</dd>
+        </div>
+      </dl>
+    </div>
+  </a>
 </article>

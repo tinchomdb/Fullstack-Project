@@ -1,0 +1,39 @@
+:host {
+  display: block;
+}
+
+:host([data-variant='inline']) {
+  display: flex;
+  gap: var(--space-2);
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+
+  .seller-name {
+    color: var(--color-accent-interactive);
+    font-weight: var(--font-weight-medium);
+  }
+}
+
+:host([data-variant='box']) {
+  .seller-box {
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+    border-top: var(--border-subtle);
+  }
+
+  .seller-row {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-2) 0;
+    font-size: var(--font-size-sm);
+
+    .label {
+      color: var(--color-text-secondary);
+    }
+
+    .value {
+      color: var(--color-accent-interactive);
+      font-weight: var(--font-weight-medium);
+    }
+  }
+}

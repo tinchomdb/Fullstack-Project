@@ -1,0 +1,24 @@
+:host {
+  display: inline-block;
+}
+
+.price {
+  font-weight: var(--font-weight-normal);
+  color: var(--color-price);
+}
+
+:host([data-size='sm']) .price {
+  font-size: var(--font-size-lg);
+}
+
+:host([data-size='md']) .price {
+  font-size: 1.5rem;
+}
+
+:host([data-size='lg']) .price {
+  font-size: 1.75rem;
+}
+
+:host([data-size='xl']) .price {
+  font-size: 2rem;
+}

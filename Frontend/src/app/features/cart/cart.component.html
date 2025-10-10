@@ -1,58 +1,47 @@
-<h2>Shopping Cart</h2>
+<div class="cart-container">
+  <h1>Shopping Cart</h1>
 
-<app-data-state
-  [loading]="loading()"
-  [error]="error()"
-  [hasData]="cart() !== null"
-  loadingMessage="Loading your cart…"
-  emptyMessage="Your cart is empty"
-  errorTitle="Could not load cart."
-  (retry)="reload()"
-/>
+  <app-data-state
+    [loading]="loading()"
+    [error]="error()"
+    [hasData]="cart() !== null"
+    loadingMessage="Loading your cart…"
+    emptyMessage="Your cart is empty"
+    errorTitle="Could not load cart."
+    (retry)="reload()"
+  />
 
-@if (cart(); as cartData) {
-  <div class="cart-summary">
-    <p>Total Items: {{ itemCount() }}</p>
-    <p>Subtotal: {{ cartData.currency }} {{ cartData.subtotal.toFixed(2) }}</p>
-    <p>Total: {{ cartData.currency }} {{ cartData.total.toFixed(2) }}</p>
-  </div>
+  @if (cart(); as cartData) {
+    @if (!isEmpty()) {
+      <app-sidebar-layout>
+        <div main class="cart-content">
+          <div class="cart-items">
+            @for (item of cartData.items; track item.productId) {
+              <app-cart-item
+                [item]="item"
+                [currency]="cartData.currency"
+                (quantityChange)="updateQuantity(item.productId, $event)"
+                (remove)="removeItem(item.productId)"
+              />
+            }
+          </div>
 
-  @if (!isEmpty()) {
-    <div class="cart-items">
-      @for (item of cartData.items; track item.productId) {
-        <div class="cart-item">
-          <img [src]="item.imageUrl" [alt]="item.productName" />
-          <div class="item-details">
-            <h3>{{ item.productName }}</h3>
-            <p>Quantity: {{ item.quantity }}</p>
-            <p>Unit Price: {{ cartData.currency }} {{ item.unitPrice.toFixed(2) }}</p>
-            <p class="line-total">Total: {{ cartData.currency }} {{ item.lineTotal.toFixed(2) }}</p>
-            <div class="item-actions">
-              <div class="quantity-controls">
-                <app-button
-                  (click)="updateQuantity(item.productId, item.quantity - 1)"
-                  [disabled]="item.quantity <= 1"
-                  size="sm"
-                >
-                  -
-                </app-button>
-                <span>{{ item.quantity }}</span>
-                <app-button (click)="updateQuantity(item.productId, item.quantity + 1)" size="sm"
-                  >+</app-button
-                >
-              </div>
-              <app-button (click)="removeItem(item.productId)" size="sm" class="remove-btn"
-                >Remove</app-button
-              >
-            </div>
+          <div class="cart-actions-mobile">
+            <app-button (click)="clearCart()">Clear Cart</app-button>
           </div>
         </div>
-      }
-    </div>
-
-    <div class="cart-actions">
-      <app-button (click)="checkout()" variant="primary">Checkout</app-button>
-      <app-button (click)="clearCart()" class="clear-cart-btn">Clear Cart</app-button>
-    </div>
+        <div sidebar>
+          <app-order-summary-panel
+            [cart]="cart()"
+            [showItemDetails]="false"
+            ctaLabel="Proceed to Checkout"
+            [showSecondaryCta]="true"
+            secondaryCtaLabel="Clear Cart"
+            (ctaClick)="checkout()"
+            (secondaryCtaClick)="clearCart()"
+          />
+        </div>
+      </app-sidebar-layout>
+    }
   }
-}
+</div>

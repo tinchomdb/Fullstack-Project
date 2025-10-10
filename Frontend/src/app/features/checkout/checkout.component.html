@@ -1,5 +1,5 @@
 <div class="checkout-container">
-  <h2>Checkout</h2>
+  <h1>Checkout</h1>
 
   <app-data-state
     [loading]="cartLoading()"
@@ -12,218 +12,12 @@
 
   @if (cart(); as cartData) {
     @if (!isEmpty()) {
-      <div class="checkout-content">
-        <!-- Order Summary -->
-        <div class="order-summary">
-          <h3>Order Summary</h3>
-          <div class="summary-items">
-            @for (item of cartData.items; track item.productId) {
-              <div class="summary-item">
-                <img [src]="item.imageUrl" [alt]="item.productName" class="item-image" />
-                <div class="item-info">
-                  <h4>{{ item.productName }}</h4>
-                  <p>Qty: {{ item.quantity }}</p>
-                </div>
-                <div class="item-price">
-                  {{ cartData.currency }} {{ item.lineTotal.toFixed(2) }}
-                </div>
-              </div>
-            }
-          </div>
-
-          <div class="summary-totals">
-            <div class="total-line">
-              <span>Subtotal:</span>
-              <span>{{ cartData.currency }} {{ cartData.subtotal.toFixed(2) }}</span>
-            </div>
-            <div class="total-line">
-              <span>Shipping:</span>
-              <span>{{ cartData.currency }} {{ selectedShippingCost.toFixed(2) }}</span>
-            </div>
-            <div class="total-line total-final">
-              <span>Total:</span>
-              <span>{{ cartData.currency }} {{ totalWithShipping.toFixed(2) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Checkout Form -->
-        <div class="checkout-form">
-          <form [formGroup]="shippingForm" (ngSubmit)="processCheckout()">
-            <!-- Shipping Information -->
-            <section class="form-section">
-              <h3>Shipping Information</h3>
-              <div class="form-grid">
-                <div class="form-field">
-                  <label for="firstName">First Name</label>
-                  <input
-                    id="firstName"
-                    type="text"
-                    formControlName="firstName"
-                    [class.error]="
-                      shippingForm.get('firstName')?.invalid &&
-                      shippingForm.get('firstName')?.touched
-                    "
-                  />
-                  @if (
-                    shippingForm.get('firstName')?.invalid && shippingForm.get('firstName')?.touched
-                  ) {
-                    <span class="error-message">First name is required</span>
-                  }
-                </div>
-
-                <div class="form-field">
-                  <label for="lastName">Last Name</label>
-                  <input
-                    id="lastName"
-                    type="text"
-                    formControlName="lastName"
-                    [class.error]="
-                      shippingForm.get('lastName')?.invalid && shippingForm.get('lastName')?.touched
-                    "
-                  />
-                  @if (
-                    shippingForm.get('lastName')?.invalid && shippingForm.get('lastName')?.touched
-                  ) {
-                    <span class="error-message">Last name is required</span>
-                  }
-                </div>
-
-                <div class="form-field full-width">
-                  <label for="email">Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    formControlName="email"
-                    [class.error]="
-                      shippingForm.get('email')?.invalid && shippingForm.get('email')?.touched
-                    "
-                  />
-                  @if (shippingForm.get('email')?.invalid && shippingForm.get('email')?.touched) {
-                    <span class="error-message">Valid email is required</span>
-                  }
-                </div>
-
-                <div class="form-field full-width">
-                  <label for="phone">Phone</label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    formControlName="phone"
-                    [class.error]="
-                      shippingForm.get('phone')?.invalid && shippingForm.get('phone')?.touched
-                    "
-                  />
-                  @if (shippingForm.get('phone')?.invalid && shippingForm.get('phone')?.touched) {
-                    <span class="error-message">Valid phone number is required</span>
-                  }
-                </div>
-
-                <div class="form-field full-width">
-                  <label for="address">Address</label>
-                  <input
-                    id="address"
-                    type="text"
-                    formControlName="address"
-                    [class.error]="
-                      shippingForm.get('address')?.invalid && shippingForm.get('address')?.touched
-                    "
-                  />
-                  @if (
-                    shippingForm.get('address')?.invalid && shippingForm.get('address')?.touched
-                  ) {
-                    <span class="error-message">Address is required</span>
-                  }
-                </div>
-
-                <div class="form-field">
-                  <label for="city">City</label>
-                  <input
-                    id="city"
-                    type="text"
-                    formControlName="city"
-                    [class.error]="
-                      shippingForm.get('city')?.invalid && shippingForm.get('city')?.touched
-                    "
-                  />
-                  @if (shippingForm.get('city')?.invalid && shippingForm.get('city')?.touched) {
-                    <span class="error-message">City is required</span>
-                  }
-                </div>
-
-                <div class="form-field">
-                  <label for="state">State</label>
-                  <input
-                    id="state"
-                    type="text"
-                    formControlName="state"
-                    [class.error]="
-                      shippingForm.get('state')?.invalid && shippingForm.get('state')?.touched
-                    "
-                  />
-                  @if (shippingForm.get('state')?.invalid && shippingForm.get('state')?.touched) {
-                    <span class="error-message">State is required</span>
-                  }
-                </div>
-
-                <div class="form-field">
-                  <label for="zipCode">ZIP Code</label>
-                  <input
-                    id="zipCode"
-                    type="text"
-                    formControlName="zipCode"
-                    [class.error]="
-                      shippingForm.get('zipCode')?.invalid && shippingForm.get('zipCode')?.touched
-                    "
-                  />
-                  @if (
-                    shippingForm.get('zipCode')?.invalid && shippingForm.get('zipCode')?.touched
-                  ) {
-                    <span class="error-message">Valid ZIP code is required</span>
-                  }
-                </div>
-
-                <div class="form-field">
-                  <label for="country">Country</label>
-                  <select id="country" formControlName="country">
-                    <option value="United States">United States</option>
-                    <option value="Canada">Canada</option>
-                  </select>
-                </div>
-              </div>
-            </section>
-
-            <!-- Shipping Options -->
-            <section class="form-section" [formGroup]="shippingForm2">
-              <h3>Shipping Options</h3>
-              @for (option of shippingOptions; track option.id) {
-                <div class="shipping-option">
-                  <label class="radio-label">
-                    <input type="radio" [value]="option.id" formControlName="shippingOption" />
-                    <span class="radio-content">
-                      <span class="option-name">{{ option.name }}</span>
-                      <span class="option-cost">${{ option.cost.toFixed(2) }}</span>
-                    </span>
-                  </label>
-                </div>
-              }
-            </section>
-
-            <!-- Payment Method -->
-            <section class="form-section" [formGroup]="paymentForm">
-              <h3>Payment Method</h3>
-              <div class="payment-options">
-                <label class="radio-label">
-                  <input type="radio" value="credit-card" formControlName="method" />
-                  <span class="radio-content">Credit Card (Demo)</span>
-                </label>
-                <label class="radio-label">
-                  <input type="radio" value="paypal" formControlName="method" />
-                  <span class="radio-content">PayPal (Demo)</span>
-                </label>
-              </div>
-              <p class="payment-note">This is a demo. No actual payment will be processed.</p>
-            </section>
+      <app-sidebar-layout>
+        <div main>
+          <form (ngSubmit)="processCheckout()">
+            <app-shipping-information-form [form]="shippingForm" />
+            <app-shipping-options [form]="shippingForm2" [options]="shippingOptions" />
+            <app-payment-method [form]="paymentForm" />
 
             @if (error()) {
               <div class="error-banner">
@@ -231,24 +25,23 @@
               </div>
             }
 
-            <!-- Actions -->
             <div class="checkout-actions">
               <app-button type="button" (click)="goBackToCart()"> Back to Cart </app-button>
-              <app-button
-                type="submit"
-                variant="primary"
-                [disabled]="!isFormValid || isProcessing()"
-              >
-                @if (isProcessing()) {
-                  Processing...
-                } @else {
-                  Place Order
-                }
-              </app-button>
             </div>
           </form>
         </div>
-      </div>
+        <div sidebar>
+          <app-order-summary-panel
+            [cart]="cart()"
+            [additionalCost]="selectedShippingCost"
+            [additionalCostLabel]="'Shipping'"
+            [showItemDetails]="true"
+            [ctaLabel]="isProcessing() ? 'Processing...' : 'Place Order'"
+            [ctaDisabled]="!isFormValid || isProcessing()"
+            (ctaClick)="processCheckout()"
+          />
+        </div>
+      </app-sidebar-layout>
     }
   }
 </div>

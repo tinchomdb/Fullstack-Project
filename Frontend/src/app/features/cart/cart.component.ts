@@ -6,10 +6,20 @@ import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/auth/auth.service';
 import { DataStateComponent } from '../../shared/ui/data-state/data-state.component';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { CartItemComponent } from './cart-item/cart-item.component';
+import { OrderSummaryPanelComponent } from '../../shared/ui/order-summary-panel/order-summary-panel.component';
+import { SidebarLayoutComponent } from '../../shared/layouts/sidebar-layout/sidebar-layout.component';
 
 @Component({
   selector: 'app-cart',
-  imports: [CommonModule, DataStateComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    DataStateComponent,
+    ButtonComponent,
+    CartItemComponent,
+    OrderSummaryPanelComponent,
+    SidebarLayoutComponent,
+  ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

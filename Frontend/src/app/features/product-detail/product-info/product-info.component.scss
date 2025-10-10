@@ -1,0 +1,43 @@
+.info-section {
+  .product-title {
+    font-size: clamp(1.5rem, 3vw, 1.75rem);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+    line-height: var(--line-height-tight);
+  }
+
+  .price-section {
+    margin-bottom: var(--space-4);
+  }
+
+  .stock-status-wrapper {
+    margin-bottom: var(--space-4);
+  }
+
+  .seller-wrapper {
+    margin-bottom: var(--space-6);
+  }
+
+  .divider {
+    border: none;
+    border-top: var(--border-subtle);
+    margin: var(--space-6) 0;
+  }
+
+  .description-section {
+    .section-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      margin-bottom: var(--space-4);
+      color: var(--color-text-primary);
+    }
+
+    .description {
+      font-size: var(--font-size-base);
+      line-height: var(--line-height-relaxed);
+      color: var(--color-text-secondary);
+      white-space: pre-wrap;
+    }
+  }
+}

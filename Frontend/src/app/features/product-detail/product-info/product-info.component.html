@@ -1,0 +1,26 @@
+<div class="info-section">
+  <h1 class="product-title">{{ product().name }}</h1>
+
+  <!-- Price -->
+  <div class="price-section">
+    <app-product-price [price]="product().price" [currency]="product().currency" [size]="'lg'" />
+  </div>
+
+  <!-- Stock Status -->
+  <div class="stock-status-wrapper">
+    <app-stock-status [stock]="product().stock" [variant]="'inline'" />
+  </div>
+
+  <!-- Seller Info -->
+  <div class="seller-wrapper">
+    <app-seller-info [seller]="product().seller" [variant]="'inline'" />
+  </div>
+
+  <hr class="divider" />
+
+  <!-- Description -->
+  <div class="description-section">
+    <h2 class="section-title">About this item</h2>
+    <p class="description">{{ product().description }}</p>
+  </div>
+</div>

@@ -7,10 +7,25 @@ import { CartService } from '../../core/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
 import { DataStateComponent } from '../../shared/ui/data-state/data-state.component';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { OrderSummaryPanelComponent } from '../../shared/ui/order-summary-panel/order-summary-panel.component';
+import { SidebarLayoutComponent } from '../../shared/layouts/sidebar-layout/sidebar-layout.component';
+import { ShippingInformationFormComponent } from './shipping-information-form/shipping-information-form.component';
+import { ShippingOptionsComponent } from './shipping-options/shipping-options.component';
+import { PaymentMethodComponent } from './payment-method/payment-method.component';
 
 @Component({
   selector: 'app-checkout',
-  imports: [CommonModule, ReactiveFormsModule, DataStateComponent, ButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    DataStateComponent,
+    ButtonComponent,
+    OrderSummaryPanelComponent,
+    SidebarLayoutComponent,
+    ShippingInformationFormComponent,
+    ShippingOptionsComponent,
+    PaymentMethodComponent,
+  ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,17 +36,14 @@ export class CheckoutComponent {
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
 
-  // State signals
   protected readonly isProcessing = signal(false);
   protected readonly error = signal<string | null>(null);
 
-  // Cart state from service
   protected readonly cart = this.cartService.cart;
   protected readonly cartLoading = this.cartService.loading;
   protected readonly cartError = this.cartService.error;
   protected readonly isEmpty = this.cartService.isEmpty;
 
-  // Shipping form
   protected readonly shippingForm = this.fb.nonNullable.group({
     firstName: ['', [Validators.required, Validators.minLength(2)]],
     lastName: ['', [Validators.required, Validators.minLength(2)]],
@@ -44,16 +56,14 @@ export class CheckoutComponent {
     country: ['United States', [Validators.required]],
   });
 
-  // Payment method (simplified for demo)
   protected readonly paymentForm = this.fb.nonNullable.group({
     method: ['credit-card', [Validators.required]],
   });
 
-  // Shipping options
   protected readonly shippingOptions = [
-    { id: 'standard', name: 'Standard Shipping (5-7 days)', cost: 5.99 },
-    { id: 'express', name: 'Express Shipping (2-3 days)', cost: 12.99 },
-    { id: 'overnight', name: 'Overnight Shipping', cost: 24.99 },
+    { value: 'standard', label: 'Standard Shipping (5-7 days)', cost: 5.99 },
+    { value: 'express', label: 'Express Shipping (2-3 days)', cost: 12.99 },
+    { value: 'overnight', label: 'Overnight Shipping', cost: 24.99 },
   ] as const;
 
   protected readonly shippingForm2 = this.fb.nonNullable.group({
@@ -69,7 +79,7 @@ export class CheckoutComponent {
 
   get selectedShippingCost(): number {
     const selectedOption = this.shippingForm2.value.shippingOption;
-    return this.shippingOptions.find((option) => option.id === selectedOption)?.cost ?? 0;
+    return this.shippingOptions.find((option) => option.value === selectedOption)?.cost ?? 0;
   }
 
   get totalWithShipping(): number {
@@ -83,6 +93,7 @@ export class CheckoutComponent {
 
   processCheckout(): void {
     if (!this.isFormValid || this.isProcessing()) {
+      this.shippingForm.markAllAsTouched();
       return;
     }
 

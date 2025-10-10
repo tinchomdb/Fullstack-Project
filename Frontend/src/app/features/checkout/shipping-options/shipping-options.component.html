@@ -1,0 +1,14 @@
+<app-form-section [title]="'Shipping Options'" [formGroup]="form()">
+  <app-form-radio-group
+    [control]="$any(form().get('shippingOption'))"
+    [options]="options()"
+    [name]="'shippingOption'"
+  >
+    <ng-template #optionTemplate let-option>
+      <span class="option-content">
+        <span class="option-name">{{ option.label }}</span>
+        <span class="option-cost">${{ option.cost.toFixed(2) }}</span>
+      </span>
+    </ng-template>
+  </app-form-radio-group>
+</app-form-section>

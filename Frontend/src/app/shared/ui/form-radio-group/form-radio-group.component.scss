@@ -1,0 +1,31 @@
+@use '../../../../styles/radio-mixins' as radio;
+
+.radio-group {
+  @include radio.radio-group-container;
+}
+
+.radio-label {
+  @include radio.radio-label;
+
+  input[type='radio']:checked + .radio-content {
+    .radio-main {
+      font-weight: var(--font-weight-medium);
+    }
+  }
+}
+
+.radio-content {
+  @include radio.radio-content;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.radio-main {
+  color: var(--color-text-primary);
+}
+
+.radio-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}

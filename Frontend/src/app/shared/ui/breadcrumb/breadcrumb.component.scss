@@ -1,0 +1,27 @@
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+
+  a {
+    color: var(--color-accent-interactive);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+      color: var(--color-accent-primary);
+    }
+  }
+
+  .separator {
+    color: var(--color-text-muted);
+  }
+
+  .current {
+    color: var(--color-text-primary);
+    font-weight: var(--font-weight-medium);
+  }
+}
