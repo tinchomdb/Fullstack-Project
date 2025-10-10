@@ -1,10 +1,6 @@
 @use '../../../../styles/tokens' as tokens;
 
 .featured {
-  display: flex;
-  flex-direction: row;
-  gap: clamp(var(--space-6), 4vw, var(--space-10));
-  align-items: stretch;
   border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--color-surface-inverse);

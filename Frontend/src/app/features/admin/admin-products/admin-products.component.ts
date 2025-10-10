@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductsService } from '../../../core/services/products.service';
-import { AdminCategoriesService } from '../../../core/services/admin-categories.service';
+import { CategoriesService } from '../../../core/services/categories.service';
 import { Product } from '../../../core/models/product.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 
@@ -21,7 +21,7 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
 })
 export class AdminProductsComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
-  private readonly categoriesService = inject(AdminCategoriesService);
+  private readonly categoriesService = inject(CategoriesService);
   private readonly fb = inject(FormBuilder);
 
   readonly products = this.productsService.products;
