@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { AdminCategoriesService } from '../../../core/services/admin-categories.service';
+import { CategoriesService } from '../../../core/services/categories.service';
 import { Category } from '../../../core/models/category.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 
@@ -12,7 +12,7 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminCategoriesComponent implements OnInit {
-  private readonly categoriesService = inject(AdminCategoriesService);
+  private readonly categoriesService = inject(CategoriesService);
   private readonly fb = inject(FormBuilder);
 
   readonly categories = this.categoriesService.categories;

@@ -13,7 +13,7 @@ export interface CategoryTreeNode {
 }
 
 @Injectable({ providedIn: 'root' })
-export class AdminCategoriesService {
+export class CategoriesService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBase}/api/categories`;
   private readonly categoriesResource = new Resource<readonly Category[]>([]);
