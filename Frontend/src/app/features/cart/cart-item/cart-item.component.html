@@ -1,0 +1,27 @@
+<div class="cart-item">
+  <a
+    class="item-image-link"
+    [routerLink]="['/products', item().productId]"
+    [queryParams]="{ sellerId: item().sellerId }"
+  >
+    <img [src]="item().imageUrl" [alt]="item().productName" />
+  </a>
+  <div class="item-details">
+    <a
+      class="item-name-link"
+      [routerLink]="['/products', item().productId]"
+      [queryParams]="{ sellerId: item().sellerId }"
+    >
+      <h3>{{ item().productName }}</h3>
+    </a>
+    <p>Unit Price: {{ currency() }} {{ item().unitPrice.toFixed(2) }}</p>
+    <p class="line-total">Total: {{ currency() }} {{ item().lineTotal.toFixed(2) }}</p>
+    <div class="item-actions">
+      <app-quantity-selector
+        [quantity]="item().quantity"
+        (quantityChange)="onQuantityChange($event)"
+      />
+      <app-button (click)="onRemove()" size="sm" variant="danger">Remove</app-button>
+    </div>
+  </div>
+</div>

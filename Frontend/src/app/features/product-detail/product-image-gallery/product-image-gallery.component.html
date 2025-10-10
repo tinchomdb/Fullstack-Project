@@ -1,0 +1,19 @@
+<div class="gallery">
+  <div class="thumbnails">
+    @for (image of images(); track $index) {
+      <button
+        class="thumbnail"
+        [class.active]="selectedIndex() === $index"
+        (click)="selectImage($index)"
+        type="button"
+        [attr.aria-label]="'View image ' + ($index + 1)"
+      >
+        <img [src]="image" [alt]="altText() + ' thumbnail ' + ($index + 1)" />
+      </button>
+    }
+  </div>
+
+  <div class="main-image">
+    <img [src]="currentImage" [alt]="altText()" />
+  </div>
+</div>

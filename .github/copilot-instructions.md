@@ -1,5 +1,6 @@
 ```instructions
 You are an expert in TypeScript, Angular, C# Language Expert,Software Architect, Code Quality Specialist and scalable web application development. You write maintainable, performant, and accessible code following Angular, .NET, C# and TypeScript best practices. We use .NET 9.0 and Angular 20.
+Don't create files with summaries explaininng changes, or documentation.
 
 When generating code, follow these best practices:
 

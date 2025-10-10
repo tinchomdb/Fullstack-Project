@@ -1,28 +1,35 @@
 <article class="product-card">
-  <div class="image">
-    @if (product().imageUrls.length) {
-      <img [ngSrc]="product().imageUrls[0]" [alt]="product().name" width="320" height="240" />
-    } @else {
-      <div class="placeholder" aria-hidden="true">No image</div>
-    }
-  </div>
-  <div class="body">
-    <h3>{{ product().name }}</h3>
-    <p>{{ product().description }}</p>
-    <div class="footer">
-      <span>{{ product().price | currency: product().currency : 'symbol' : '1.2-2' }}</span>
-      <span class="seller">{{ product().seller.displayName }}</span>
+  <a
+    class="card-link"
+    [routerLink]="productLink()"
+    [queryParams]="productQueryParams()"
+    [attr.aria-label]="'View details for ' + product().name"
+  >
+    <div class="image">
+      @if (product().imageUrls.length) {
+        <img [ngSrc]="product().imageUrls[0]" [alt]="product().name" width="320" height="240" />
+      } @else {
+        <div class="placeholder" aria-hidden="true">No image</div>
+      }
     </div>
-    <div class="actions">
-      <app-button
-        [disabled]="isAddingToCart()"
-        (click)="onAddToCart()"
-        type="button"
-        shape="rounded"
-        size="full"
-      >
-        <span>Add to Cart</span>
-      </app-button>
+    <div class="body">
+      <h3>{{ product().name }}</h3>
+      <p>{{ product().description }}</p>
+      <div class="footer">
+        <span>{{ product().price | currency: product().currency : 'symbol' : '1.2-2' }}</span>
+        <span class="seller">{{ product().seller.displayName }}</span>
+      </div>
     </div>
+  </a>
+  <div class="actions">
+    <app-button
+      [disabled]="isAddingToCart()"
+      (click)="onAddToCart()"
+      type="button"
+      shape="rounded"
+      size="full"
+    >
+      <span>Add to Cart</span>
+    </app-button>
   </div>
 </article>

@@ -1,0 +1,15 @@
+@if (variant() === 'inline') {
+  <span class="label">Sold by:</span>
+  <span class="seller-name">{{ seller().displayName }}</span>
+} @else {
+  <div class="seller-box">
+    <div class="seller-row">
+      <span class="label">Ships from</span>
+      <span class="value">{{ seller().displayName }}</span>
+    </div>
+    <div class="seller-row">
+      <span class="label">Sold by</span>
+      <span class="value">{{ seller().displayName }}</span>
+    </div>
+  </div>
+}

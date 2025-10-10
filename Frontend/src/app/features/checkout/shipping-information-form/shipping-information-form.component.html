@@ -1,0 +1,74 @@
+<app-form-section [title]="'Shipping Information'" [formGroup]="form()">
+  <div class="form-grid">
+    <app-form-field
+      [control]="$any(form().get('firstName'))"
+      [id]="'firstName'"
+      [label]="'First Name'"
+      [errorMessage]="'First name is required'"
+    />
+
+    <app-form-field
+      [control]="$any(form().get('lastName'))"
+      [id]="'lastName'"
+      [label]="'Last Name'"
+      [errorMessage]="'Last name is required'"
+    />
+
+    <app-form-field
+      [control]="$any(form().get('email'))"
+      [id]="'email'"
+      [label]="'Email'"
+      [type]="'email'"
+      [fullWidth]="true"
+      [errorMessage]="'Valid email is required'"
+    />
+
+    <app-form-field
+      [control]="$any(form().get('phone'))"
+      [id]="'phone'"
+      [label]="'Phone'"
+      [type]="'tel'"
+      [fullWidth]="true"
+      [errorMessage]="'Valid phone number is required'"
+    />
+
+    <app-form-field
+      [control]="$any(form().get('address'))"
+      [id]="'address'"
+      [label]="'Address'"
+      [fullWidth]="true"
+      [errorMessage]="'Address is required'"
+    />
+
+    <app-form-field
+      [control]="$any(form().get('city'))"
+      [id]="'city'"
+      [label]="'City'"
+      [errorMessage]="'City is required'"
+    />
+
+    <app-form-field
+      [control]="$any(form().get('state'))"
+      [id]="'state'"
+      [label]="'State'"
+      [errorMessage]="'State is required'"
+    />
+
+    <app-form-field
+      [control]="$any(form().get('zipCode'))"
+      [id]="'zipCode'"
+      [label]="'ZIP Code'"
+      [errorMessage]="'Valid ZIP code is required'"
+    />
+
+    <app-form-field
+      [control]="$any(form().get('country'))"
+      [id]="'country'"
+      [label]="'Country'"
+      [type]="'select'"
+    >
+      <option value="United States">United States</option>
+      <option value="Canada">Canada</option>
+    </app-form-field>
+  </div>
+</app-form-section>

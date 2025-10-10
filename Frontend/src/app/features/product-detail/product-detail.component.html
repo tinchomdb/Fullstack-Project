@@ -1,0 +1,30 @@
+<div class="product-detail-container">
+  <app-data-state
+    [loading]="loading()"
+    [error]="error()"
+    [hasData]="!!product()"
+    [loadingMessage]="'Loading product...'"
+    [errorTitle]="'Failed to load product'"
+    (retry)="retry()"
+  />
+
+  @if (product(); as prod) {
+    <app-breadcrumb [items]="breadcrumbItems()" />
+
+    <div class="product-layout">
+      <div class="gallery-section">
+        <app-product-image-gallery [images]="prod.imageUrls" [altText]="prod.name" />
+      </div>
+      <app-product-info [product]="prod" />
+
+      <app-product-buy-box
+        [product]="prod"
+        [quantity]="quantity()"
+        [addingToCart]="addingToCart()"
+        (quantityChange)="onQuantityChange($event)"
+        (addToCart)="addToCart()"
+        (buyNow)="buyNow()"
+      />
+    </div>
+  }
+</div>

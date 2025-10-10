@@ -7,6 +7,22 @@
   background: var(--color-surface-primary);
   border: var(--border-subtle);
   box-shadow: var(--shadow-md);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .image {
@@ -71,7 +87,7 @@
 
 .actions {
   margin-top: auto;
-  padding-top: var(--space-2);
+  padding: 0 var(--space-responsive-sm) var(--space-responsive-sm);
 }
 
 .loading-text {

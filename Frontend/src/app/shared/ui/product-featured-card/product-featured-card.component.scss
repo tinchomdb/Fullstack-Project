@@ -8,6 +8,28 @@
   background: var(--color-surface-inverse);
   color: var(--color-text-inverse);
   box-shadow: var(--shadow-lg);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-sm-strong);
+  }
+}
+
+.featured-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: row;
+  gap: clamp(var(--space-6), 4vw, var(--space-10));
+  align-items: stretch;
+  flex: 1;
+
+  @media (max-width: 960px) {
+    flex-direction: column;
+  }
 }
 
 .media {
@@ -68,10 +90,4 @@
   margin: var(--space-2) 0 0;
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-semibold);
-}
-
-@media (max-width: 960px) {
-  .featured {
-    flex-direction: column;
-  }
 }

@@ -198,6 +198,8 @@ export class CartService {
       quantity,
       unitPrice: product.price,
       lineTotal: product.price * quantity,
+      sellerId: product.seller.id,
+      sellerName: product.seller.displayName,
     };
   }
 
