@@ -48,7 +48,9 @@ public class DataSeedingService(
                 Id = "cat-electronics",
                 Name = "Electronics",
                 Slug = "electronics",
-                Description = "Electronic devices and accessories"
+                Description = "Electronic devices and accessories",
+                Image = "https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400",
+                Featured = true
             },
             new()
             {
@@ -56,7 +58,9 @@ public class DataSeedingService(
                 Name = "Laptops",
                 Slug = "laptops",
                 Description = "Portable computers and notebooks",
-                ParentCategoryId = "cat-electronics"
+                ParentCategoryId = "cat-electronics",
+                Image = "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
+                Featured = true
             },
             new()
             {
@@ -64,14 +68,17 @@ public class DataSeedingService(
                 Name = "Smartphones",
                 Slug = "smartphones",
                 Description = "Mobile phones and accessories",
-                ParentCategoryId = "cat-electronics"
+                ParentCategoryId = "cat-electronics",
+                Image = "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400"
             },
             new()
             {
                 Id = "cat-clothing",
                 Name = "Clothing",
                 Slug = "clothing",
-                Description = "Fashion and apparel"
+                Description = "Fashion and apparel",
+                Image = "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=400",
+                Featured = true
             },
             new()
             {
@@ -79,7 +86,8 @@ public class DataSeedingService(
                 Name = "Men's Clothing",
                 Slug = "mens-clothing",
                 Description = "Clothing for men",
-                ParentCategoryId = "cat-clothing"
+                ParentCategoryId = "cat-clothing",
+                Image = "https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=400"
             },
             new()
             {
@@ -87,28 +95,32 @@ public class DataSeedingService(
                 Name = "Women's Clothing",
                 Slug = "womens-clothing",
                 Description = "Clothing for women",
-                ParentCategoryId = "cat-clothing"
+                ParentCategoryId = "cat-clothing",
+                Image = "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=400"
             },
             new()
             {
                 Id = "cat-home-garden",
                 Name = "Home & Garden",
                 Slug = "home-garden",
-                Description = "Home improvement and garden supplies"
+                Description = "Home improvement and garden supplies",
+                Image = "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=400"
             },
             new()
             {
                 Id = "cat-books",
                 Name = "Books",
                 Slug = "books",
-                Description = "Physical and digital books"
+                Description = "Physical and digital books",
+                Image = "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400"
             },
             new()
             {
                 Id = "cat-sports",
                 Name = "Sports & Outdoors",
                 Slug = "sports-outdoors",
-                Description = "Sports equipment and outdoor gear"
+                Description = "Sports equipment and outdoor gear",
+                Image = "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=400"
             }
         };
 
@@ -227,7 +239,8 @@ public class DataSeedingService(
                     AverageRating = techProSeller.SellerProfile.AverageRating,
                     TotalProducts = 8
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800"]
+                ImageUrls = ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800"],
+                Featured = true
             },
             new()
             {
@@ -263,7 +276,8 @@ public class DataSeedingService(
                     AverageRating = techProSeller.SellerProfile.AverageRating,
                     TotalProducts = 8
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800"]
+                ImageUrls = ["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800"],
+                Featured = true
             },
             new()
             {
@@ -319,7 +333,8 @@ public class DataSeedingService(
                     AverageRating = fashionSeller.SellerProfile.AverageRating,
                     TotalProducts = 6
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800"]
+                ImageUrls = ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800"],
+                Featured = true
             },
             new()
             {

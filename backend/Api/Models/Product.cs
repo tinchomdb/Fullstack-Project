@@ -26,6 +26,8 @@ public sealed record class Product
 
     public IReadOnlyList<string> ImageUrls { get; init; } = [];
 
+    public bool Featured { get; init; }
+
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
     public DateTime UpdatedAt { get; init; } = DateTime.UtcNow;

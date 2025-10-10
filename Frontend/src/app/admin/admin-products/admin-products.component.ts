@@ -41,6 +41,7 @@ export class AdminProductsComponent implements OnInit {
     currency: ['USD', [Validators.required]],
     categoryId: ['', [Validators.required]],
     imageUrls: [''],
+    featured: [false],
     sellerId: ['', [Validators.required]],
   });
 
@@ -76,6 +77,7 @@ export class AdminProductsComponent implements OnInit {
       currency: product.currency,
       categoryId: product.categoryId,
       imageUrls: product.imageUrls.join(', '),
+      featured: product.featured ?? false,
       sellerId: product.sellerId,
     });
     this.showForm.set(true);
@@ -116,6 +118,7 @@ export class AdminProductsComponent implements OnInit {
       categoryId: formValue.categoryId,
       sellerId,
       imageUrls,
+      featured: formValue.featured ?? false,
       seller: {
         id: sellerId,
         displayName: '',

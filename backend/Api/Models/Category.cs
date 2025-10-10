@@ -12,6 +12,10 @@ public sealed record class Category
     public string Slug { get; init; } = string.Empty;
 
     public string? Description { get; init; }
+
+    public string? Image { get; init; }
+
+    public bool Featured { get; init; }
     
     public string? ParentCategoryId { get; init; }
 
