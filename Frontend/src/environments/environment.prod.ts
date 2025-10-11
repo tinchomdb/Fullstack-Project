@@ -3,5 +3,6 @@ export const environment = {
   production: true,
   apiBase: 'https://fullstack-app-prod.azurewebsites.net',
   msalClientId: 'b71ddc9e-2cc7-412e-ba06-a758a0d3a7b7',
-  msalAuthority: 'https://entraIdExternal.ciamlogin.com/',
+  msalAuthority:
+    'https://af53b2d4-9ec3-4f23-92c7-50db6457512a.ciamlogin.com/af53b2d4-9ec3-4f23-92c7-50db6457512a',
 } as const;

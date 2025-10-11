@@ -53,42 +53,4 @@ public sealed class ProductsController(IProductsRepository repository) : Control
 
         return Ok(product);
     }
-
-    [HttpPost]
-    [Authorize(Roles = "admin")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product, CancellationToken cancellationToken)
-    {
-        var createdProduct = await repository.CreateProductAsync(product, cancellationToken);
-        return CreatedAtAction(nameof(GetProduct), new { productId = createdProduct.Id, sellerId = createdProduct.SellerId }, createdProduct);
-    }
-
-    [HttpPut("{productId}/seller/{sellerId}")]
-    [Authorize(Roles = "admin")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<Product>> UpdateProduct(string productId, string sellerId, [FromBody] Product product, CancellationToken cancellationToken)
-    {
-        if (product.Id != productId || product.SellerId != sellerId)
-        {
-            return BadRequest("Product ID and SellerId must match route parameters");
-        }
-
-        var updatedProduct = await repository.UpdateProductAsync(product, cancellationToken);
-        return Ok(updatedProduct);
-    }
-
-    [HttpDelete("{productId}/seller/{sellerId}")]
-    [Authorize(Roles = "admin")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> DeleteProduct(string productId, string sellerId, CancellationToken cancellationToken)
-    {
-        await repository.DeleteProductAsync(productId, sellerId, cancellationToken);
-        return NoContent();
-    }
 }

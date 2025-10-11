@@ -12,6 +12,7 @@ import { Resource } from '../../shared/utils/resource';
 export class ProductsService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBase}/api/products`;
+  private readonly adminBaseUrl = `${environment.apiBase}/api/admin/products`;
 
   private readonly productsResource = new Resource<readonly Product[]>([]);
 
@@ -35,7 +36,7 @@ export class ProductsService {
 
   createProduct(product: Partial<Product>): Observable<Product> {
     const apiModel = mapProductToApi(product as Product);
-    return this.http.post<ProductApiModel>(this.baseUrl, apiModel).pipe(
+    return this.http.post<ProductApiModel>(this.adminBaseUrl, apiModel).pipe(
       map(mapProductFromApi),
       tap(() => this.loadProducts()),
     );
@@ -44,7 +45,10 @@ export class ProductsService {
   updateProduct(product: Product): Observable<Product> {
     const apiModel = mapProductToApi(product);
     return this.http
-      .put<ProductApiModel>(`${this.baseUrl}/${product.id}/seller/${product.sellerId}`, apiModel)
+      .put<ProductApiModel>(
+        `${this.adminBaseUrl}/${product.id}/seller/${product.sellerId}`,
+        apiModel,
+      )
       .pipe(
         map(mapProductFromApi),
         tap(() => this.loadProducts()),
@@ -53,7 +57,7 @@ export class ProductsService {
 
   deleteProduct(productId: string, sellerId: string): Observable<void> {
     return this.http
-      .delete<void>(`${this.baseUrl}/${productId}/seller/${sellerId}`)
+      .delete<void>(`${this.adminBaseUrl}/${productId}/seller/${sellerId}`)
       .pipe(tap(() => this.loadProducts()));
   }
 

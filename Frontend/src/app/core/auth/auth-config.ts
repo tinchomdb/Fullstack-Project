@@ -29,12 +29,15 @@ export const loginRequest = {
   scopes: ['openid', 'profile', 'email'],
 };
 
+// API scope for accessing the backend API
+// This scope will be used to request access tokens with the correct audience
+const apiScope = 'api://c90274e1-2286-4a11-8734-52cee58da3e0/Marketplace.Access';
+
 // Map API endpoints that require authentication
-// MSAL will automatically attach JWT token to requests matching these patterns
+// MSAL interceptor will automatically attach JWT access tokens to requests matching these patterns
 export const protectedResourceMap = new Map<string, Array<string>>([
-  // Cart checkout and migration require authentication
-  [`${environment.apiBase}/api/carts/migrate`, ['openid', 'profile', 'email']],
-  [`${environment.apiBase}/api/carts/*/checkout`, ['openid', 'profile', 'email']],
-  // All order operations require authentication
-  [`${environment.apiBase}/api/orders`, ['openid', 'profile', 'email']],
+  [`${environment.apiBase}/api/carts/migrate`, [apiScope]],
+  [`${environment.apiBase}/api/carts/*/checkout`, [apiScope]],
+  [`${environment.apiBase}/api/orders`, [apiScope]],
+  [`${environment.apiBase}/api/admin`, [apiScope]],
 ]);

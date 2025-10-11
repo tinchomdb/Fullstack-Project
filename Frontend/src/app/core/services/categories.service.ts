@@ -16,6 +16,7 @@ export interface CategoryTreeNode {
 export class CategoriesService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBase}/api/categories`;
+  private readonly adminBaseUrl = `${environment.apiBase}/api/admin/categories`;
   private readonly categoriesResource = new Resource<readonly Category[]>([]);
 
   readonly categories = this.categoriesResource.data;
@@ -30,18 +31,20 @@ export class CategoriesService {
   }
 
   createCategory(category: Partial<Category>): Observable<Category> {
-    return this.http.post<Category>(this.baseUrl, category).pipe(tap(() => this.loadCategories()));
+    return this.http
+      .post<Category>(this.adminBaseUrl, category)
+      .pipe(tap(() => this.loadCategories()));
   }
 
   updateCategory(category: Category): Observable<Category> {
     return this.http
-      .put<Category>(`${this.baseUrl}/${category.id}`, category)
+      .put<Category>(`${this.adminBaseUrl}/${category.id}`, category)
       .pipe(tap(() => this.loadCategories()));
   }
 
   deleteCategory(categoryId: string): Observable<void> {
     return this.http
-      .delete<void>(`${this.baseUrl}/${categoryId}`)
+      .delete<void>(`${this.adminBaseUrl}/${categoryId}`)
       .pipe(tap(() => this.loadCategories()));
   }
 
