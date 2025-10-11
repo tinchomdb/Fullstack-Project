@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/auth/auth.service';
-import { DataStateComponent } from '../../shared/ui/data-state/data-state.component';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { CartItemComponent } from './cart-item/cart-item.component';
 import { OrderSummaryPanelComponent } from '../../shared/ui/order-summary-panel/order-summary-panel.component';
@@ -14,7 +13,6 @@ import { SidebarLayoutComponent } from '../../shared/layouts/sidebar-layout/side
   selector: 'app-cart',
   imports: [
     CommonModule,
-    DataStateComponent,
     ButtonComponent,
     CartItemComponent,
     OrderSummaryPanelComponent,

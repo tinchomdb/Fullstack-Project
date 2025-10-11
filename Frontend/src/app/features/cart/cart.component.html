@@ -1,16 +1,6 @@
 <div class="cart-container">
   <h1>Shopping Cart</h1>
 
-  <app-data-state
-    [loading]="loading()"
-    [error]="error()"
-    [hasData]="cart() !== null"
-    loadingMessage="Loading your cart…"
-    emptyMessage="Your cart is empty"
-    errorTitle="Could not load cart."
-    (retry)="reload()"
-  />
-
   @if (cart(); as cartData) {
     @if (!isEmpty()) {
       <app-sidebar-layout>

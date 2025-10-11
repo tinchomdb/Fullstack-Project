@@ -16,7 +16,6 @@ import { Product } from '../../core/models/product.model';
 import { ProductImageGalleryComponent } from './product-image-gallery/product-image-gallery.component';
 import { ProductBuyBoxComponent } from './product-buy-box/product-buy-box.component';
 import { ProductInfoComponent } from './product-info/product-info.component';
-import { DataStateComponent } from '../../shared/ui/data-state/data-state.component';
 import {
   BreadcrumbComponent,
   type BreadcrumbItem,
@@ -29,7 +28,6 @@ import {
     ProductImageGalleryComponent,
     ProductBuyBoxComponent,
     ProductInfoComponent,
-    DataStateComponent,
     BreadcrumbComponent,
   ],
   templateUrl: './product-detail.component.html',
