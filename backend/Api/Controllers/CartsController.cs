@@ -19,11 +19,6 @@ public sealed class CartsController(ICartsRepository cartsRepository, IOrdersRep
     {
         var activeCart = await cartsRepository.GetActiveCartByUserAsync(userId, cancellationToken);
 
-        if (activeCart is null)
-        {
-            return NotFound();
-        }
-
         return Ok(activeCart);
     }
 
