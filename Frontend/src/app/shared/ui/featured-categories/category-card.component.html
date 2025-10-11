@@ -1,0 +1,22 @@
+<a
+  class="category-card"
+  [routerLink]="['/products']"
+  [queryParams]="{ category: category().slug }"
+  [attr.aria-label]="'Browse ' + category().name"
+>
+  @if (category().image; as image) {
+    <div class="category-image">
+      <img [ngSrc]="image" [alt]="category().name" width="300" height="300" priority />
+    </div>
+  } @else {
+    <div class="category-image placeholder">
+      <span class="placeholder-text">{{ category().name.charAt(0) }}</span>
+    </div>
+  }
+  <div class="category-info">
+    <h3 class="category-name">{{ category().name }}</h3>
+    @if (category().description) {
+      <p class="category-description">{{ category().description }}</p>
+    }
+  </div>
+</a>

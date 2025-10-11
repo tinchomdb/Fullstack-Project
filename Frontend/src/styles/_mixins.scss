@@ -1,0 +1,37 @@
+// Breakpoint mixins for mobile-first responsive design
+// These mixins can be imported in component styles without adding to bundle size
+@mixin media-xs {
+  @media (min-width: 480px) {
+    @content;
+  }
+}
+
+@mixin media-sm {
+  @media (min-width: 640px) {
+    @content;
+  }
+}
+
+@mixin media-md {
+  @media (min-width: 768px) {
+    @content;
+  }
+}
+
+@mixin media-lg {
+  @media (min-width: 1024px) {
+    @content;
+  }
+}
+
+@mixin media-xl {
+  @media (min-width: 1280px) {
+    @content;
+  }
+}
+
+@mixin media-2xl {
+  @media (min-width: 1536px) {
+    @content;
+  }
+}

@@ -1,4 +1,4 @@
-@use '../../../../styles/tokens' as tokens;
+@use '../../../../styles/mixins' as *;
 
 .buy-box {
   position: static;
@@ -7,7 +7,7 @@
   background: var(--color-surface-primary);
   padding: var(--space-6);
 
-  @include tokens.media-md {
+  @include media-md {
     position: sticky;
     top: var(--space-6);
   }

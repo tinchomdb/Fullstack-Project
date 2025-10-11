@@ -1,6 +1,8 @@
-@use '../../../../styles/tokens' as tokens;
+@use '../../../../styles/mixins' as *;
 
 .featured {
+  position: relative;
+  z-index: 1;
   border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--color-surface-inverse);
@@ -25,7 +27,7 @@
   align-items: stretch;
   flex: 1;
 
-  @include tokens.media-lg {
+  @include media-lg {
     flex-direction: row;
   }
 }

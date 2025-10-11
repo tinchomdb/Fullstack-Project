@@ -1,0 +1,32 @@
+@use '../../../../styles/mixins' as *;
+
+.featured-categories {
+  margin-bottom: var(--space-responsive-lg);
+}
+
+.heading {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-6) 0;
+  line-height: var(--line-height-tight);
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+
+  @include media-sm {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include media-lg {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+  }
+
+  @include media-xl {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}

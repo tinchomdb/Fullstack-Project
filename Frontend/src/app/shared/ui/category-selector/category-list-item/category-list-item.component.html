@@ -1,0 +1,33 @@
+<li>
+  <a
+    [routerLink]="['/products']"
+    [queryParams]="{ category: node().category.slug }"
+    class="category-link"
+    [class.has-children]="node().children.length > 0"
+    role="menuitem"
+    (click)="itemClick.emit()"
+  >
+    <span class="category-name">{{ node().category.name }}</span>
+    @if (node().children.length > 0) {
+      <app-arrow-icon class="arrow-icon" />
+    }
+  </a>
+
+  @if (node().children.length > 0) {
+    <ul class="subcategory-list">
+      @for (childNode of node().children; track childNode.category.id) {
+        <li>
+          <a
+            [routerLink]="['/products']"
+            [queryParams]="{ category: childNode.category.slug }"
+            class="subcategory-link"
+            role="menuitem"
+            (click)="itemClick.emit()"
+          >
+            {{ childNode.category.name }}
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</li>
