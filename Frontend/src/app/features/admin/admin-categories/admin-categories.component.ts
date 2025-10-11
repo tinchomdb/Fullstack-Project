@@ -27,7 +27,6 @@ export class AdminCategoriesComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.categoriesService.loadCategories();
   }
 
   private initForm(): void {

@@ -5,6 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Category } from '../models/category.model';
 import { Resource } from '../../shared/utils/resource';
+import { LoadingOverlayService } from './loading-overlay.service';
 
 export interface CategoryTreeNode {
   category: Category;
@@ -15,9 +16,14 @@ export interface CategoryTreeNode {
 @Injectable({ providedIn: 'root' })
 export class CategoriesService {
   private readonly http = inject(HttpClient);
+  private readonly loadingOverlayService = inject(LoadingOverlayService);
   private readonly baseUrl = `${environment.apiBase}/api/categories`;
   private readonly adminBaseUrl = `${environment.apiBase}/api/admin/categories`;
-  private readonly categoriesResource = new Resource<readonly Category[]>([]);
+  private readonly categoriesResource = new Resource<readonly Category[]>(
+    [],
+    'Loading categories...',
+    this.loadingOverlayService,
+  );
 
   readonly categories = this.categoriesResource.data;
   readonly loading = this.categoriesResource.loading;
@@ -27,25 +33,32 @@ export class CategoriesService {
   readonly flattenedTree = computed(() => this.flattenTree(this.categoryTree()));
 
   loadCategories(): void {
+    if (this.categories() && this.categories()!.length > 0) {
+      return;
+    }
+    this.categoriesResource.load(this.getAllCategories());
+  }
+
+  reloadCategories(): void {
     this.categoriesResource.load(this.getAllCategories());
   }
 
   createCategory(category: Partial<Category>): Observable<Category> {
     return this.http
       .post<Category>(this.adminBaseUrl, category)
-      .pipe(tap(() => this.loadCategories()));
+      .pipe(tap(() => this.reloadCategories()));
   }
 
   updateCategory(category: Category): Observable<Category> {
     return this.http
       .put<Category>(`${this.adminBaseUrl}/${category.id}`, category)
-      .pipe(tap(() => this.loadCategories()));
+      .pipe(tap(() => this.reloadCategories()));
   }
 
   deleteCategory(categoryId: string): Observable<void> {
     return this.http
       .delete<void>(`${this.adminBaseUrl}/${categoryId}`)
-      .pipe(tap(() => this.loadCategories()));
+      .pipe(tap(() => this.reloadCategories()));
   }
 
   getAvailableParentCategories(excludeCategoryId?: string): Category[] {
