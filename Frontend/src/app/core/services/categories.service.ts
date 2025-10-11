@@ -31,6 +31,7 @@ export class CategoriesService {
 
   readonly categoryTree = computed(() => this.buildCategoryTree(this.categories() ?? []));
   readonly flattenedTree = computed(() => this.flattenTree(this.categoryTree()));
+  readonly featuredCategories = computed(() => (this.categories() ?? []).filter((c) => c.featured));
 
   loadCategories(): void {
     if (this.categories() && this.categories()!.length > 0) {
@@ -84,6 +85,26 @@ export class CategoriesService {
     if (!parentId) return 'None';
     const parent = (this.categories() ?? []).find((c) => c.id === parentId);
     return parent?.name ?? 'Unknown';
+  }
+
+  getChildCategories(parentCategoryId: string): Category[] {
+    return (this.categories() ?? []).filter((c) => c.parentCategoryId === parentCategoryId);
+  }
+
+  getAllDescendantCategoryIds(categoryId: string): string[] {
+    const descendantIds: string[] = [categoryId];
+    const categories = this.categories() ?? [];
+
+    const collectDescendants = (parentId: string) => {
+      const children = categories.filter((c) => c.parentCategoryId === parentId);
+      children.forEach((child) => {
+        descendantIds.push(child.id);
+        collectDescendants(child.id);
+      });
+    };
+
+    collectDescendants(categoryId);
+    return descendantIds;
   }
 
   private getAllCategories(): Observable<readonly Category[]> {

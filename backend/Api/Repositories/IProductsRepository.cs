@@ -12,6 +12,8 @@ public interface IProductsRepository
 
     Task<IReadOnlyList<Product>> GetProductsByCategoryAsync(string categoryId, CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<Product>> GetProductsByCategoriesAsync(string[] categoryIds, CancellationToken cancellationToken = default);
+
     Task<Product> CreateProductAsync(Product product, CancellationToken cancellationToken = default);
 
     Task<Product> UpdateProductAsync(Product product, CancellationToken cancellationToken = default);

@@ -64,9 +64,13 @@ export class ProductsComponent implements OnInit, OnDestroy {
   protected readonly featuredProduct = this.productsService.featuredProduct;
   protected readonly remainingProducts = this.productsService.remainingProducts;
 
-  protected readonly featuredCategories = computed(() =>
-    (this.categoriesService.categories() ?? []).filter((c) => c.featured).slice(0, 6),
-  );
+  protected readonly displayedCategories = computed(() => {
+    const category = this.activeCategory();
+    if (category) {
+      return this.categoriesService.getChildCategories(category.id);
+    }
+    return this.categoriesService.featuredCategories().slice(0, 6);
+  });
 
   protected readonly pageHeading = computed(() => {
     const category = this.activeCategory();
@@ -98,7 +102,9 @@ export class ProductsComponent implements OnInit, OnDestroy {
   private loadProductsBasedOnCategory(): void {
     const category = this.activeCategory();
     if (category) {
-      this.productsService.loadProductsByCategory(category.id);
+      // Load products from this category AND all its descendants
+      const categoryIds = this.categoriesService.getAllDescendantCategoryIds(category.id);
+      this.productsService.loadProductsByCategories(categoryIds);
     } else {
       this.productsService.reloadProducts();
     }
