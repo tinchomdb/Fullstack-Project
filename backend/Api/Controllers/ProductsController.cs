@@ -29,6 +29,20 @@ public sealed class ProductsController(IProductsRepository repository) : Control
         return Ok(products);
     }
 
+    [HttpGet("by-categories")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<Product>>> GetProductsByCategories([FromQuery] string[] categoryIds, CancellationToken cancellationToken)
+    {
+        if (categoryIds is null || categoryIds.Length == 0)
+        {
+            return Ok(Array.Empty<Product>());
+        }
+
+        var products = await repository.GetProductsByCategoriesAsync(categoryIds, cancellationToken);
+        return Ok(products);
+    }
+
     [HttpGet("by-category/{categoryId}")]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]

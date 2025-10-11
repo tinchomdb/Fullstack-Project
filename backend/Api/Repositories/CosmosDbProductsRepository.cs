@@ -106,6 +106,39 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         return products.AsReadOnly();
     }
 
+    public async Task<IReadOnlyList<Product>> GetProductsByCategoriesAsync(
+        string[] categoryIds,
+        CancellationToken cancellationToken = default)
+    {
+        if (categoryIds is null || categoryIds.Length == 0)
+        {
+            return Array.Empty<Product>();
+        }
+
+        // Build a query that checks if any of the product's categoryIds match any of the provided categoryIds
+        var categoryConditions = string.Join(" OR ", 
+            categoryIds.Select((_, index) => $"ARRAY_CONTAINS(c.categoryIds, @categoryId{index})"));
+
+        var queryText = $"SELECT * FROM c WHERE ({categoryConditions}) AND c.type = @type";
+        var query = new QueryDefinition(queryText).WithParameter("@type", "Product");
+
+        for (int i = 0; i < categoryIds.Length; i++)
+        {
+            query = query.WithParameter($"@categoryId{i}", categoryIds[i]);
+        }
+
+        var iterator = _container.GetItemQueryIterator<Product>(query);
+        var products = new List<Product>();
+
+        while (iterator.HasMoreResults)
+        {
+            var response = await iterator.ReadNextAsync(cancellationToken);
+            products.AddRange(response);
+        }
+
+        return products.AsReadOnly();
+    }
+
     public async Task<Product> CreateProductAsync(
         Product product,
         CancellationToken cancellationToken = default)

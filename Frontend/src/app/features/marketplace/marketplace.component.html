@@ -7,8 +7,8 @@
     eyebrow="Marketplace"
   />
 
-  @if (featuredCategories().length > 0) {
-    <app-featured-categories [categories]="featuredCategories()" />
+  @if (displayedCategories().length > 0) {
+    <app-featured-categories [categories]="displayedCategories()" />
   }
 
   @if (featuredProduct(); as featured) {

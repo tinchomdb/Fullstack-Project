@@ -51,6 +51,14 @@ export class ProductsService {
     this.productsResource.load(this.getProductsByCategory(categoryId));
   }
 
+  loadProductsByCategories(categoryIds: string[]): void {
+    if (!categoryIds || categoryIds.length === 0) {
+      this.reloadProducts();
+      return;
+    }
+    this.productsResource.load(this.getProductsByCategories(categoryIds));
+  }
+
   createProduct(product: Partial<Product>): Observable<Product> {
     const apiModel = mapProductToApi(product as Product);
     return this.http.post<ProductApiModel>(this.adminBaseUrl, apiModel).pipe(
@@ -94,6 +102,16 @@ export class ProductsService {
   private getProductsByCategory(categoryId: string): Observable<readonly Product[]> {
     return this.http
       .get<readonly ProductApiModel[]>(`${this.baseUrl}/by-category/${categoryId}`)
+      .pipe(
+        map((items) => (Array.isArray(items) ? items : [])),
+        map((items) => items.map(mapProductFromApi)),
+      );
+  }
+
+  private getProductsByCategories(categoryIds: string[]): Observable<readonly Product[]> {
+    const params = categoryIds.map((id) => `categoryIds=${encodeURIComponent(id)}`).join('&');
+    return this.http
+      .get<readonly ProductApiModel[]>(`${this.baseUrl}/by-categories?${params}`)
       .pipe(
         map((items) => (Array.isArray(items) ? items : [])),
         map((items) => items.map(mapProductFromApi)),
