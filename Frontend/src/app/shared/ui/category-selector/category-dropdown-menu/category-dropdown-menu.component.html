@@ -1,0 +1,35 @@
+<div class="dropdown-menu" role="menu">
+  <div class="dropdown-header">
+    <h3>Shop by Department</h3>
+  </div>
+
+  @if (loading()) {
+    <div class="dropdown-loading">
+      <p>Loading categories...</p>
+    </div>
+  } @else if (categoryTree().length === 0) {
+    <div class="dropdown-empty">
+      <p>No categories available</p>
+    </div>
+  } @else {
+    <ul class="category-list">
+      <li>
+        <a
+          [routerLink]="['/products']"
+          class="category-link all-link"
+          role="menuitem"
+          (click)="itemClick.emit()"
+        >
+          <span class="category-name">All Departments</span>
+        </a>
+      </li>
+
+      @for (node of categoryTree(); track node.category.id) {
+        <app-category-list-item
+          [node]="node"
+          (itemClick)="itemClick.emit()"
+        />
+      }
+    </ul>
+  }
+</div>

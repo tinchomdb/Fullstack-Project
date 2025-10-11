@@ -1,0 +1,14 @@
+<div class="category-selector">
+  <app-category-selector-button
+    [isExpanded]="isOpen()"
+    (buttonClick)="toggleDropdown()"
+  />
+
+  @if (isOpen()) {
+    <app-category-dropdown-menu
+      [categoryTree]="categoryTree()"
+      [loading]="loading()"
+      (itemClick)="closeDropdown()"
+    />
+  }
+</div>

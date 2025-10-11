@@ -1,12 +1,16 @@
-@use '../../../../styles/tokens' as tokens;
+@use '../../../../styles/mixins' as *;
 
 :host {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
   border-bottom: var(--border-subtle);
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
   padding: var(--space-6) var(--space-responsive-md);
+  background: var(--color-surface-primary);
   backdrop-filter: blur(12px);
 }
 
@@ -28,7 +32,7 @@ nav {
   display: none;
   justify-content: flex-end;
 
-  @include tokens.media-md {
+  @include media-md {
     display: flex;
   }
 }
@@ -99,7 +103,7 @@ nav a.is-active {
   transition: all 0.2s ease;
   gap: 0.25rem;
 
-  @include tokens.media-md {
+  @include media-md {
     display: none;
   }
 
@@ -143,10 +147,9 @@ nav a.is-active {
   right: 0;
   bottom: 0;
   background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
   backdrop-filter: blur(4px);
 
-  @include tokens.media-md {
+  @include media-md {
     display: none;
   }
 }

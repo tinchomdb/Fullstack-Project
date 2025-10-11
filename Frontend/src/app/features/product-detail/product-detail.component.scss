@@ -1,11 +1,11 @@
-@use '../../../styles/tokens' as tokens;
+@use '../../../styles/mixins' as *;
 
 .product-detail-container {
   max-width: 1500px;
   margin: 0 auto;
   padding: var(--space-4);
 
-  @include tokens.media-md {
+  @include media-md {
     padding: var(--space-6);
   }
 }
@@ -24,7 +24,7 @@
     grid-row: auto;
   }
 
-  @include tokens.media-md {
+  @include media-md {
     grid-template-columns: 1fr 1fr 360px;
     gap: var(--space-8);
 
@@ -44,7 +44,7 @@
     }
   }
 
-  @include tokens.media-xl {
+  @include media-xl {
     grid-template-columns: 1fr 1fr 360px;
   }
 }

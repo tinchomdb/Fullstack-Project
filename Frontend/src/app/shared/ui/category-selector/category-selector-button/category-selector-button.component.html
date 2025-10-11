@@ -1,0 +1,11 @@
+<button
+  class="selector-button"
+  type="button"
+  (click)="buttonClick.emit()"
+  [attr.aria-expanded]="isExpanded()"
+  aria-label="Open categories menu"
+>
+  <app-menu-icon class="menu-icon" />
+  <span class="selector-text">All</span>
+  <app-chevron-icon class="chevron-icon" />
+</button>

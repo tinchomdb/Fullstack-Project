@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
 import { AuthButtonComponent } from '../auth-button/auth-button.component';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
+import { CategorySelectorComponent } from '../category-selector/category-selector.component';
 
 export interface NavItem {
   label: string;
@@ -13,7 +14,13 @@ export interface NavItem {
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink, RouterLinkActive, AuthButtonComponent, ThemeToggleComponent],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    AuthButtonComponent,
+    ThemeToggleComponent,
+    CategorySelectorComponent,
+  ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

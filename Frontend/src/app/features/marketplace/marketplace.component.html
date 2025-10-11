@@ -17,6 +17,10 @@
     (retry)="reload()"
   />
 
+  @if (!categoriesLoading() && featuredCategories().length > 0) {
+    <app-featured-categories [categories]="featuredCategories()" />
+  }
+
   @if (featuredProduct(); as featured) {
     <app-product-featured-card [product]="featured" />
   }
