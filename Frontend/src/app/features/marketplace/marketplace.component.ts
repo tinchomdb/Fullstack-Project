@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+  computed,
+  effect,
+} from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 import { ProductsService } from '../../core/services/products.service';
 import { CategoriesService } from '../../core/services/categories.service';
@@ -24,27 +33,74 @@ import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories
 export class ProductsComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly headingId = 'products-heading';
 
+  private readonly queryParams = toSignal(this.route.queryParams, { initialValue: {} });
+
+  private readonly categorySlug = computed(() => {
+    const params = this.queryParams() as Record<string, string>;
+    return params['category'];
+  });
+
+  protected readonly activeCategory = computed(() => {
+    const slug = this.categorySlug();
+    if (!slug) return null;
+
+    const categories = this.categoriesService.categories() ?? [];
+    return categories.find((c) => c.slug === slug) ?? null;
+  });
+
+  protected readonly loading = computed(
+    () => this.productsService.loading() || this.categoriesService.loading(),
+  );
+
+  protected readonly error = computed(
+    () => this.productsService.error() || this.categoriesService.error(),
+  );
+
   protected readonly products = this.productsService.products;
-  protected readonly loading = this.productsService.loading;
-  protected readonly error = this.productsService.error;
   protected readonly featuredProduct = this.productsService.featuredProduct;
   protected readonly remainingProducts = this.productsService.remainingProducts;
 
-  protected readonly categories = this.categoriesService.categories;
-  protected readonly categoriesLoading = this.categoriesService.loading;
   protected readonly featuredCategories = computed(() =>
-    (this.categories() ?? []).filter((c) => c.featured).slice(0, 6),
+    (this.categoriesService.categories() ?? []).filter((c) => c.featured).slice(0, 6),
   );
 
+  protected readonly pageHeading = computed(() => {
+    const category = this.activeCategory();
+    return category ? category.name : 'Featured products';
+  });
+
+  protected readonly pageSubtitle = computed(() => {
+    const category = this.activeCategory();
+    return category
+      ? category.description || `Browse all products in ${category.name}`
+      : 'Discover curated items from our top sellers. Updated in real time from the backend API.';
+  });
+
+  constructor() {
+    effect(() => {
+      this.loadProductsBasedOnCategory();
+    });
+  }
+
   ngOnInit(): void {
-    this.reload();
+    this.categoriesService.loadCategories();
   }
 
   reload(): void {
-    this.productsService.loadProducts();
+    this.loadProductsBasedOnCategory();
     this.categoriesService.loadCategories();
+  }
+
+  private loadProductsBasedOnCategory(): void {
+    const category = this.activeCategory();
+    if (category) {
+      this.productsService.loadProductsByCategory(category.id);
+    } else {
+      this.productsService.loadProducts();
+    }
   }
 }

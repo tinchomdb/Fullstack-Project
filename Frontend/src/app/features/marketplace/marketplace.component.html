@@ -1,9 +1,9 @@
 <section class="products-page" [attr.aria-labelledby]="headingId">
   <app-section-header
     [headingId]="headingId"
-    heading="Featured products"
+    [heading]="pageHeading()"
     headingLevel="h1"
-    subtitle="Discover curated items from our top sellers. Updated in real time from the backend API."
+    [subtitle]="pageSubtitle()"
     eyebrow="Marketplace"
   />
 
@@ -17,7 +17,7 @@
     (retry)="reload()"
   />
 
-  @if (!categoriesLoading() && featuredCategories().length > 0) {
+  @if (!loading() && featuredCategories().length > 0) {
     <app-featured-categories [categories]="featuredCategories()" />
   }
 

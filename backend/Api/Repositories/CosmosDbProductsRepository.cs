@@ -88,7 +88,7 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         string categoryId,
         CancellationToken cancellationToken = default)
     {
-        // Cross-partition query - consider using materialized view for production
+        // Cross-partition query - we could use a materialized view for a real application
         var query = new QueryDefinition(
             "SELECT * FROM c WHERE ARRAY_CONTAINS(c.categoryIds, @categoryId) AND c.type = @type")
             .WithParameter("@categoryId", categoryId)
