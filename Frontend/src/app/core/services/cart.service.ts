@@ -1,6 +1,6 @@
 import { inject, Injectable, computed, effect } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { map, Observable, of, catchError } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { map, Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { Cart } from '../models/cart.model';
@@ -14,6 +14,7 @@ import { Resource } from '../../shared/utils/resource';
 import { Product } from '../models/product.model';
 import { CartItem } from '../models/cart-item.model';
 import { AuthService } from '../auth/auth.service';
+import { LoadingOverlayService } from './loading-overlay.service';
 
 export interface CheckoutRequest {
   cartId: string;
@@ -24,8 +25,13 @@ export interface CheckoutRequest {
 export class CartService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly loadingOverlayService = inject(LoadingOverlayService);
   private readonly baseUrl = `${environment.apiBase}/api/carts`;
-  private readonly cartResource = new Resource<Cart | null>(null);
+  private readonly cartResource = new Resource<Cart | null>(
+    null,
+    'Loading cart...',
+    this.loadingOverlayService,
+  );
 
   readonly cart = this.cartResource.data;
   readonly loading = this.cartResource.loading;
@@ -39,13 +45,16 @@ export class CartService {
   readonly totalAmount = computed(() => this.cart()?.total ?? 0);
   readonly isEmpty = computed(() => this.itemCount() === 0);
 
+  private lastLoadedUserId: string | null = null;
+
   constructor() {
-    this.initializeCart();
-    this.setupLoginEffect();
+    this.setupAuthEffect();
+    this.subscribeToLoginEvents();
   }
 
   loadCart(): void {
     const userId = this.authService.userId();
+    this.lastLoadedUserId = userId;
     this.cartResource.load(this.getActiveCartByUser(userId));
   }
 
@@ -130,21 +139,25 @@ export class CartService {
     );
   }
 
-  private initializeCart(): void {
-    const hasGuestSession = !!this.authService.getGuestSessionId();
-    const isLoggedIn = this.authService.isLoggedIn();
+  private setupAuthEffect(): void {
+    // React to changes in authentication state
+    effect(() => {
+      const hasGuestSession = !!this.authService.getGuestSessionId();
+      const isLoggedIn = this.authService.isLoggedIn();
+      const currentUserId = this.authService.userId();
 
-    if (isLoggedIn || hasGuestSession) {
-      this.loadCart();
-    }
+      // Only load cart if:
+      // 1. User is logged in or has a guest session, AND
+      // 2. We haven't loaded the cart for this userId yet
+      if ((isLoggedIn || hasGuestSession) && this.lastLoadedUserId !== currentUserId) {
+        this.loadCart();
+      }
+    });
   }
 
-  private setupLoginEffect(): void {
-    effect(() => {
-      const isLoggedIn = this.authService.isLoggedIn();
-      if (isLoggedIn) {
-        this.mergeGuestAndUserCarts();
-      }
+  private subscribeToLoginEvents(): void {
+    this.authService.onLoginCompleted$.subscribe(() => {
+      this.mergeGuestAndUserCarts();
     });
   }
 

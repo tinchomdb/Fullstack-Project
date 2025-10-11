@@ -19,7 +19,7 @@ import { ButtonComponent } from '../../../shared/ui/button/button.component';
   styleUrl: './admin-products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminProductsComponent implements OnInit {
+export class AdminProductsComponent {
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly fb = inject(FormBuilder);
@@ -51,11 +51,6 @@ export class AdminProductsComponent implements OnInit {
       const field = this.productForm.get(fieldName);
       return field ? field.invalid && field.touched : false;
     });
-
-  ngOnInit(): void {
-    this.productsService.loadProducts();
-    this.categoriesService.loadCategories();
-  }
 
   openCreateForm(): void {
     this.editingProduct.set(null);

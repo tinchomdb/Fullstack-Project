@@ -7,17 +7,7 @@
     eyebrow="Marketplace"
   />
 
-  <app-data-state
-    [loading]="loading()"
-    [error]="error()"
-    [hasData]="(products()?.length ?? 0) > 0"
-    loadingMessage="Loading the latest catalog…"
-    emptyMessage="No products are available yet. Check back soon!"
-    errorTitle="Could not load products."
-    (retry)="reload()"
-  />
-
-  @if (!loading() && featuredCategories().length > 0) {
+  @if (featuredCategories().length > 0) {
     <app-featured-categories [categories]="featuredCategories()" />
   }
 

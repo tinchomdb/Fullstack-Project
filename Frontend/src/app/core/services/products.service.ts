@@ -7,14 +7,20 @@ import { Product } from '../models/product.model';
 import { ProductApiModel } from '../models/api/product-api.model';
 import { mapProductFromApi, mapProductToApi } from '../mappers/product.mapper';
 import { Resource } from '../../shared/utils/resource';
+import { LoadingOverlayService } from './loading-overlay.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
   private readonly http = inject(HttpClient);
+  private readonly loadingOverlayService = inject(LoadingOverlayService);
   private readonly baseUrl = `${environment.apiBase}/api/products`;
   private readonly adminBaseUrl = `${environment.apiBase}/api/admin/products`;
 
-  private readonly productsResource = new Resource<readonly Product[]>([]);
+  private readonly productsResource = new Resource<readonly Product[]>(
+    [],
+    'Loading products...',
+    this.loadingOverlayService,
+  );
 
   readonly products = this.productsResource.data;
   readonly loading = this.productsResource.loading;
@@ -31,6 +37,13 @@ export class ProductsService {
   });
 
   loadProducts(): void {
+    if (this.products() && this.products()!.length > 0) {
+      return;
+    }
+    this.productsResource.load(this.getAllProducts());
+  }
+
+  reloadProducts(): void {
     this.productsResource.load(this.getAllProducts());
   }
 
@@ -42,7 +55,7 @@ export class ProductsService {
     const apiModel = mapProductToApi(product as Product);
     return this.http.post<ProductApiModel>(this.adminBaseUrl, apiModel).pipe(
       map(mapProductFromApi),
-      tap(() => this.loadProducts()),
+      tap(() => this.reloadProducts()),
     );
   }
 
@@ -55,14 +68,14 @@ export class ProductsService {
       )
       .pipe(
         map(mapProductFromApi),
-        tap(() => this.loadProducts()),
+        tap(() => this.reloadProducts()),
       );
   }
 
   deleteProduct(productId: string, sellerId: string): Observable<void> {
     return this.http
       .delete<void>(`${this.adminBaseUrl}/${productId}/seller/${sellerId}`)
-      .pipe(tap(() => this.loadProducts()));
+      .pipe(tap(() => this.reloadProducts()));
   }
 
   getProduct(productId: string, sellerId: string): Observable<Product> {

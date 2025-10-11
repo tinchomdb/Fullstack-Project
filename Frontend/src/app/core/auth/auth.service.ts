@@ -7,8 +7,8 @@ import {
   EventType,
   AccountInfo,
 } from '@azure/msal-browser';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { filter, takeUntil, map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -17,11 +17,15 @@ export class AuthService {
   private readonly msalService = inject(MsalService);
   private readonly msalBroadcastService = inject(MsalBroadcastService);
   private readonly destroy$ = new Subject<void>();
+  private readonly loginCompleted$ = new Subject<AccountInfo>();
 
   private readonly GUEST_SESSION_KEY = 'guestSessionId';
 
   readonly isLoggedIn = signal(false);
   readonly isAdmin = signal(false);
+
+  // Expose as observable for services to subscribe to login events
+  readonly onLoginCompleted$: Observable<AccountInfo> = this.loginCompleted$.asObservable();
 
   readonly userId = computed(() => {
     this.isLoggedIn();
@@ -79,6 +83,11 @@ export class AuthService {
         if (event.eventType === EventType.LOGIN_SUCCESS) {
           const payload = event.payload as AuthenticationResult;
           this.msalService.instance.setActiveAccount(payload.account);
+
+          // Emit login completed event for other services
+          if (payload.account) {
+            this.loginCompleted$.next(payload.account);
+          }
         }
         this.syncAuthState();
       });

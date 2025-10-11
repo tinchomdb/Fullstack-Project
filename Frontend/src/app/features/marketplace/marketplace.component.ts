@@ -1,17 +1,17 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
   inject,
   computed,
-  effect,
+  OnInit,
+  OnDestroy,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Subject, takeUntil } from 'rxjs';
 
 import { ProductsService } from '../../core/services/products.service';
 import { CategoriesService } from '../../core/services/categories.service';
-import { DataStateComponent } from '../../shared/ui/data-state/data-state.component';
 import { ProductFeaturedCardComponent } from '../../shared/ui/product-featured-card/product-featured-card.component';
 import { ProductGridComponent } from '../../shared/ui/product-grid/product-grid.component';
 import { SectionHeaderComponent } from '../../shared/ui/section-header/section-header.component';
@@ -20,7 +20,6 @@ import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories
 @Component({
   selector: 'app-products-page',
   imports: [
-    DataStateComponent,
     ProductFeaturedCardComponent,
     ProductGridComponent,
     SectionHeaderComponent,
@@ -30,10 +29,11 @@ import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories
   styleUrl: './marketplace.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit, OnDestroy {
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly route = inject(ActivatedRoute);
+  private readonly destroy$ = new Subject<void>();
 
   protected readonly headingId = 'products-heading';
 
@@ -80,19 +80,19 @@ export class ProductsComponent implements OnInit {
       : 'Discover curated items from our top sellers. Updated in real time from the backend API.';
   });
 
-  constructor() {
-    effect(() => {
+  ngOnInit(): void {
+    // Load products based on initial URL (handles page reload with category in URL)
+    this.loadProductsBasedOnCategory();
+
+    // Subscribe to query param changes to reload products when category filter changes
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.loadProductsBasedOnCategory();
     });
   }
 
-  ngOnInit(): void {
-    this.categoriesService.loadCategories();
-  }
-
-  reload(): void {
-    this.loadProductsBasedOnCategory();
-    this.categoriesService.loadCategories();
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadProductsBasedOnCategory(): void {
@@ -100,7 +100,7 @@ export class ProductsComponent implements OnInit {
     if (category) {
       this.productsService.loadProductsByCategory(category.id);
     } else {
-      this.productsService.loadProducts();
+      this.productsService.reloadProducts();
     }
   }
 }
