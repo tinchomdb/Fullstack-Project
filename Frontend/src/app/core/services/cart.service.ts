@@ -245,15 +245,9 @@ export class CartService {
   }
 
   private getActiveCartByUser(userId: string): Observable<Cart | null> {
-    return this.http.get<CartApiModel>(`${this.baseUrl}/by-user/${userId}/active`).pipe(
-      map(mapCartFromApi),
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 404) {
-          return of(null);
-        }
-        throw error;
-      }),
-    );
+    return this.http
+      .get<CartApiModel | null>(`${this.baseUrl}/by-user/${userId}/active`)
+      .pipe(map((response) => (response ? mapCartFromApi(response) : null)));
   }
 
   private upsertCart(userId: string, cart: Cart): Observable<Cart> {
