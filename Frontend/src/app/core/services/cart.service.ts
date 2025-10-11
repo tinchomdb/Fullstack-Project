@@ -1,32 +1,24 @@
-import { inject, Injectable, computed, effect } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, computed, effect, untracked } from '@angular/core';
 import { map, Observable } from 'rxjs';
 
-import { environment } from '../../../environments/environment';
 import { Cart } from '../models/cart.model';
-import { CartStatus } from '../models/cart-status.model';
 import { Order } from '../models/order.model';
-import { CartApiModel } from '../models/api/cart-api.model';
-import { OrderApiModel } from '../models/api/order-api.model';
-import { mapCartFromApi } from '../mappers/cart.mapper';
-import { mapOrderFromApi } from '../mappers/order.mapper';
 import { Resource } from '../../shared/utils/resource';
 import { Product } from '../models/product.model';
 import { CartItem } from '../models/cart-item.model';
 import { AuthService } from '../auth/auth.service';
 import { LoadingOverlayService } from './loading-overlay.service';
+import { CartApiService } from './cart-api.service';
+import { CartHelperService } from './cart-helper.service';
 
-export interface CheckoutRequest {
-  cartId: string;
-  shippingCost: number;
-}
+export type { CheckoutRequest } from './cart-api.service';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
-  private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
   private readonly loadingOverlayService = inject(LoadingOverlayService);
-  private readonly baseUrl = `${environment.apiBase}/api/carts`;
+  private readonly cartApi = inject(CartApiService);
+  private readonly cartHelper = inject(CartHelperService);
   private readonly cartResource = new Resource<Cart | null>(
     null,
     'Loading cart...',
@@ -37,15 +29,12 @@ export class CartService {
   readonly loading = this.cartResource.loading;
   readonly error = this.cartResource.error;
 
-  readonly itemCount = computed(() => {
-    const cart = this.cart();
-    return cart?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
-  });
+  readonly itemCount = computed(
+    () => this.cart()?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0,
+  );
 
   readonly totalAmount = computed(() => this.cart()?.total ?? 0);
   readonly isEmpty = computed(() => this.itemCount() === 0);
-
-  private lastLoadedUserId: string | null = null;
 
   constructor() {
     this.setupAuthEffect();
@@ -53,46 +42,39 @@ export class CartService {
   }
 
   loadCart(): void {
-    const userId = this.authService.userId();
-    this.lastLoadedUserId = userId;
-    this.cartResource.load(this.getActiveCartByUser(userId));
+    const userId = this.getUserId();
+    this.cartResource.load(this.cartApi.getActiveCartByUser(userId));
+  }
+
+  reloadCart(): void {
+    this.loadCart();
   }
 
   addToCart(product: Product, quantity: number = 1): void {
-    const userId = this.authService.userId();
     const currentCart = this.cart();
 
     if (!currentCart) {
-      const newCart = this.createNewCart(userId, product, quantity);
-      this.saveCart(userId, newCart);
+      const newCart = this.cartHelper.createNewCart(this.getUserId(), product, quantity);
+      this.saveCart(newCart);
       return;
     }
 
-    const existingItemIndex = currentCart.items.findIndex((item) => item.productId === product.id);
-
-    const updatedItems =
-      existingItemIndex >= 0
-        ? this.updateExistingItem(currentCart.items, existingItemIndex, quantity)
-        : this.addNewItem(currentCart.items, product, quantity);
-
-    const updatedCart = this.recalculateCartTotals(currentCart, updatedItems);
-    this.saveCart(userId, updatedCart);
+    const updatedItems = this.cartHelper.addItemToCart(currentCart.items, product, quantity);
+    this.updateCart(currentCart, updatedItems);
   }
 
   removeFromCart(productId: string): void {
-    const userId = this.authService.userId();
     const currentCart = this.cart();
     if (!currentCart) return;
 
-    const updatedItems = currentCart.items.filter((item) => item.productId !== productId);
+    const updatedItems = this.cartHelper.removeItemFromCart(currentCart.items, productId);
 
     if (updatedItems.length === 0) {
-      this.cartResource.load(this.deleteCart(userId).pipe(map(() => null)));
+      this.clearCart();
       return;
     }
 
-    const updatedCart = this.recalculateCartTotals(currentCart, updatedItems);
-    this.saveCart(userId, updatedCart);
+    this.updateCart(currentCart, updatedItems);
   }
 
   updateQuantity(productId: string, quantity: number): void {
@@ -101,42 +83,40 @@ export class CartService {
       return;
     }
 
-    const userId = this.authService.userId();
     const currentCart = this.cart();
     if (!currentCart) return;
 
-    const updatedItems = currentCart.items.map((item) =>
-      item.productId === productId
-        ? { ...item, quantity, lineTotal: item.unitPrice * quantity }
-        : item,
+    const updatedItems = this.cartHelper.updateItemQuantityInCart(
+      currentCart.items,
+      productId,
+      quantity,
     );
 
-    const updatedCart = this.recalculateCartTotals(currentCart, updatedItems);
-    this.saveCart(userId, updatedCart);
+    this.updateCart(currentCart, updatedItems);
   }
 
   clearCart(): void {
-    const userId = this.authService.userId();
-    this.cartResource.load(this.deleteCart(userId).pipe(map(() => null)));
+    this.cartResource.load(this.cartApi.deleteCart(this.getUserId()).pipe(map(() => null)));
   }
 
   checkout(shippingCost: number = 0): Observable<Order> {
-    const userId = this.authService.userId();
     const currentCart = this.cart();
 
     if (!currentCart) {
       throw new Error('No active cart to checkout');
     }
 
-    return this.checkoutCart(userId, {
-      cartId: currentCart.id,
-      shippingCost,
-    }).pipe(
-      map((order) => {
-        this.cartResource.reset();
-        return order;
-      }),
-    );
+    return this.cartApi
+      .checkout(this.getUserId(), {
+        cartId: currentCart.id,
+        shippingCost,
+      })
+      .pipe(
+        map((order) => {
+          this.cartResource.reset();
+          return order;
+        }),
+      );
   }
 
   private setupAuthEffect(): void {
@@ -146,11 +126,10 @@ export class CartService {
       const isLoggedIn = this.authService.isLoggedIn();
       const currentUserId = this.authService.userId();
 
-      // Only load cart if:
-      // 1. User is logged in or has a guest session, AND
-      // 2. We haven't loaded the cart for this userId yet
-      if ((isLoggedIn || hasGuestSession) && this.lastLoadedUserId !== currentUserId) {
-        this.loadCart();
+      // Only load cart if user is logged in or has a guest session
+      // Use untracked to prevent the effect from re-running when cart updates
+      if (isLoggedIn || hasGuestSession) {
+        untracked(() => this.loadCart());
       }
     });
   }
@@ -165,7 +144,7 @@ export class CartService {
     const guestId = this.authService.getGuestSessionId();
 
     if (!guestId) {
-      this.loadCart();
+      this.reloadCart();
       return;
     }
 
@@ -174,112 +153,28 @@ export class CartService {
       return;
     }
 
-    this.migrateGuestCart(guestId, account.localAccountId).subscribe({
+    this.cartApi.migrateGuestCart({ guestId, userId: account.localAccountId }).subscribe({
       next: () => {
         this.authService.clearGuestSession();
-        this.loadCart();
+        this.reloadCart();
       },
       error: () => {
         this.authService.clearGuestSession();
-        this.loadCart();
+        this.reloadCart();
       },
     });
   }
 
-  private createNewCart(userId: string, product: Product, quantity: number): Cart {
-    const cartItem = this.createCartItem(product, quantity);
-    const itemTotal = product.price * quantity;
-
-    return {
-      id: crypto.randomUUID(),
-      userId,
-      status: CartStatus.Active,
-      createdAt: new Date().toISOString(),
-      lastUpdatedAt: new Date().toISOString(),
-      items: [cartItem],
-      subtotal: itemTotal,
-      currency: 'USD',
-      total: itemTotal,
-    };
+  private getUserId(): string {
+    return this.authService.userId();
   }
 
-  private createCartItem(product: Product, quantity: number): CartItem {
-    return {
-      productId: product.id,
-      productName: product.name,
-      imageUrl: product.imageUrls[0] ?? '',
-      quantity,
-      unitPrice: product.price,
-      lineTotal: product.price * quantity,
-      sellerId: product.seller.id,
-      sellerName: product.seller.displayName,
-    };
+  private updateCart(cart: Cart, items: readonly CartItem[]): void {
+    const updatedCart = this.cartHelper.recalculateCartTotals(cart, items);
+    this.saveCart(updatedCart);
   }
 
-  private updateExistingItem(
-    items: readonly CartItem[],
-    index: number,
-    quantityToAdd: number,
-  ): readonly CartItem[] {
-    const existingItem = items[index];
-    const newQuantity = existingItem.quantity + quantityToAdd;
-    const updatedItem: CartItem = {
-      ...existingItem,
-      quantity: newQuantity,
-      lineTotal: existingItem.unitPrice * newQuantity,
-    };
-
-    return [...items.slice(0, index), updatedItem, ...items.slice(index + 1)];
-  }
-
-  private addNewItem(
-    items: readonly CartItem[],
-    product: Product,
-    quantity: number,
-  ): readonly CartItem[] {
-    const newItem = this.createCartItem(product, quantity);
-    return [...items, newItem];
-  }
-
-  private recalculateCartTotals(cart: Cart, items: readonly CartItem[]): Cart {
-    const subtotal = items.reduce((sum, item) => sum + item.lineTotal, 0);
-
-    return {
-      ...cart,
-      items,
-      subtotal,
-      total: subtotal,
-      lastUpdatedAt: new Date().toISOString(),
-    };
-  }
-
-  private saveCart(userId: string, cart: Cart): void {
-    this.cartResource.load(this.upsertCart(userId, cart));
-  }
-
-  private getActiveCartByUser(userId: string): Observable<Cart | null> {
-    return this.http
-      .get<CartApiModel | null>(`${this.baseUrl}/by-user/${userId}/active`)
-      .pipe(map((response) => (response ? mapCartFromApi(response) : null)));
-  }
-
-  private upsertCart(userId: string, cart: Cart): Observable<Cart> {
-    return this.http
-      .put<CartApiModel>(`${this.baseUrl}/by-user/${userId}`, cart)
-      .pipe(map(mapCartFromApi));
-  }
-
-  private deleteCart(userId: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/by-user/${userId}`);
-  }
-
-  private checkoutCart(userId: string, request: CheckoutRequest): Observable<Order> {
-    return this.http
-      .post<OrderApiModel>(`${this.baseUrl}/by-user/${userId}/checkout`, request)
-      .pipe(map(mapOrderFromApi));
-  }
-
-  private migrateGuestCart(guestId: string, userId: string): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/migrate`, { guestId, userId });
+  private saveCart(cart: Cart): void {
+    this.cartResource.load(this.cartApi.upsertCart(this.getUserId(), cart));
   }
 }

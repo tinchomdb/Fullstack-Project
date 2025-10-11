@@ -5,7 +5,6 @@ import { CommonModule } from '@angular/common';
 
 import { CartService } from '../../core/services/cart.service';
 import { CheckoutService } from '../../core/services/checkout.service';
-import { DataStateComponent } from '../../shared/ui/data-state/data-state.component';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { OrderSummaryPanelComponent } from '../../shared/ui/order-summary-panel/order-summary-panel.component';
 import { SidebarLayoutComponent } from '../../shared/layouts/sidebar-layout/sidebar-layout.component';
@@ -18,7 +17,6 @@ import { PaymentMethodComponent } from './payment-method/payment-method.componen
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    DataStateComponent,
     ButtonComponent,
     OrderSummaryPanelComponent,
     SidebarLayoutComponent,

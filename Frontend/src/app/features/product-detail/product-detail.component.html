@@ -1,13 +1,4 @@
 <div class="product-detail-container">
-  <app-data-state
-    [loading]="loading()"
-    [error]="error()"
-    [hasData]="!!product()"
-    [loadingMessage]="'Loading product...'"
-    [errorTitle]="'Failed to load product'"
-    (retry)="retry()"
-  />
-
   @if (product(); as prod) {
     <app-breadcrumb [items]="breadcrumbItems()" />
 
