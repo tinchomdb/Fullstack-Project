@@ -16,6 +16,7 @@ import { mapCarouselSlideFromApi } from '../mappers/carousel-slide.mapper';
 export class CarouselApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiBase}/api/admin/slides`;
+  private readonly publicUrl = `${environment.apiBase}/api/slides`;
 
   getSlides(): Observable<CarouselSlide[]> {
     return this.http
@@ -25,7 +26,7 @@ export class CarouselApiService {
 
   getActiveSlides(): Observable<CarouselSlide[]> {
     return this.http
-      .get<CarouselSlideApiModel[]>(`${this.baseUrl}/active`)
+      .get<CarouselSlideApiModel[]>(`${this.publicUrl}/active`)
       .pipe(map((response) => response.map(mapCarouselSlideFromApi)));
   }
 
