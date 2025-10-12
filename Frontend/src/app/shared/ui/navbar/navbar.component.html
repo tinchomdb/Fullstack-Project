@@ -5,19 +5,16 @@
   <app-search-bar class="search-bar-container" />
 
   <div class="navbar-actions">
-    <app-auth-button></app-auth-button>
-    <app-theme-toggle></app-theme-toggle>
+    <app-auth-button class="desktop-only"></app-auth-button>
+    <app-theme-toggle class="desktop-only"></app-theme-toggle>
     <app-cart-button [itemCount]="cartItemCount()"></app-cart-button>
-    <app-hamburger-menu-button
-      [isExpanded]="isMobileMenuOpen()"
-      (toggle)="toggleMobileMenu()"
-    ></app-hamburger-menu-button>
+    <app-menu-sidebar class="mobile-only" />
   </div>
 </div>
 
-<!-- Second Row: Category Selector and Category Links (Desktop only) -->
+<!-- Second Row: Menu Sidebar and Category Links (Desktop only) -->
 <div class="navbar-bottom">
-  <app-category-selector />
+  <app-menu-sidebar />
 
   <nav class="categories-nav" aria-label="Categories">
     <ul>
@@ -25,7 +22,7 @@
         <li>
           <a
             [routerLink]="['/products']"
-            [queryParams]="{ categoryId: category.id }"
+            [queryParams]="{ category: category.slug }"
             routerLinkActive="is-active"
             [attr.aria-label]="'Browse ' + category.name"
           >
@@ -50,24 +47,6 @@
           (clicked)="closeMobileMenu()"
         />
       </div>
-
-      <ul>
-        @for (item of navigation(); track item.path) {
-          <li>
-            <a
-              routerLinkActive="is-active"
-              [routerLinkActiveOptions]="{ exact: true }"
-              #rla="routerLinkActive"
-              [attr.aria-current]="rla.isActive ? 'page' : null"
-              [routerLink]="item.path"
-              [attr.aria-label]="item.ariaLabel"
-              (click)="closeMobileMenu()"
-            >
-              {{ item.label }}
-            </a>
-          </li>
-        }
-      </ul>
       <div class="mobile-auth">
         <app-auth-button [additionalClick]="closeMobileMenu"></app-auth-button>
       </div>

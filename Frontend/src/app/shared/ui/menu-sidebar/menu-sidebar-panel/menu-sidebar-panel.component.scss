@@ -1,0 +1,120 @@
+@use '../../../../../styles/mixins' as *;
+
+$sidebar-max-width: 365px;
+$transition-duration: 0.3s;
+
+%interactive-item {
+  @extend %interactive-element;
+  padding: var(--space-3);
+}
+
+.sidebar-panel {
+  inset: 0 auto 0 0;
+  width: min(80vw, $sidebar-max-width);
+  background-color: var(--color-surface-primary);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  animation: slideIn $transition-duration ease-out;
+  z-index: var(--z-index-modal);
+
+  @include media-md {
+    width: $sidebar-max-width;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  justify-content: space-between;
+  padding: var(--space-4);
+  background: var(--gradient-accent);
+  border-bottom: var(--border-subtle);
+}
+
+.sidebar-greeting {
+  flex: 1;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-surface-primary);
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sidebar-section {
+  padding: var(--space-4);
+}
+
+.sidebar-section-title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-3);
+}
+
+.sidebar-loading {
+  padding: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+.sidebar-divider {
+  height: 1px;
+  background-color: var(--color-border-subtle);
+  margin: var(--space-2) 0;
+}
+
+.category-list,
+.settings-list {
+  @extend %list-reset;
+}
+
+.category-item {
+  @extend %list-item-spacing;
+}
+
+.settings-link {
+  @extend %interactive-item;
+  @extend %base-text-style;
+  display: block;
+  text-decoration: none;
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+}
+
+.logout-button {
+  color: var(--color-text-critical);
+  font-weight: var(--font-weight-semibold);
+
+  &:hover {
+    background-color: var(--color-surface-critical);
+  }
+}
+
+.theme-toggle-item {
+  @extend %interactive-item;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.settings-label {
+  @extend %base-text-style;
+}

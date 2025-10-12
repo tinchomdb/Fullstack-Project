@@ -1,0 +1,17 @@
+<div class="menu-sidebar">
+  <app-menu-sidebar-button (buttonClick)="toggleSidebar()" />
+
+  @if (isOpen()) {
+    <div class="sidebar-overlay" (click)="closeSidebar()">
+      <app-menu-sidebar-panel
+        [categoryTree]="categoryTree()"
+        [loading]="loading()"
+        [isLoggedIn]="isLoggedIn()"
+        [isAdmin]="isAdmin()"
+        (itemClick)="closeSidebar()"
+        (logoutClick)="logout()"
+        (click)="$event.stopPropagation()"
+      />
+    </div>
+  }
+</div>
