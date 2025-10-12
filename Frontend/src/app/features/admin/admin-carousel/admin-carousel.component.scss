@@ -1,0 +1,208 @@
+.admin-carousel {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--space-8);
+
+  .header {
+    margin-bottom: var(--space-8);
+
+    h2 {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-semibold);
+      margin-bottom: var(--space-2);
+      color: var(--color-text-primary);
+    }
+
+    .subtitle {
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+    }
+  }
+
+  .add-slide-section,
+  .slides-section {
+    background: var(--color-surface-primary);
+    border-radius: var(--radius-md);
+    padding: var(--space-6);
+    margin-bottom: var(--space-8);
+    box-shadow: var(--shadow-sm);
+    border: var(--border-subtle);
+  }
+
+  h3 {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    margin-bottom: var(--space-6);
+    color: var(--color-text-primary);
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    max-width: 600px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-text-secondary);
+  }
+
+  .slides-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .slide-card {
+    border: var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--space-6);
+    transition: border-color 0.2s;
+
+    &.inactive {
+      opacity: 0.6;
+      background: var(--color-surface-muted);
+    }
+
+    &:hover {
+      border-color: var(--color-accent-interactive);
+    }
+  }
+
+  .slide-preview {
+    margin-bottom: var(--space-4);
+
+    img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+    }
+  }
+
+  .slide-info {
+    margin-bottom: var(--space-4);
+
+    .slide-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-2);
+    }
+
+    .slide-order {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 2rem;
+      height: 2rem;
+      background: var(--color-accent-primary);
+      color: var(--color-surface-primary);
+      border-radius: 50%;
+      font-weight: var(--font-weight-semibold);
+      font-size: var(--font-size-sm);
+    }
+
+    .slide-status {
+      padding: var(--space-1) var(--space-3);
+      border-radius: var(--radius-pill);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      background: var(--color-surface-muted);
+      color: var(--color-text-secondary);
+
+      &.active {
+        background: var(--color-surface-success);
+        color: var(--color-text-success);
+      }
+    }
+
+    .slide-alt {
+      font-weight: var(--font-weight-medium);
+      margin-bottom: var(--space-1);
+      color: var(--color-text-primary);
+    }
+
+    .slide-url {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      word-break: break-all;
+    }
+  }
+
+  .slide-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+
+    .order-controls {
+      display: flex;
+      gap: var(--space-2);
+    }
+
+    .main-actions {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+  }
+
+  .icon-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: var(--border-subtle);
+    background: var(--color-surface-primary);
+    color: var(--color-text-primary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-size: var(--font-size-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover:not(:disabled) {
+      background: var(--color-accent-primary);
+      color: var(--color-surface-primary);
+      border-color: var(--color-accent-primary);
+    }
+
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+  }
+
+  .edit-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+
+    .edit-actions {
+      display: flex;
+      gap: var(--space-3);
+      margin-top: var(--space-2);
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-carousel {
+    padding: var(--space-4);
+
+    .slide-actions {
+      flex-direction: column;
+      align-items: stretch;
+
+      .order-controls,
+      .main-actions {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+}

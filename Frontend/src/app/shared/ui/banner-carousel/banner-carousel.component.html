@@ -1,6 +1,6 @@
 <div class="carousel-container">
   <div class="carousel-wrapper">
-    @for (slide of slides; track $index) {
+    @for (slide of slides(); track $index) {
       <div
         class="carousel-slide"
         [class.active]="$index === currentIndex()"

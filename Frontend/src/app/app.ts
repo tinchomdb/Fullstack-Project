@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, computed, inject, OnInit } from '@a
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './shared/ui/navbar/navbar.component';
 import { FooterComponent } from './shared/ui/footer/footer.component';
-import { LoadingOverlayComponent } from './core/ui/loading-overlay/loading-overlay.component';
+import { LoadingOverlayComponent } from './shared/ui/loading-overlay/loading-overlay.component';
 import { BreadcrumbComponent } from './shared/ui/breadcrumb/breadcrumb.component';
 import { AuthService } from './core/auth/auth.service';
 import { CategoriesService } from './core/services/categories.service';

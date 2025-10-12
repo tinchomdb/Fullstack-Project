@@ -10,9 +10,9 @@ import { ButtonComponent } from '../../shared/ui/button/button.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminComponent {
-  readonly activeTab = signal<'products' | 'categories'>('products');
+  readonly activeTab = signal<'products' | 'categories' | 'carousel'>('products');
 
-  setActiveTab(tab: 'products' | 'categories'): void {
+  setActiveTab(tab: 'products' | 'categories' | 'carousel'): void {
     this.activeTab.set(tab);
   }
 }

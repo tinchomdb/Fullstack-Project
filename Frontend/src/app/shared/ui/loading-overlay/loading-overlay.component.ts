@@ -1,5 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { LoadingOverlayService } from '../../services/loading-overlay.service';
+import { LoadingOverlayService } from '../../../core/services/loading-overlay.service';
 
 @Component({
   selector: 'app-loading-overlay',

@@ -1,0 +1,145 @@
+<div class="admin-carousel">
+  <div class="header">
+    <h2>Carousel Management</h2>
+    <p class="subtitle">Manage banner carousel slides for the homepage</p>
+  </div>
+
+  <!-- Add New Slide Form -->
+  <div class="add-slide-section">
+    <h3>Add New Slide</h3>
+    <form class="form" [formGroup]="newSlideForm" (ngSubmit)="addSlide()">
+      <app-form-field
+        [control]="newSlideForm.controls.imageUrl"
+        label="Image URL"
+        id="new-image-url"
+        type="url"
+        [fullWidth]="true"
+      />
+
+      <app-form-field
+        [control]="newSlideForm.controls.alt"
+        label="Alt Text (Description)"
+        id="new-alt"
+        type="text"
+        [fullWidth]="true"
+      />
+
+      <app-form-checkbox
+        [control]="newSlideForm.controls.isActive"
+        label="Active"
+        id="new-active"
+      />
+
+      <app-button type="submit" [disabled]="newSlideForm.invalid || isFormSubmitting()">
+        Add Slide
+      </app-button>
+    </form>
+  </div>
+
+  <!-- Existing Slides List -->
+  <div class="slides-section">
+    <h3>Current Slides ({{ slides().length }})</h3>
+
+    @if (slides().length === 0) {
+      <div class="empty-state">
+        <p>No slides yet. Add your first slide above.</p>
+      </div>
+    }
+
+    <div class="slides-list">
+      @for (slide of slides(); track slide.id; let i = $index) {
+        <div class="slide-card" [class.inactive]="!slide.isActive">
+          @if (isEditing() && editingSlideId() === slide.id) {
+            <!-- Edit Mode -->
+            <form class="edit-form" [formGroup]="editSlideForm" (ngSubmit)="saveEdit()">
+              <app-form-field
+                [control]="editSlideForm.controls.imageUrl"
+                label="Image URL"
+                [id]="'edit-url-' + slide.id"
+                type="url"
+                [fullWidth]="true"
+              />
+
+              <app-form-field
+                [control]="editSlideForm.controls.alt"
+                label="Alt Text"
+                [id]="'edit-alt-' + slide.id"
+                type="text"
+                [fullWidth]="true"
+              />
+
+              <app-form-checkbox
+                [control]="editSlideForm.controls.isActive"
+                label="Active"
+                [id]="'edit-active-' + slide.id"
+              />
+
+              <div class="edit-actions">
+                <app-button
+                  type="submit"
+                  variant="primary"
+                  [disabled]="isFormSubmitting() || editSlideForm.invalid"
+                >
+                  Save
+                </app-button>
+                <app-button
+                  type="button"
+                  (click)="closeEditForm()"
+                  variant="secondary"
+                  [disabled]="isFormSubmitting()"
+                >
+                  Cancel
+                </app-button>
+              </div>
+            </form>
+          } @else {
+            <!-- View Mode -->
+            <div class="slide-preview">
+              <img [src]="slide.imageUrl" [alt]="slide.alt" />
+            </div>
+
+            <div class="slide-info">
+              <div class="slide-header">
+                <span class="slide-order">{{ slide.order }}</span>
+                <span class="slide-status" [class.active]="slide.isActive">
+                  {{ slide.isActive ? 'Active' : 'Inactive' }}
+                </span>
+              </div>
+              <p class="slide-alt">{{ slide.alt }}</p>
+              <p class="slide-url">{{ slide.imageUrl }}</p>
+            </div>
+
+            <div class="slide-actions">
+              <div class="order-controls">
+                <button
+                  class="icon-button"
+                  (click)="moveUp(i)"
+                  [disabled]="i === 0"
+                  title="Move up"
+                >
+                  ↑
+                </button>
+                <button
+                  class="icon-button"
+                  (click)="moveDown(i)"
+                  [disabled]="i === slides().length - 1"
+                  title="Move down"
+                >
+                  ↓
+                </button>
+              </div>
+
+              <div class="main-actions">
+                <app-button (click)="toggleActive(slide.id)" variant="secondary">
+                  {{ slide.isActive ? 'Deactivate' : 'Activate' }}
+                </app-button>
+                <app-button (click)="openEditForm(slide)" variant="primary"> Edit </app-button>
+                <app-button (click)="deleteSlide(slide.id)" variant="danger"> Delete </app-button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
