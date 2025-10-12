@@ -4,103 +4,77 @@
     <app-button (click)="openCreateForm()" shape="rounded">Add New Category</app-button>
   </div>
 
-  @if (error()) {
-    <div class="alert alert-error">{{ error() }}</div>
-  }
-
-  @if (loading() && !showForm()) {
-    <div class="loading">Loading categories...</div>
-  }
-
   @if (showForm()) {
-    <div class="category-form-overlay" (click)="closeForm()">
-      <div class="category-form" (click)="$event.stopPropagation()">
-        <div class="form-header">
-          <h3>{{ editingCategory() ? 'Edit Category' : 'Create New Category' }}</h3>
-          <button type="button" class="btn-close" (click)="closeForm()">×</button>
+    <app-modal-form
+      [title]="editingCategory() ? 'Edit Category' : 'Create New Category'"
+      [maxWidth]="'500px'"
+      (close)="closeForm()"
+    >
+      <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
+        <app-form-field
+          [control]="$any(categoryForm.get('name'))"
+          [id]="'name'"
+          [label]="'Category Name'"
+          [fullWidth]="true"
+          [errorMessage]="'Category name is required (min 2 characters)'"
+        />
+
+        <app-form-field
+          [control]="$any(categoryForm.get('slug'))"
+          [id]="'slug'"
+          [label]="'Slug'"
+          [fullWidth]="true"
+          [errorMessage]="'Slug is required (lowercase letters, numbers, and hyphens only)'"
+        />
+
+        <app-form-field
+          [control]="$any(categoryForm.get('description'))"
+          [id]="'description'"
+          [label]="'Description'"
+          [type]="'textarea'"
+          [fullWidth]="true"
+          [errorMessage]="''"
+        />
+
+        <app-form-field
+          [control]="$any(categoryForm.get('image'))"
+          [id]="'image'"
+          [label]="'Image URL'"
+          [fullWidth]="true"
+          [errorMessage]="''"
+        />
+
+        <app-form-checkbox
+          [control]="$any(categoryForm.get('featured'))"
+          [id]="'featured'"
+          [label]="'Mark as Featured'"
+          [subtitle]="'Featured categories will be highlighted on the homepage'"
+        />
+
+        <app-form-field
+          [control]="$any(categoryForm.get('parentCategoryId'))"
+          [id]="'parentCategoryId'"
+          [label]="'Parent Category'"
+          [type]="'select'"
+          [fullWidth]="true"
+          [errorMessage]="''"
+        >
+          <option value="">None (Top-level category)</option>
+          @for (category of getAvailableParentCategories(); track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </app-form-field>
+
+        <div class="form-actions">
+          <app-button type="button" (click)="closeForm()" variant="secondary" shape="rounded"
+            >Cancel</app-button
+          >
+          <app-button type="submit" [disabled]="categoryForm.invalid || loading()" shape="rounded">
+            {{ editingCategory() ? 'Update' : 'Create' }} Category
+          </app-button>
         </div>
-
-        <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
-          <div class="form-group">
-            <label for="name">Category Name *</label>
-            <input
-              id="name"
-              type="text"
-              formControlName="name"
-              placeholder="Enter category name"
-              (blur)="generateSlug()"
-            />
-            @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
-              <span class="error-text">Category name is required (min 2 characters)</span>
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="slug">Slug *</label>
-            <input id="slug" type="text" formControlName="slug" placeholder="category-slug" />
-            <small>URL-friendly identifier (lowercase, hyphens only)</small>
-            @if (categoryForm.get('slug')?.invalid && categoryForm.get('slug')?.touched) {
-              <span class="error-text"
-                >Slug is required (lowercase letters, numbers, and hyphens only)</span
-              >
-            }
-          </div>
-
-          <div class="form-group">
-            <label for="description">Description</label>
-            <textarea
-              id="description"
-              formControlName="description"
-              placeholder="Enter category description"
-              rows="3"
-            ></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="image">Image URL</label>
-            <input
-              id="image"
-              type="url"
-              formControlName="image"
-              placeholder="https://example.com/image.jpg"
-            />
-            <small>Enter a URL for the category image</small>
-          </div>
-
-          <div class="form-group checkbox-group">
-            <label>
-              <input id="featured" type="checkbox" formControlName="featured" />
-              <span>Mark as Featured</span>
-            </label>
-            <small>Featured categories will be highlighted on the homepage</small>
-          </div>
-
-          <div class="form-group">
-            <label for="parentCategoryId">Parent Category</label>
-            <select id="parentCategoryId" formControlName="parentCategoryId">
-              <option value="">None (Top-level category)</option>
-              @for (category of getAvailableParentCategories(); track category.id) {
-                <option [value]="category.id">{{ category.name }}</option>
-              }
-            </select>
-            <small>Select a parent category to create a subcategory</small>
-          </div>
-
-          <div class="form-actions">
-            <app-button type="button" (click)="closeForm()" variant="secondary" shape="rounded"
-              >Cancel</app-button
-            >
-            <app-button
-              type="submit"
-              [disabled]="categoryForm.invalid || loading()"
-              shape="rounded"
-            >
-              {{ editingCategory() ? 'Update' : 'Create' }} Category
-            </app-button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </app-modal-form>
   }
 
   <div class="categories-tree">
@@ -108,76 +82,12 @@
       <p class="no-categories">No categories found. Create your first category!</p>
     }
 
-    @for (node of flattenedTree(); track node.category.id) {
-      <div
-        class="category-card"
-        [attr.data-level]="node.level"
-        [style.margin-left.rem]="node.level * 2"
-      >
-        <div class="category-tree-indicator">
-          @if (node.level > 0) {
-            <span class="tree-icon">└─</span>
-          }
-        </div>
-
-        @if (node.category.image) {
-          <div class="category-image">
-            <img [src]="node.category.image" [alt]="node.category.name" />
-          </div>
-        }
-
-        <div class="category-info">
-          <div class="category-header">
-            <h3>{{ node.category.name }}</h3>
-            @if (node.category.featured) {
-              <span class="category-badge badge-featured">⭐ Featured</span>
-            }
-            @if (node.level > 0) {
-              <span class="category-badge badge-subcategory"> Level {{ node.level }} </span>
-            } @else {
-              <span class="category-badge badge-root">Root</span>
-            }
-          </div>
-
-          <p class="category-slug">{{ node.category.slug }}</p>
-
-          @if (node.category.description) {
-            <p class="category-description">{{ node.category.description }}</p>
-          }
-
-          <div class="category-metadata">
-            @if (node.category.parentCategoryId) {
-              <span class="category-meta">
-                <strong>Parent:</strong> {{ getParentCategoryName(node.category.parentCategoryId) }}
-              </span>
-            }
-            @if (node.children.length > 0) {
-              <span class="category-meta">
-                <strong>Subcategories:</strong> {{ node.children.length }}
-              </span>
-            }
-          </div>
-        </div>
-
-        <div class="category-actions">
-          <app-button
-            (click)="openEditForm(node.category)"
-            variant="secondary"
-            size="sm"
-            shape="rounded"
-          >
-            Edit
-          </app-button>
-          <app-button
-            (click)="deleteCategory(node.category)"
-            variant="danger"
-            size="sm"
-            shape="rounded"
-          >
-            Delete
-          </app-button>
-        </div>
-      </div>
+    @for (node of categoryTree(); track node.category.id) {
+      <app-admin-category-tree-item
+        [node]="node"
+        (edit)="openEditForm($event)"
+        (delete)="deleteCategory($event)"
+      />
     }
   </div>
 </div>

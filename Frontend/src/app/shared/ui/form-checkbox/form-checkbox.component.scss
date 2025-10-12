@@ -1,0 +1,31 @@
+.form-checkbox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin-bottom: var(--space-6);
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    cursor: pointer;
+
+    input[type='checkbox'] {
+      width: auto;
+      cursor: pointer;
+      accent-color: var(--color-accent-primary);
+    }
+
+    .checkbox-label {
+      font-weight: var(--font-weight-medium);
+      color: var(--color-text-primary);
+    }
+  }
+
+  .checkbox-subtitle {
+    display: block;
+    margin-left: calc(var(--space-2) + 1em);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+}

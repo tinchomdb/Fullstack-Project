@@ -1,0 +1,9 @@
+<div class="form-checkbox">
+  <label [attr.for]="id()">
+    <input [id]="id()" type="checkbox" [formControl]="control()" />
+    <span class="checkbox-label">{{ label() }}</span>
+  </label>
+  @if (subtitle()) {
+    <small class="checkbox-subtitle">{{ subtitle() }}</small>
+  }
+</div>

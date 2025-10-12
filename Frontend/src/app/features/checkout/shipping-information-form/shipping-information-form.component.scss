@@ -3,7 +3,7 @@
 .form-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: var(--space-4);
+  column-gap: var(--space-4);
 
   @include media-xs {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));

@@ -8,8 +8,7 @@ export interface Product {
   readonly currency: string;
   readonly stock?: number;
   readonly sellerId: string;
-  readonly categoryId: string;
-  readonly categoryIds?: readonly string[];
+  readonly categoryIds: readonly string[];
   readonly seller: Seller;
   readonly imageUrls: readonly string[];
   readonly featured?: boolean;

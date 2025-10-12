@@ -1,11 +1,4 @@
-import {
-  Component,
-  OnInit,
-  inject,
-  signal,
-  computed,
-  ChangeDetectionStrategy,
-} from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
@@ -16,10 +9,6 @@ import { Product } from '../../core/models/product.model';
 import { ProductImageGalleryComponent } from './product-image-gallery/product-image-gallery.component';
 import { ProductBuyBoxComponent } from './product-buy-box/product-buy-box.component';
 import { ProductInfoComponent } from './product-info/product-info.component';
-import {
-  BreadcrumbComponent,
-  type BreadcrumbItem,
-} from '../../shared/ui/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-product-detail',
@@ -28,7 +17,6 @@ import {
     ProductImageGalleryComponent,
     ProductBuyBoxComponent,
     ProductInfoComponent,
-    BreadcrumbComponent,
   ],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
@@ -48,15 +36,6 @@ export class ProductDetailComponent implements OnInit {
 
   private productId = '';
   private sellerId = '';
-
-  protected readonly breadcrumbItems = computed<BreadcrumbItem[]>(() => {
-    const prod = this.product();
-    if (!prod) return [];
-    return [
-      { label: 'Products', route: '/products' },
-      { label: prod.name, isActive: true },
-    ];
-  });
 
   protected onQuantityChange(newQuantity: number): void {
     this.quantity.set(newQuantity);
