@@ -1,48 +1,40 @@
-<a class="logo" routerLink="/products" aria-label="Go to products">{{ title() }}</a>
+<!-- First Row: Logo, Search, Actions -->
+<div class="navbar-top">
+  <a class="logo" routerLink="/products" aria-label="Go to products">{{ title() }}</a>
 
-<app-category-selector />
+  <app-search-bar class="search-bar-container" />
 
-<!-- Desktop Navigation -->
-<nav class="desktop-nav" aria-label="Main">
-  <ul>
-    @for (item of navigation(); track item.path) {
-      <li>
-        <a
-          routerLinkActive="is-active"
-          [routerLinkActiveOptions]="{ exact: true }"
-          #rla="routerLinkActive"
-          [attr.aria-current]="rla.isActive ? 'page' : null"
-          [routerLink]="item.path"
-          [attr.aria-label]="item.ariaLabel"
-        >
-          {{ item.label }}
-          @if (item.path === '/cart' && cartItemCount() > 0) {
-            <span class="cart-badge" [attr.aria-label]="cartItemCount() + ' items in cart'">
-              {{ cartItemCount() }}
-            </span>
-          }
-        </a>
-      </li>
-    }
-  </ul>
-</nav>
+  <div class="navbar-actions">
+    <app-auth-button></app-auth-button>
+    <app-theme-toggle></app-theme-toggle>
+    <app-cart-button [itemCount]="cartItemCount()"></app-cart-button>
+    <app-hamburger-menu-button
+      [isExpanded]="isMobileMenuOpen()"
+      (toggle)="toggleMobileMenu()"
+    ></app-hamburger-menu-button>
+  </div>
+</div>
 
-<div class="navbar-actions">
-  <app-auth-button></app-auth-button>
-  <app-theme-toggle></app-theme-toggle>
+<!-- Second Row: Category Selector and Category Links (Desktop only) -->
+<div class="navbar-bottom">
+  <app-category-selector />
 
-  <!-- Mobile Hamburger Button -->
-  <button
-    class="mobile-menu-toggle"
-    type="button"
-    (click)="toggleMobileMenu()"
-    [attr.aria-expanded]="isMobileMenuOpen()"
-    [attr.aria-label]="isMobileMenuOpen() ? 'Close menu' : 'Open menu'"
-  >
-    <span class="hamburger-line"></span>
-    <span class="hamburger-line"></span>
-    <span class="hamburger-line"></span>
-  </button>
+  <nav class="categories-nav" aria-label="Categories">
+    <ul>
+      @for (category of categories(); track category.id) {
+        <li>
+          <a
+            [routerLink]="['/products']"
+            [queryParams]="{ categoryId: category.id }"
+            routerLinkActive="is-active"
+            [attr.aria-label]="'Browse ' + category.name"
+          >
+            {{ category.name }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
 </div>
 
 <!-- Mobile Navigation Overlay -->
@@ -51,24 +43,12 @@
     <nav class="mobile-nav" aria-label="Mobile menu" (click)="$event.stopPropagation()">
       <!-- Close button -->
       <div class="mobile-nav-header">
-        <button
-          class="mobile-nav-close"
-          type="button"
-          (click)="closeMobileMenu()"
-          aria-label="Close menu"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
+        <app-close-button
+          variant="default"
+          size="lg"
+          ariaLabel="Close menu"
+          (clicked)="closeMobileMenu()"
+        />
       </div>
 
       <ul>
@@ -84,11 +64,6 @@
               (click)="closeMobileMenu()"
             >
               {{ item.label }}
-              @if (item.path === '/cart' && cartItemCount() > 0) {
-                <span class="cart-badge" [attr.aria-label]="cartItemCount() + ' items in cart'">
-                  {{ cartItemCount() }}
-                </span>
-              }
             </a>
           </li>
         }

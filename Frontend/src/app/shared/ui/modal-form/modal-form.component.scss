@@ -32,24 +32,6 @@
       font-weight: var(--font-weight-semibold);
       color: var(--color-text-primary);
     }
-
-    .btn-close {
-      background: none;
-      border: none;
-      font-size: var(--font-size-xl);
-      color: var(--color-text-secondary);
-      cursor: pointer;
-      padding: 0;
-      width: var(--space-8);
-      height: var(--space-8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      &:hover {
-        color: var(--color-text-primary);
-      }
-    }
   }
 
   .form-content {

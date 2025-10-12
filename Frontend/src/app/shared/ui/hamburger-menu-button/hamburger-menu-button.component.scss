@@ -1,0 +1,51 @@
+@use '../../../../styles/mixins' as *;
+
+.hamburger-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-primary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 0.25rem;
+
+  @include media-md {
+    display: none;
+  }
+
+  &:hover {
+    background: var(--color-surface-muted);
+  }
+
+  &:focus-visible {
+    outline: var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  .hamburger-line {
+    width: 1.25rem;
+    height: 2px;
+    background: var(--color-text-secondary);
+    border-radius: 1px;
+    transition: all 0.2s ease;
+  }
+
+  &[aria-expanded='true'] {
+    .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(0.3rem, 0.3rem);
+    }
+
+    .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(0.3rem, -0.3rem);
+    }
+  }
+}

@@ -1,0 +1,11 @@
+<button
+  class="hamburger-button"
+  type="button"
+  (click)="onToggle()"
+  [attr.aria-expanded]="isExpanded()"
+  [attr.aria-label]="isExpanded() ? 'Close menu' : 'Open menu'"
+>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+  <span class="hamburger-line"></span>
+</button>

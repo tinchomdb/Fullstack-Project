@@ -1,0 +1,39 @@
+<button
+  type="button"
+  class="navigation-arrow"
+  [class.navigation-arrow--left]="direction() === 'left'"
+  [class.navigation-arrow--right]="direction() === 'right'"
+  [class.navigation-arrow--up]="direction() === 'up'"
+  [class.navigation-arrow--down]="direction() === 'down'"
+  [disabled]="disabled()"
+  [attr.aria-label]="ariaLabel()"
+  (click)="handleClick()"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    @switch (direction()) {
+      @case ('left') {
+        <polyline points="15 18 9 12 15 6"></polyline>
+      }
+      @case ('right') {
+        <polyline points="9 18 15 12 9 6"></polyline>
+      }
+      @case ('up') {
+        <polyline points="18 15 12 9 6 15"></polyline>
+      }
+      @case ('down') {
+        <polyline points="6 9 12 15 18 9"></polyline>
+      }
+    }
+  </svg>
+</button>
