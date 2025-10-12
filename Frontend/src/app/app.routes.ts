@@ -75,6 +75,16 @@ export const routes: Routes = [
           title: 'Manage Categories',
         },
       },
+      {
+        path: 'carousel',
+        loadComponent: () =>
+          import('./features/admin/admin-carousel/admin-carousel.component').then(
+            (m) => m.AdminCarouselComponent,
+          ),
+        data: {
+          title: 'Manage Carousel',
+        },
+      },
     ],
   },
   {

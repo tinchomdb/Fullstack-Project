@@ -1,7 +1,7 @@
 <div class="admin-container">
   <header class="admin-header">
     <h1>Admin Panel</h1>
-    <p>Manage products and categories</p>
+    <p>Manage products, categories, and carousel</p>
   </header>
 
   <nav class="admin-nav">
@@ -22,6 +22,15 @@
       shape="rounded"
     >
       Categories
+    </app-button>
+    <app-button
+      class="tab-button"
+      [class.active]="activeTab() === 'carousel'"
+      (click)="setActiveTab('carousel')"
+      routerLink="carousel"
+      shape="rounded"
+    >
+      Carousel
     </app-button>
   </nav>
 

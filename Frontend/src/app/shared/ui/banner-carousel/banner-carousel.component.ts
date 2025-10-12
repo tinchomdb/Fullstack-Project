@@ -5,14 +5,11 @@ import {
   OnDestroy,
   signal,
   computed,
+  inject,
 } from '@angular/core';
 
 import { NavigationArrowComponent } from '../navigation-arrow/navigation-arrow.component';
-
-interface CarouselSlide {
-  imageUrl: string;
-  alt: string;
-}
+import { CarouselService } from '../../../core/services/carousel.service';
 
 @Component({
   selector: 'app-banner-carousel',
@@ -22,37 +19,17 @@ interface CarouselSlide {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BannerCarouselComponent implements OnInit, OnDestroy {
+  private readonly carouselService = inject(CarouselService);
   private autoRotateInterval?: number;
   private readonly autoRotateDelay = 5000;
 
-  protected readonly slides: CarouselSlide[] = [
-    {
-      imageUrl:
-        'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&h=600&fit=crop',
-      alt: 'Shop the latest fashion trends',
-    },
-    {
-      imageUrl:
-        'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1600&h=600&fit=crop',
-      alt: 'Discover premium watches and accessories',
-    },
-    {
-      imageUrl:
-        'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1600&h=600&fit=crop',
-      alt: 'Tech essentials for modern living',
-    },
-    {
-      imageUrl:
-        'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&h=600&fit=crop',
-      alt: 'Home decor and lifestyle products',
-    },
-  ];
+  protected readonly slides = this.carouselService.activeSlides;
 
   protected readonly currentIndex = signal(0);
   protected readonly previousIndex = signal<number | null>(null);
   protected readonly isTransitioning = signal(false);
 
-  protected readonly currentSlide = computed(() => this.slides[this.currentIndex()]);
+  protected readonly currentSlide = computed(() => this.slides()[this.currentIndex()]);
 
   ngOnInit(): void {
     this.startAutoRotate();
@@ -67,7 +44,7 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
 
     this.isTransitioning.set(true);
     this.previousIndex.set(this.currentIndex());
-    this.currentIndex.update((index) => (index + 1) % this.slides.length);
+    this.currentIndex.update((index) => (index + 1) % this.slides().length);
 
     // Reset transition flag and previous index after animation completes
     setTimeout(() => {
@@ -84,7 +61,7 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
 
     this.isTransitioning.set(true);
     this.previousIndex.set(this.currentIndex());
-    this.currentIndex.update((index) => (index - 1 + this.slides.length) % this.slides.length);
+    this.currentIndex.update((index) => (index - 1 + this.slides().length) % this.slides().length);
 
     // Reset transition flag and previous index after animation completes
     setTimeout(() => {
