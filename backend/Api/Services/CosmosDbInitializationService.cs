@@ -63,6 +63,13 @@ public class CosmosDbInitializationService
             "Categories container - Product categories (cache-friendly)",
             cancellationToken);
 
+        await CreateContainerAsync(
+            database.Database,
+            _settings.ContainersNames.CarouselSlides,
+            "/partitionKey",
+            "Carousel Slides container - Homepage carousel management",
+            cancellationToken);
+
         Console.WriteLine("All containers initialized successfully!");
     }
 

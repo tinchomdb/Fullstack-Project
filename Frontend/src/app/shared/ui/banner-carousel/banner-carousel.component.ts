@@ -22,16 +22,33 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
   private readonly carouselService = inject(CarouselService);
   private autoRotateInterval?: number;
   private readonly autoRotateDelay = 5000;
+  private readonly transitionDuration = 500;
 
-  protected readonly slides = this.carouselService.activeSlides;
+  protected readonly slides = computed(() => this.carouselService.activeSlides() ?? []);
+  protected readonly loading = computed(() => this.carouselService.activeSlidesLoading());
+  protected readonly error = computed(() => this.carouselService.activeSlidesError());
 
   protected readonly currentIndex = signal(0);
-  protected readonly previousIndex = signal<number | null>(null);
   protected readonly isTransitioning = signal(false);
 
-  protected readonly currentSlide = computed(() => this.slides()[this.currentIndex()]);
+  // Computed: Always keep 3 slides ready (left, current, right)
+  protected readonly leftSlideIndex = computed(() => {
+    const current = this.currentIndex();
+    const total = this.slides().length;
+    return total > 0 ? (current - 1 + total) % total : -1;
+  });
+
+  protected readonly rightSlideIndex = computed(() => {
+    const current = this.currentIndex();
+    const total = this.slides().length;
+    return total > 0 ? (current + 1) % total : -1;
+  });
+
+  protected readonly hasSlides = computed(() => this.slides().length > 0);
+  protected readonly canNavigate = computed(() => this.hasSlides() && !this.isTransitioning());
 
   ngOnInit(): void {
+    this.carouselService.loadActiveSlides();
     this.startAutoRotate();
   }
 
@@ -40,42 +57,47 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
   }
 
   protected goToNext(): void {
-    if (this.isTransitioning()) return;
+    if (!this.canNavigate()) return;
 
     this.isTransitioning.set(true);
-    this.previousIndex.set(this.currentIndex());
-    this.currentIndex.update((index) => (index + 1) % this.slides().length);
 
-    // Reset transition flag and previous index after animation completes
+    // Simply increment the index - CSS handles the animation
+    const total = this.slides().length;
+    this.currentIndex.update((current) => (current + 1) % total);
+
+    // Reset transition flag after animation completes
     setTimeout(() => {
       this.isTransitioning.set(false);
-      this.previousIndex.set(null);
-    }, 500);
+    }, this.transitionDuration);
 
-    // Reset auto-rotate timer
     this.resetAutoRotate();
   }
 
   protected goToPrevious(): void {
-    if (this.isTransitioning()) return;
+    if (!this.canNavigate()) return;
 
     this.isTransitioning.set(true);
-    this.previousIndex.set(this.currentIndex());
-    this.currentIndex.update((index) => (index - 1 + this.slides().length) % this.slides().length);
 
-    // Reset transition flag and previous index after animation completes
+    // Simply decrement the index - CSS handles the animation
+    const total = this.slides().length;
+    this.currentIndex.update((current) => (current - 1 + total) % total);
+
+    // Reset transition flag after animation completes
     setTimeout(() => {
       this.isTransitioning.set(false);
-      this.previousIndex.set(null);
-    }, 500);
+    }, this.transitionDuration);
 
-    // Reset auto-rotate timer
     this.resetAutoRotate();
   }
 
   private startAutoRotate(): void {
+    // Clear any existing interval first
+    this.stopAutoRotate();
+
     this.autoRotateInterval = window.setInterval(() => {
-      this.goToNext();
+      if (this.canNavigate()) {
+        this.goToNext();
+      }
     }, this.autoRotateDelay);
   }
 
@@ -87,7 +109,6 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
   }
 
   private resetAutoRotate(): void {
-    this.stopAutoRotate();
     this.startAutoRotate();
   }
 }

@@ -34,6 +34,7 @@ public static class CosmosDbExtensions
         services.AddSingleton<ICartsRepository, CosmosDbCartsRepository>();
         services.AddSingleton<IOrdersRepository, CosmosDbOrdersRepository>();
         services.AddSingleton<IUsersRepository, CosmosDbUsersRepository>();
+        services.AddSingleton<ICarouselSlidesRepository, CosmosDbCarouselSlidesRepository>();
 
         // Register database services
         services.AddSingleton<CosmosDbInitializationService>();
