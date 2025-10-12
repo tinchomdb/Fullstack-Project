@@ -1,15 +1,17 @@
 <div class="carousel-container">
   <div class="carousel-wrapper">
-    @for (slide of slides(); track slide.id) {
-      <div
-        class="carousel-slide"
-        [class.slide-left]="$index === leftSlideIndex()"
-        [class.slide-current]="$index === currentIndex()"
-        [class.slide-right]="$index === rightSlideIndex()"
-      >
-        <img [src]="slide.imageUrl" [alt]="slide.alt" class="carousel-image" />
-      </div>
-    }
+    <div
+      class="carousel-track"
+      [class.no-transition]="trackShouldDisableTransition()"
+      [style.transform]="trackTransform()"
+      (transitionend)="onTransitionEnd($event)"
+    >
+      @for (slide of renderedSlides(); track trackSlideId(slide, $index)) {
+        <div class="carousel-slide">
+          <img [src]="slide.imageUrl" [alt]="slide.alt" class="carousel-image" />
+        </div>
+      }
+    </div>
 
     <app-navigation-arrow
       class="carousel-arrow carousel-arrow--left"
