@@ -3,10 +3,21 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category } from '../../../core/models/category.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { AdminCategoryTreeItemComponent } from './admin-category-tree-item/admin-category-tree-item.component';
+import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-checkbox.component';
+import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.component';
+import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.component';
 
 @Component({
   selector: 'app-admin-categories',
-  imports: [ReactiveFormsModule, ButtonComponent],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    AdminCategoryTreeItemComponent,
+    FormCheckboxComponent,
+    FormFieldComponent,
+    ModalFormComponent,
+  ],
   templateUrl: './admin-categories.component.html',
   styleUrl: './admin-categories.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -18,7 +29,7 @@ export class AdminCategoriesComponent implements OnInit {
   readonly categories = this.categoriesService.categories;
   readonly loading = this.categoriesService.loading;
   readonly error = this.categoriesService.error;
-  readonly flattenedTree = this.categoriesService.flattenedTree;
+  readonly categoryTree = this.categoriesService.categoryTree;
 
   readonly showForm = signal(false);
   readonly editingCategory = signal<Category | null>(null);
@@ -37,6 +48,13 @@ export class AdminCategoriesComponent implements OnInit {
       image: [''],
       featured: [false],
       parentCategoryId: [''],
+    });
+
+    // Auto-generate slug from name when creating new category
+    this.categoryForm.get('name')?.valueChanges.subscribe(() => {
+      if (!this.editingCategory()) {
+        this.generateSlug();
+      }
     });
   }
 

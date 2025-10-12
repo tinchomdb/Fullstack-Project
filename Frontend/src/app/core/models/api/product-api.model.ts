@@ -8,7 +8,6 @@ export type ProductApiModel = {
   readonly currency?: string;
   readonly stock?: number;
   readonly sellerId?: string;
-  readonly categoryId?: string;
   readonly categoryIds?: readonly string[];
   readonly seller?: SellerApiModel | null;
   readonly imageUrls?: readonly string[] | null;

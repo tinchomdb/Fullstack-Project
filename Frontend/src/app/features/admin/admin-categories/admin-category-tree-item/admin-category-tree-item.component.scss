@@ -1,0 +1,11 @@
+.category-slug {
+  font-family: monospace;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-primary);
+  border-radius: var(--radius-sm);
+  border: var(--border-subtle);
+  display: inline-block;
+  margin-bottom: var(--space-2);
+}

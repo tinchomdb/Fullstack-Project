@@ -29,12 +29,18 @@ export class CategoriesService {
   readonly loading = this.categoriesResource.loading;
   readonly error = this.categoriesResource.error;
 
-  readonly categoryTree = computed(() => this.buildCategoryTree(this.categories() ?? []));
-  readonly flattenedTree = computed(() => this.flattenTree(this.categoryTree()));
-  readonly featuredCategories = computed(() => (this.categories() ?? []).filter((c) => c.featured));
+  private readonly categoriesArray = computed(() => this.categories() ?? []);
+  private readonly categoryMap = computed(() => {
+    const map = new Map<string, Category>();
+    this.categoriesArray().forEach((category) => map.set(category.id, category));
+    return map;
+  });
+
+  readonly categoryTree = computed(() => this.buildCategoryTree(this.categoriesArray()));
+  readonly featuredCategories = computed(() => this.categoriesArray().filter((c) => c.featured));
 
   loadCategories(): void {
-    if (this.categories() && this.categories()!.length > 0) {
+    if (this.categoriesArray().length > 0) {
       return;
     }
     this.categoriesResource.load(this.getAllCategories());
@@ -63,100 +69,106 @@ export class CategoriesService {
   }
 
   getAvailableParentCategories(excludeCategoryId?: string): Category[] {
-    const categories = this.categories() ?? [];
-
     if (!excludeCategoryId) {
-      return [...categories];
+      return [...this.categoriesArray()];
     }
 
-    const descendantIds = new Set<string>();
-    const findDescendants = (categoryId: string) => {
-      descendantIds.add(categoryId);
-      categories
-        .filter((c) => c.parentCategoryId === categoryId)
-        .forEach((c) => findDescendants(c.id));
-    };
-    findDescendants(excludeCategoryId);
-
-    return categories.filter((c) => !descendantIds.has(c.id));
+    const descendantIds = this.collectAllDescendants(excludeCategoryId);
+    return this.categoriesArray().filter((c) => !descendantIds.has(c.id));
   }
 
   getParentCategoryName(parentId?: string): string {
     if (!parentId) return 'None';
-    const parent = (this.categories() ?? []).find((c) => c.id === parentId);
-    return parent?.name ?? 'Unknown';
+    return this.categoryMap().get(parentId)?.name ?? 'Unknown';
   }
 
   getChildCategories(parentCategoryId: string): Category[] {
-    return (this.categories() ?? []).filter((c) => c.parentCategoryId === parentCategoryId);
+    return this.categoriesArray().filter((c) => c.parentCategoryId === parentCategoryId);
   }
 
   getAllDescendantCategoryIds(categoryId: string): string[] {
-    const descendantIds: string[] = [categoryId];
-    const categories = this.categories() ?? [];
+    return Array.from(this.collectAllDescendants(categoryId));
+  }
 
-    const collectDescendants = (parentId: string) => {
-      const children = categories.filter((c) => c.parentCategoryId === parentId);
-      children.forEach((child) => {
-        descendantIds.push(child.id);
-        collectDescendants(child.id);
-      });
-    };
+  getCategoryPath(categoryId: string): Category[] {
+    const path: Category[] = [];
+    const categoryMap = this.categoryMap();
+    let currentCategory = categoryMap.get(categoryId);
 
-    collectDescendants(categoryId);
-    return descendantIds;
+    while (currentCategory) {
+      path.unshift(currentCategory);
+      currentCategory = currentCategory.parentCategoryId
+        ? categoryMap.get(currentCategory.parentCategoryId)
+        : undefined;
+    }
+
+    return path;
+  }
+
+  getCategoryById(categoryId: string): Category | undefined {
+    return this.categoryMap().get(categoryId);
   }
 
   private getAllCategories(): Observable<readonly Category[]> {
     return this.http.get<readonly Category[]>(this.baseUrl);
   }
 
+  private collectAllDescendants(categoryId: string): Set<string> {
+    const descendantIds = new Set<string>([categoryId]);
+    const categories = this.categoriesArray();
+
+    const addDescendants = (parentId: string): void => {
+      categories
+        .filter((c) => c.parentCategoryId === parentId)
+        .forEach((child) => {
+          descendantIds.add(child.id);
+          addDescendants(child.id);
+        });
+    };
+
+    addDescendants(categoryId);
+    return descendantIds;
+  }
+
   private buildCategoryTree(categories: readonly Category[]): CategoryTreeNode[] {
-    const categoryMap = new Map<string, CategoryTreeNode>();
+    const nodeMap = new Map<string, CategoryTreeNode>();
     const rootNodes: CategoryTreeNode[] = [];
 
+    // Create all nodes first
     categories.forEach((category) => {
-      categoryMap.set(category.id, {
+      nodeMap.set(category.id, {
         category,
         children: [],
         level: 0,
       });
     });
 
+    // Build parent-child relationships and calculate levels
     categories.forEach((category) => {
-      const node = categoryMap.get(category.id)!;
+      const node = nodeMap.get(category.id)!;
 
       if (category.parentCategoryId) {
-        const parentNode = categoryMap.get(category.parentCategoryId);
+        const parentNode = nodeMap.get(category.parentCategoryId);
         if (parentNode) {
           node.level = parentNode.level + 1;
           parentNode.children.push(node);
-        } else {
-          rootNodes.push(node);
+          return;
         }
-      } else {
-        rootNodes.push(node);
       }
+
+      rootNodes.push(node);
     });
 
-    const sortNodes = (nodes: CategoryTreeNode[]) => {
-      nodes.sort((a, b) => a.category.name.localeCompare(b.category.name));
-      nodes.forEach((node) => sortNodes(node.children));
-    };
-    sortNodes(rootNodes);
-
+    this.sortTreeNodes(rootNodes);
     return rootNodes;
   }
 
-  private flattenTree(nodes: CategoryTreeNode[]): CategoryTreeNode[] {
-    const result: CategoryTreeNode[] = [];
-
-    const traverse = (node: CategoryTreeNode) => {
-      result.push(node);
-      node.children.forEach(traverse);
-    };
-
-    nodes.forEach(traverse);
-    return result;
+  private sortTreeNodes(nodes: CategoryTreeNode[]): void {
+    nodes.sort((a, b) => a.category.name.localeCompare(b.category.name));
+    nodes.forEach((node) => {
+      if (node.children.length > 0) {
+        this.sortTreeNodes(node.children);
+      }
+    });
   }
 }

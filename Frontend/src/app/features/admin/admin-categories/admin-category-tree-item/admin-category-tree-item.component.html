@@ -1,0 +1,25 @@
+<app-admin-item-card
+  [imageUrl]="node().category.image"
+  [imageAlt]="node().category.name"
+  [title]="node().category.name"
+  [description]="node().category.description"
+  [badges]="badges()"
+  [metadata]="metadata()"
+  [level]="node().level"
+  [showTreeIndicator]="true"
+  (edit)="edit.emit(node().category)"
+  (delete)="delete.emit(node().category)"
+>
+  <div slot="content" class="category-slug">{{ node().category.slug }}</div>
+</app-admin-item-card>
+
+@if (node().children.length > 0) {
+  @for (child of node().children; track child.category.id) {
+    <app-admin-category-tree-item
+      [node]="child"
+      [parentName]="node().category.name"
+      (edit)="edit.emit($event)"
+      (delete)="delete.emit($event)"
+    />
+  }
+}

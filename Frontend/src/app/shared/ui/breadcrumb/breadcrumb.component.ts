@@ -1,11 +1,7 @@
-import { Component, ChangeDetectionStrategy, input } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, computed } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-export interface BreadcrumbItem {
-  label: string;
-  route?: string;
-  isActive?: boolean;
-}
+import { BreadcrumbService } from '../../../core/services/breadcrumb.service';
 
 @Component({
   selector: 'app-breadcrumb',
@@ -15,6 +11,9 @@ export interface BreadcrumbItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BreadcrumbComponent {
-  readonly items = input.required<BreadcrumbItem[]>();
-  readonly separator = input('›');
+  private readonly breadcrumbService = inject(BreadcrumbService);
+
+  protected readonly items = this.breadcrumbService.breadcrumbs;
+  protected readonly separator = '›';
+  protected readonly showBreadcrumbs = computed(() => this.items().length > 1);
 }

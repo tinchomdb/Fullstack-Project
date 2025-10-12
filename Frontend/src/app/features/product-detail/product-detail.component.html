@@ -1,7 +1,5 @@
 <div class="product-detail-container">
   @if (product(); as prod) {
-    <app-breadcrumb [items]="breadcrumbItems()" />
-
     <div class="product-layout">
       <div class="gallery-section">
         <app-product-image-gallery [images]="prod.imageUrls" [altText]="prod.name" />

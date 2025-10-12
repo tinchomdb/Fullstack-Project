@@ -1,0 +1,12 @@
+<div class="modal-overlay" (click)="onOverlayClick()">
+  <div class="modal-form" [style.max-width]="maxWidth()" (click)="stopPropagation($event)">
+    <div class="form-header">
+      <h3>{{ title() }}</h3>
+      <button type="button" class="btn-close" (click)="onCloseClick()">×</button>
+    </div>
+
+    <div class="form-content">
+      <ng-content />
+    </div>
+  </div>
+</div>

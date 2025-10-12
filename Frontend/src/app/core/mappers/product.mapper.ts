@@ -5,16 +5,15 @@ import { SellerApiModel } from '../models/api/seller-api.model';
 import { ensureString, ensureNumber } from '../../shared/utils/normalization.utils';
 
 export function mapProductFromApi(dto: ProductApiModel): Product {
-  const sellerId = ensureString(dto.sellerId);
   return {
     id: ensureString(dto.id),
     name: ensureString(dto.name, 'Unnamed product'),
     description: ensureString(dto.description, 'No description available.'),
     price: ensureNumber(dto.price),
     currency: ensureString(dto.currency, 'USD'),
-    sellerId,
-    categoryId: ensureString(dto.categoryId),
-    seller: mapSellerFromApi(dto.seller, sellerId),
+    sellerId: ensureString(dto.sellerId),
+    categoryIds: dto.categoryIds && dto.categoryIds.length > 0 ? dto.categoryIds : [],
+    seller: mapSellerFromApi(dto.seller, ensureString(dto.sellerId)),
     imageUrls: normalizeImageUrls(dto.imageUrls),
     createdAt: ensureString(dto.createdAt),
     updatedAt: ensureString(dto.updatedAt),
@@ -39,7 +38,7 @@ export function mapProductToApi(product: Product): ProductApiModel {
     currency: product.currency,
     stock: product.stock ?? 0,
     sellerId: product.sellerId,
-    categoryIds: product.categoryIds ?? [product.categoryId],
+    categoryIds: product.categoryIds,
     imageUrls: product.imageUrls,
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,

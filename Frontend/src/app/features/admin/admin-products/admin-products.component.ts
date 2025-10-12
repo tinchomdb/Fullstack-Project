@@ -11,10 +11,21 @@ import { ProductsService } from '../../../core/services/products.service';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Product } from '../../../core/models/product.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.component';
+import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-checkbox.component';
+import { AdminItemCardComponent } from '../../../shared/ui/admin-item-card/admin-item-card.component';
+import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.component';
 
 @Component({
   selector: 'app-admin-products',
-  imports: [ReactiveFormsModule, ButtonComponent],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    FormFieldComponent,
+    FormCheckboxComponent,
+    AdminItemCardComponent,
+    ModalFormComponent,
+  ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,7 +81,7 @@ export class AdminProductsComponent {
       price: product.price,
       stock: product.stock ?? 0,
       currency: product.currency,
-      categoryId: product.categoryId,
+      categoryId: product.categoryIds.length > 0 ? product.categoryIds[0] : '',
       imageUrls: product.imageUrls.join(', '),
       featured: product.featured ?? false,
       sellerId: product.sellerId,
@@ -110,7 +121,7 @@ export class AdminProductsComponent {
       price: formValue.price,
       stock: formValue.stock,
       currency: formValue.currency,
-      categoryId: formValue.categoryId,
+      categoryIds: formValue.categoryId ? [formValue.categoryId] : [],
       sellerId,
       imageUrls,
       featured: formValue.featured ?? false,

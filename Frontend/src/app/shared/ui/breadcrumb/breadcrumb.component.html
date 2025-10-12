@@ -1,12 +1,14 @@
-<nav class="breadcrumbs" aria-label="Breadcrumb">
-  @for (item of items(); track $index) {
-    @if (!$first) {
-      <span class="separator">{{ separator() }}</span>
+@if (showBreadcrumbs()) {
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    @for (item of items(); track $index) {
+      @if (!$first) {
+        <span class="separator">{{ separator }}</span>
+      }
+      @if (item.route) {
+        <a [routerLink]="item.route" [queryParams]="item.queryParams">{{ item.label }}</a>
+      } @else {
+        <span class="current">{{ item.label }}</span>
+      }
     }
-    @if (item.route && !item.isActive) {
-      <a [routerLink]="item.route">{{ item.label }}</a>
-    } @else {
-      <span class="current">{{ item.label }}</span>
-    }
-  }
-</nav>
+  </nav>
+}

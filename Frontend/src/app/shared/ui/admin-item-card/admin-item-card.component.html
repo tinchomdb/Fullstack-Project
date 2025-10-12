@@ -1,0 +1,50 @@
+<div class="admin-item-card" [attr.data-level]="level()" [style.margin-left.rem]="level() * 2">
+  @if (showTreeIndicator() && level() > 0) {
+    <div class="tree-indicator">
+      <span class="tree-icon">└─</span>
+    </div>
+  }
+
+  <div class="item-image">
+    @if (imageUrl()) {
+      <img [src]="imageUrl()" [alt]="imageAlt()" />
+    } @else {
+      <div class="no-image">No Image</div>
+    }
+  </div>
+
+  <div class="item-info">
+    <div class="item-header">
+      <h3>{{ title() }}</h3>
+      @for (badge of badges(); track badge.label) {
+        <app-badge [label]="badge.label" [variant]="badge.variant" />
+      }
+    </div>
+
+    @if (description()) {
+      <p class="item-description">{{ description() }}</p>
+    }
+
+    @if (metadata().length > 0) {
+      <div class="item-metadata">
+        @for (meta of metadata(); track meta.label) {
+          <span class="item-meta">
+            <strong>{{ meta.label }}:</strong> {{ meta.value }}
+          </span>
+        }
+      </div>
+    }
+
+    <ng-content select="[slot=content]" />
+  </div>
+
+  <div class="item-actions">
+    <app-button (click)="edit.emit()" variant="secondary" size="sm" shape="rounded">
+      Edit
+    </app-button>
+    <app-button (click)="delete.emit()" variant="danger" size="sm" shape="rounded">
+      Delete
+    </app-button>
+    <ng-content select="[slot=actions]" />
+  </div>
+</div>

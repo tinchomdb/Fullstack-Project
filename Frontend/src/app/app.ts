@@ -3,13 +3,20 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './shared/ui/navbar/navbar.component';
 import { FooterComponent } from './shared/ui/footer/footer.component';
 import { LoadingOverlayComponent } from './core/ui/loading-overlay/loading-overlay.component';
+import { BreadcrumbComponent } from './shared/ui/breadcrumb/breadcrumb.component';
 import { AuthService } from './core/auth/auth.service';
 import { CategoriesService } from './core/services/categories.service';
 import { ProductsService } from './core/services/products.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent, FooterComponent, LoadingOverlayComponent],
+  imports: [
+    RouterOutlet,
+    NavbarComponent,
+    FooterComponent,
+    LoadingOverlayComponent,
+    BreadcrumbComponent,
+  ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,11 +44,6 @@ export class App implements OnInit {
         label: 'Cart',
         path: '/cart',
         ariaLabel: 'View your shopping cart',
-      },
-      {
-        label: 'Contact',
-        path: '/contact',
-        ariaLabel: 'Get in touch with us',
       },
     ];
 
