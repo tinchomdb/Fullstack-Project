@@ -7,6 +7,7 @@ import { BreadcrumbComponent } from './shared/ui/breadcrumb/breadcrumb.component
 import { AuthService } from './core/auth/auth.service';
 import { CategoriesService } from './core/services/categories.service';
 import { ProductsService } from './core/services/products.service';
+import { CarouselService } from './core/services/carousel.service';
 
 @Component({
   selector: 'app-root',
@@ -25,12 +26,14 @@ export class App implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly productsService = inject(ProductsService);
+  private readonly carouselService = inject(CarouselService);
 
   protected readonly title = computed(() => 'Fullstack Marketplace');
 
   ngOnInit(): void {
     this.categoriesService.loadCategories();
     this.productsService.loadProducts();
+    this.carouselService.activeSlides();
   }
 
   protected readonly navigation = computed(() => {

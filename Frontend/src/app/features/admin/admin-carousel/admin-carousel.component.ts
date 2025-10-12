@@ -1,5 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, signal, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  signal,
+  computed,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 import { CarouselService } from '../../../core/services/carousel.service';
 import { CarouselSlide } from '../../../shared/models/carousel-slide.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -13,11 +22,15 @@ import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-che
   styleUrl: './admin-carousel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminCarouselComponent {
+export class AdminCarouselComponent implements OnInit, OnDestroy {
   private readonly carouselService = inject(CarouselService);
   private readonly fb = inject(FormBuilder);
+  private readonly destroy$ = new Subject<void>();
 
   readonly slides = this.carouselService.allSlides;
+  readonly loading = this.carouselService.allSlidesLoading;
+  readonly error = this.carouselService.allSlidesError;
+
   readonly isEditing = signal(false);
   readonly editingSlideId = signal<string | null>(null);
 
@@ -37,7 +50,36 @@ export class AdminCarouselComponent {
 
   // Computed for template convenience
   readonly canMoveUp = (index: number) => computed(() => index > 0);
-  readonly canMoveDown = (index: number) => computed(() => index < this.slides().length - 1);
+  readonly canMoveDown = (index: number) =>
+    computed(() => {
+      const currentSlides = this.slides() ?? [];
+      return index < currentSlides.length - 1;
+    });
+
+  ngOnInit(): void {
+    this.carouselService.loadAllSlides();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Generic error handler for all operations
+   */
+  private handleError(operation: string, error: any): void {
+    console.error(`Failed to ${operation}:`, error);
+    this.isFormSubmitting.set(false);
+  }
+
+  /**
+   * Generic success handler for form operations
+   */
+  private handleFormSuccess(callback?: () => void): void {
+    callback?.();
+    this.isFormSubmitting.set(false);
+  }
 
   addSlide(): void {
     if (this.newSlideForm.invalid) {
@@ -47,9 +89,14 @@ export class AdminCarouselComponent {
 
     this.isFormSubmitting.set(true);
     const slide = this.newSlideForm.getRawValue();
-    this.carouselService.addSlide(slide);
-    this.resetNewSlideForm();
-    this.isFormSubmitting.set(false);
+
+    this.carouselService
+      .createSlide(slide)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.handleFormSuccess(() => this.resetNewSlideForm()),
+        error: (err) => this.handleError('create slide', err),
+      });
   }
 
   openEditForm(slide: CarouselSlide): void {
@@ -77,9 +124,14 @@ export class AdminCarouselComponent {
 
     this.isFormSubmitting.set(true);
     const form = this.editSlideForm.getRawValue();
-    this.carouselService.updateSlide(slideId, form);
-    this.closeEditForm();
-    this.isFormSubmitting.set(false);
+
+    this.carouselService
+      .updateSlide(slideId, form)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => this.handleFormSuccess(() => this.closeEditForm()),
+        error: (err) => this.handleError('update slide', err),
+      });
   }
 
   private resetNewSlideForm(): void {
@@ -96,17 +148,31 @@ export class AdminCarouselComponent {
     );
 
     if (confirmDelete) {
-      this.carouselService.deleteSlide(id);
-
-      // If we're editing the deleted slide, close the edit form
-      if (this.editingSlideId() === id) {
-        this.closeEditForm();
-      }
+      this.carouselService
+        .deleteSlide(id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            // If we're editing the deleted slide, close the edit form
+            if (this.editingSlideId() === id) {
+              this.closeEditForm();
+            }
+          },
+          error: (err) => this.handleError('delete slide', err),
+        });
     }
   }
 
   toggleActive(id: string): void {
-    this.carouselService.toggleSlideActive(id);
+    const result = this.carouselService.toggleSlideActive(id);
+    if (result) {
+      result.pipe(takeUntil(this.destroy$)).subscribe({
+        next: () => {
+          // Slide toggled successfully
+        },
+        error: (err) => this.handleError('toggle slide', err),
+      });
+    }
   }
 
   moveUp(index: number): void {
@@ -118,7 +184,7 @@ export class AdminCarouselComponent {
   }
 
   moveDown(index: number): void {
-    const currentSlides = this.slides();
+    const currentSlides = this.slides() ?? [];
     if (index >= currentSlides.length - 1) {
       return;
     }
@@ -127,9 +193,22 @@ export class AdminCarouselComponent {
   }
 
   private reorderSlides(fromIndex: number, toIndex: number): void {
-    const currentSlides = this.slides();
-    const slideIds = currentSlides.map((s) => s.id);
+    const currentSlides = this.slides() ?? [];
+    if (currentSlides.length === 0) {
+      return;
+    }
+
+    const slideIds = currentSlides.map((slide: CarouselSlide) => slide.id);
     [slideIds[fromIndex], slideIds[toIndex]] = [slideIds[toIndex], slideIds[fromIndex]];
-    this.carouselService.reorderSlides(slideIds);
+
+    this.carouselService
+      .reorderSlides(slideIds)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          // Slides reordered successfully
+        },
+        error: (err) => this.handleError('reorder slides', err),
+      });
   }
 }
