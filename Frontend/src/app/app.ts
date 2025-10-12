@@ -34,18 +34,13 @@ export class App implements OnInit {
   }
 
   protected readonly navigation = computed(() => {
-    const baseNav = [
-      {
-        label: 'Products',
-        path: '/products',
-        ariaLabel: 'Browse products',
-      },
-      {
-        label: 'Cart',
-        path: '/cart',
-        ariaLabel: 'View your shopping cart',
-      },
-    ];
+    interface NavigationItem {
+      label: string;
+      path: string;
+      ariaLabel: string;
+    }
+
+    const baseNav: NavigationItem[] = [];
 
     // Add admin link if user is admin
     if (this.authService.isAdmin()) {

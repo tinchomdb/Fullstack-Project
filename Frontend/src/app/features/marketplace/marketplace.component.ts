@@ -14,16 +14,16 @@ import { ProductsService } from '../../core/services/products.service';
 import { CategoriesService } from '../../core/services/categories.service';
 import { ProductFeaturedCardComponent } from '../../shared/ui/product-featured-card/product-featured-card.component';
 import { ProductGridComponent } from '../../shared/ui/product-grid/product-grid.component';
-import { SectionHeaderComponent } from '../../shared/ui/section-header/section-header.component';
 import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories/featured-categories.component';
+import { BannerCarouselComponent } from '../../shared/ui/banner-carousel/banner-carousel.component';
 
 @Component({
   selector: 'app-products-page',
   imports: [
     ProductFeaturedCardComponent,
     ProductGridComponent,
-    SectionHeaderComponent,
     FeaturedCategoriesComponent,
+    BannerCarouselComponent,
   ],
   templateUrl: './marketplace.component.html',
   styleUrl: './marketplace.component.scss',

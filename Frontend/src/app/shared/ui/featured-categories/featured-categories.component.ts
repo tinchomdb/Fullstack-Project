@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 import { Category } from '../../../core/models/category.model';
-import { CategoryCardComponent } from './category-card.component';
+import { CategoryCardComponent } from './category-card/category-card.component';
 
 @Component({
   selector: 'app-featured-categories',

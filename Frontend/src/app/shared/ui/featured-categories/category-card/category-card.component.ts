@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 
-import { Category } from '../../../core/models/category.model';
+import { Category } from '../../../../core/models/category.model';
 
 @Component({
   selector: 'app-category-card',

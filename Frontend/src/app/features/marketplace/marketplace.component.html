@@ -1,14 +1,10 @@
 <section class="products-page" [attr.aria-labelledby]="headingId">
-  <app-section-header
-    [headingId]="headingId"
-    [heading]="pageHeading()"
-    headingLevel="h1"
-    [subtitle]="pageSubtitle()"
-    eyebrow="Marketplace"
-  />
+  @if (!activeCategory()) {
+    <app-banner-carousel />
+  }
 
   @if (displayedCategories().length > 0) {
-    <app-featured-categories [categories]="displayedCategories()" />
+    <app-featured-categories [heading]="''" [categories]="displayedCategories()" />
   }
 
   @if (featuredProduct(); as featured) {

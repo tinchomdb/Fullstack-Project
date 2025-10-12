@@ -1,0 +1,30 @@
+<div class="carousel-container">
+  <div class="carousel-wrapper">
+    @for (slide of slides; track $index) {
+      <div
+        class="carousel-slide"
+        [class.active]="$index === currentIndex()"
+        [class.leaving]="$index === previousIndex()"
+        [class.transitioning]="isTransitioning()"
+      >
+        <img [src]="slide.imageUrl" [alt]="slide.alt" class="carousel-image" />
+      </div>
+    }
+
+    <app-navigation-arrow
+      class="carousel-arrow carousel-arrow--left"
+      direction="left"
+      ariaLabel="Previous slide"
+      [disabled]="isTransitioning()"
+      (clicked)="goToPrevious()"
+    />
+
+    <app-navigation-arrow
+      class="carousel-arrow carousel-arrow--right"
+      direction="right"
+      ariaLabel="Next slide"
+      [disabled]="isTransitioning()"
+      (clicked)="goToNext()"
+    />
+  </div>
+</div>

@@ -1,9 +1,11 @@
 import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
+import { CloseButtonComponent } from '../close-button/close-button.component';
+
 @Component({
   selector: 'app-modal-form',
-  imports: [CommonModule],
+  imports: [CommonModule, CloseButtonComponent],
   templateUrl: './modal-form.component.html',
   styleUrls: ['./modal-form.component.scss'],
 })

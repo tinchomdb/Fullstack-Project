@@ -1,0 +1,88 @@
+@use '../../../../styles/mixins' as *;
+
+$carousel-height: 600px;
+
+.carousel-container {
+  position: relative;
+  width: 100%;
+  height: $carousel-height;
+  overflow: visible;
+  margin-top: calc(var(--space-responsive-sm) * -1);
+  margin-bottom: calc(
+    $carousel-height / -2
+  ); // Pull up content by 50% of height so bottom half goes behind
+  z-index: 0; // Lower z-index so content can appear on top
+}
+
+.carousel-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--color-surface-muted);
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 40%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 40%,
+    rgba(0, 0, 0, 0) 100%
+  );
+}
+
+.carousel-slide {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(100%);
+  transition: transform 500ms ease-in-out;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.carousel-slide.active {
+  transform: translateX(0);
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.carousel-slide.leaving {
+  transform: translateX(-100%);
+  visibility: visible;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 25%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.carousel-arrow--left {
+  left: var(--space-4);
+
+  @include media-md {
+    left: var(--space-6);
+  }
+}
+
+.carousel-arrow--right {
+  right: var(--space-4);
+
+  @include media-md {
+    right: var(--space-6);
+  }
+}

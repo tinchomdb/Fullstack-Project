@@ -2,7 +2,7 @@
   <div class="modal-form" [style.max-width]="maxWidth()" (click)="stopPropagation($event)">
     <div class="form-header">
       <h3>{{ title() }}</h3>
-      <button type="button" class="btn-close" (click)="onCloseClick()">×</button>
+      <app-close-button variant="minimal" size="md" (clicked)="onCloseClick()" />
     </div>
 
     <div class="form-content">
