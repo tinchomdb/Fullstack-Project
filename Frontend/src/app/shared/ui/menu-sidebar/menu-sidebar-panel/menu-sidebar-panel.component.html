@@ -1,0 +1,68 @@
+<aside class="sidebar-panel">
+  <div class="sidebar-header">
+    <span class="sidebar-greeting">Hello, {{ isLoggedIn() ? 'User' : 'Guest' }}</span>
+    <app-close-button
+      variant="default"
+      size="md"
+      ariaLabel="Close menu"
+      (clicked)="itemClick.emit()"
+    />
+  </div>
+
+  <!-- Categories Section -->
+  <div class="sidebar-content">
+    <div class="sidebar-section">
+      <h3 class="sidebar-section-title">Shop by Category</h3>
+
+      @if (loading()) {
+        <div class="sidebar-loading">Loading categories...</div>
+      } @else {
+        <nav class="category-nav" aria-label="Product categories">
+          <ul class="category-list">
+            @for (node of categoryTree(); track node.category.id) {
+              <li class="category-item">
+                <app-category-tree-item
+                  [node]="node"
+                  [expandedCategories]="expandedCategories()"
+                  (toggleCategory)="toggleCategory($event)"
+                  (categoryClick)="itemClick.emit()"
+                />
+              </li>
+            }
+          </ul>
+        </nav>
+      }
+    </div>
+
+    <!-- Divider -->
+    <div class="sidebar-divider"></div>
+
+    <!-- Settings Section -->
+    <div class="sidebar-section">
+      <h3 class="sidebar-section-title">Settings & Account</h3>
+
+      <ul class="settings-list">
+        @if (isAdmin()) {
+          <li>
+            <a routerLink="/admin" class="settings-link" (click)="itemClick.emit()">
+              Admin Panel
+            </a>
+          </li>
+        }
+
+        <li class="theme-toggle-item">
+          <span class="settings-label">Theme</span>
+          <app-theme-toggle />
+        </li>
+
+        @if (isLoggedIn()) {
+          <li>
+            <button type="button" class="settings-link logout-button" (click)="logoutClick.emit()">
+              Sign Out
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</aside>

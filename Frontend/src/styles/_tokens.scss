@@ -96,6 +96,18 @@
   --shadow-sm-strong: 0 12px 24px rgba(59, 130, 246, 0.25);
   --shadow-md: 0 12px 24px rgba(15, 23, 42, 0.3);
   --shadow-lg: 0 24px 40px -24px rgba(15, 23, 42, 0.65);
+
+  --z-index-base: 1;
+  --z-index-dropdown: 50;
+  --z-index-sticky: 100;
+  --z-index-overlay: 1000;
+  --z-index-modal: 1050;
+  --z-index-popover: 1100;
+  --z-index-tooltip: 1200;
+
+  --overlay-opacity-light: 0.5;
+  --overlay-opacity-medium: 0.6;
+  --overlay-opacity-dark: 0.75;
 }
 
 // Dark theme mixin to avoid duplication

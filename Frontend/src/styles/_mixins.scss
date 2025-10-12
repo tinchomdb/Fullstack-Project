@@ -1,3 +1,37 @@
+// Reusable placeholder selectors
+%interactive-element {
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--color-surface-muted);
+  }
+
+  &:focus-visible {
+    outline: var(--border-focus);
+    outline-offset: 2px;
+  }
+}
+
+%list-reset {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+%list-item-spacing {
+  &:not(:last-child) {
+    margin-bottom: var(--space-1);
+  }
+}
+
+%base-text-style {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+}
+
 // Breakpoint mixins for mobile-first responsive design
 // These mixins can be imported in component styles without adding to bundle size
 @mixin media-xs {

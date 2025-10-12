@@ -1,0 +1,82 @@
+@use '../../../../../styles/mixins' as *;
+
+$transition-duration: 0.2s;
+
+.category-button {
+  @extend %interactive-element;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--space-3);
+  background-color: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-align: left;
+
+  :host(.is-root) & {
+    font-weight: var(--font-weight-semibold);
+  }
+
+  app-chevron-icon {
+    flex-shrink: 0;
+    transition: transform $transition-duration ease;
+    color: var(--color-text-muted);
+
+    &.is-expanded {
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.category-link {
+  @extend %interactive-element;
+  display: block;
+  padding: var(--space-3);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+
+  .subcategory-list &,
+  &.is-nested {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  &.is-all {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-1);
+  }
+
+  &:hover {
+    color: var(--color-text-primary);
+  }
+}
+
+.subcategory-list {
+  list-style: none;
+  padding: 0 0 0 var(--space-6);
+  margin: 0;
+  animation: expandDown $transition-duration ease-out;
+}
+
+@keyframes expandDown {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--space-2)));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.category-item {
+  @extend %list-item-spacing;
+}

@@ -5,8 +5,7 @@ import { CartService } from '../../../core/services/cart.service';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { AuthButtonComponent } from '../auth-button/auth-button.component';
 import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
-import { CategorySelectorComponent } from '../category-selector/category-selector.component';
-import { HamburgerMenuButtonComponent } from '../hamburger-menu-button/hamburger-menu-button.component';
+import { MenuSidebarComponent } from '../menu-sidebar/menu-sidebar.component';
 import { CartButtonComponent } from '../cart-button/cart-button.component';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
 import { CloseButtonComponent } from '../close-button/close-button.component';
@@ -24,8 +23,7 @@ export interface NavItem {
     RouterLinkActive,
     AuthButtonComponent,
     ThemeToggleComponent,
-    CategorySelectorComponent,
-    HamburgerMenuButtonComponent,
+    MenuSidebarComponent,
     CartButtonComponent,
     SearchBarComponent,
     CloseButtonComponent,

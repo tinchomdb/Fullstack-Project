@@ -3,7 +3,7 @@
 :host {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-index-sticky);
   display: flex;
   flex-direction: column;
   border-bottom: var(--border-subtle);
@@ -41,6 +41,22 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
+
+  .desktop-only {
+    display: none;
+
+    @include media-md {
+      display: block;
+    }
+  }
+
+  .mobile-only {
+    display: block;
+
+    @include media-md {
+      display: none;
+    }
+  }
 }
 
 // Second row: Category Selector and Category Links

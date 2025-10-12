@@ -1,0 +1,48 @@
+@if (hasChildren()) {
+  <button
+    class="category-button"
+    type="button"
+    (click)="toggleCategory.emit(category().id)"
+    [attr.aria-expanded]="isExpanded()"
+  >
+    {{ categoryName() }}
+    <app-chevron-icon [size]="16" direction="right" [class.is-expanded]="isExpanded()" />
+  </button>
+
+  @if (isExpanded()) {
+    <ul class="subcategory-list">
+      <li>
+        <a
+          [routerLink]="productsRoute"
+          [queryParams]="categoryQueryParams()"
+          class="category-link is-all"
+          (click)="categoryClick.emit()"
+        >
+          All {{ categoryName() }}
+        </a>
+      </li>
+
+      @for (childNode of node().children; track childNode.category.id) {
+        <li class="category-item">
+          <app-category-tree-item
+            [node]="childNode"
+            [level]="level() + 1"
+            [expandedCategories]="expandedCategories()"
+            (toggleCategory)="toggleCategory.emit($event)"
+            (categoryClick)="categoryClick.emit()"
+          />
+        </li>
+      }
+    </ul>
+  }
+} @else {
+  <a
+    [routerLink]="productsRoute"
+    [queryParams]="categoryQueryParams()"
+    class="category-link"
+    [class.is-nested]="!isRootLevel()"
+    (click)="categoryClick.emit()"
+  >
+    {{ categoryName() }}
+  </a>
+}
