@@ -28,13 +28,22 @@ public static class CosmosDbExtensions
                 });
         });
 
-        // Register repository implementations
-        services.AddSingleton<IProductsRepository, CosmosDbProductsRepository>();
-        services.AddSingleton<ICategoriesRepository, CosmosDbCategoriesRepository>();
-        services.AddSingleton<ICartsRepository, CosmosDbCartsRepository>();
-        services.AddSingleton<IOrdersRepository, CosmosDbOrdersRepository>();
-        services.AddSingleton<IUsersRepository, CosmosDbUsersRepository>();
-        services.AddSingleton<ICarouselSlidesRepository, CosmosDbCarouselSlidesRepository>();
+        // Register concrete repository implementations
+        services.AddSingleton<CosmosDbProductsRepository>();
+        services.AddSingleton<CosmosDbCategoriesRepository>();
+        services.AddSingleton<CosmosDbCartsRepository>();
+        services.AddSingleton<CosmosDbOrdersRepository>();
+        services.AddSingleton<CosmosDbUsersRepository>();
+        services.AddSingleton<CosmosDbCarouselSlidesRepository>();
+
+        // Register interfaces pointing to concrete implementations
+        // These will be replaced by cached decorators if caching is enabled
+        services.AddSingleton<IProductsRepository>(serviceProvider => serviceProvider.GetRequiredService<CosmosDbProductsRepository>());
+        services.AddSingleton<ICategoriesRepository>(serviceProvider => serviceProvider.GetRequiredService<CosmosDbCategoriesRepository>());
+        services.AddSingleton<ICartsRepository>(serviceProvider => serviceProvider.GetRequiredService<CosmosDbCartsRepository>());
+        services.AddSingleton<IOrdersRepository>(serviceProvider => serviceProvider.GetRequiredService<CosmosDbOrdersRepository>());
+        services.AddSingleton<IUsersRepository>(serviceProvider => serviceProvider.GetRequiredService<CosmosDbUsersRepository>());
+        services.AddSingleton<ICarouselSlidesRepository>(serviceProvider => serviceProvider.GetRequiredService<CosmosDbCarouselSlidesRepository>());
 
         // Register database services
         services.AddSingleton<CosmosDbInitializationService>();
