@@ -6,7 +6,7 @@ import { environment } from '../../../environments/environment';
 import { Product } from '../models/product.model';
 import { ProductApiModel } from '../models/api/product-api.model';
 import { mapProductFromApi, mapProductToApi } from '../mappers/product.mapper';
-import { PaginatedResource } from '../../shared/utils/paginated-resource';
+import { InfiniteScrollResource } from '../../shared/utils/infinite-scroll-resource';
 import { PaginatedResponse } from '../models/paginated-response.model';
 import { ProductFiltersApiParams } from '../models/product-filters.model';
 import { LoadingOverlayService } from './loading-overlay.service';
@@ -18,7 +18,7 @@ export class ProductsService {
   private readonly baseUrl = `${environment.apiBase}/api/products`;
   private readonly adminBaseUrl = `${environment.apiBase}/api/admin/products`;
 
-  private readonly productsResource = new PaginatedResource<Product>(
+  private readonly productsResource = new InfiniteScrollResource<Product>(
     'Loading products...',
     this.loadingOverlayService,
   );
@@ -28,6 +28,8 @@ export class ProductsService {
   readonly totalPages = this.productsResource.totalPages;
   readonly currentPage = this.productsResource.currentPage;
   readonly loading = this.productsResource.loading;
+  readonly loadingMore = this.productsResource.loadingMore;
+  readonly hasMore = this.productsResource.hasMore;
   readonly error = this.productsResource.error;
   readonly hasData = this.productsResource.hasData;
 
@@ -43,6 +45,10 @@ export class ProductsService {
 
   loadProducts(filters: ProductFiltersApiParams = {}): void {
     this.productsResource.load(this.getFilteredProducts(filters));
+  }
+
+  loadMoreProducts(filters: ProductFiltersApiParams = {}): void {
+    this.productsResource.loadMore(this.getFilteredProducts(filters));
   }
 
   reloadProducts(): void {

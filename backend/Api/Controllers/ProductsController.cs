@@ -20,6 +20,15 @@ public sealed class ProductsController(IProductsRepository repository) : Control
         CancellationToken cancellationToken)
     {
         var result = await repository.GetProductsAsync(parameters, cancellationToken);
+        
+        if (result.TotalPages > 0 && parameters.Page > result.TotalPages)
+        {
+            return BadRequest(new 
+            { 
+                error = $"Page {parameters.Page} exceeds total pages ({result.TotalPages}). Please request a page between 1 and {result.TotalPages}." 
+            });
+        }
+        
         return Ok(result);
     }
 

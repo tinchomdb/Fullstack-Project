@@ -10,7 +10,7 @@ import {
 } from '../models/product-filters.model';
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, SortOption } from '../models/sort-option.model';
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 4;
 const PRICE_DEBOUNCE_MS = 500;
 
 @Injectable({ providedIn: 'root' })
@@ -82,6 +82,12 @@ export class FiltersService {
   setPage(page: number): void {
     if (page < 1) return;
     this.pageSignal.set(page);
+  }
+
+  // Increment to next page for infinite scroll
+
+  loadNextPage(): void {
+    this.pageSignal.update((current) => current + 1);
   }
 
   setCategoryId(categoryId: string | null): void {
