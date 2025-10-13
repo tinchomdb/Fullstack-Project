@@ -23,6 +23,24 @@
     gap: var(--space-6);
   }
 
+  .slug-field-wrapper {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    margin-bottom: var(--space-6);
+
+    app-form-field {
+      flex: 1;
+      margin-bottom: 0;
+    }
+
+    .slug-generate-btn {
+      flex-shrink: 0;
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--font-size-sm);
+    }
+  }
+
   .form-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);

@@ -15,6 +15,7 @@ import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.com
 import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-checkbox.component';
 import { AdminItemCardComponent } from '../../../shared/ui/admin-item-card/admin-item-card.component';
 import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.component';
+import { generateSlug } from '../../../shared/utils/form.utils';
 
 @Component({
   selector: 'app-admin-products',
@@ -66,6 +67,17 @@ export class AdminProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.productsService.loadProducts();
+    this.initFormSubscriptions();
+  }
+
+  private initFormSubscriptions(): void {
+    // Auto-generate slug from name when creating new product
+    this.productForm.get('name')?.valueChanges.subscribe((name) => {
+      if (!this.editingProduct()) {
+        const slug = generateSlug(name || '');
+        this.productForm.patchValue({ slug });
+      }
+    });
   }
 
   openCreateForm(): void {
@@ -203,5 +215,11 @@ export class AdminProductsComponent implements OnInit {
         console.error('Error deleting product:', err);
       },
     });
+  }
+
+  manuallyGenerateSlug(): void {
+    const name = this.productForm.get('name')?.value || '';
+    const slug = generateSlug(name);
+    this.productForm.patchValue({ slug });
   }
 }
