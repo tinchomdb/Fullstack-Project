@@ -14,6 +14,14 @@ export class BreadcrumbService {
     this.breadcrumbsState.set(breadcrumbs);
   }
 
+  updateBreadcrumbsForProductDetailsPage(productName: string, categoryId: string): void {
+    const categoryPath = this.categoryService.getCategoryPath(categoryId);
+    const categorySegments = categoryPath.map((c) => c.slug);
+    const breadcrumbs = this.buildBreadcrumbs(['category', ...categorySegments]);
+    breadcrumbs.push({ label: productName });
+    this.breadcrumbsState.set(breadcrumbs);
+  }
+
   private buildBreadcrumbs(segments: string[]): BreadcrumbItem[] {
     const breadcrumbs: BreadcrumbItem[] = [{ label: 'Home', route: '/products' }];
 

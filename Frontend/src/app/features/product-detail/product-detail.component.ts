@@ -9,6 +9,8 @@ import { Product } from '../../core/models/product.model';
 import { ProductImageGalleryComponent } from './product-image-gallery/product-image-gallery.component';
 import { ProductBuyBoxComponent } from './product-buy-box/product-buy-box.component';
 import { ProductInfoComponent } from './product-info/product-info.component';
+import { BreadcrumbService } from '../../core/services/breadcrumb.service';
+import { CategoriesService } from '../../core/services/categories.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -27,6 +29,8 @@ export class ProductDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly productsService = inject(ProductsService);
   private readonly cartService = inject(CartService);
+  private readonly categoryService = inject(CategoriesService);
+  private readonly breadcrumbService = inject(BreadcrumbService);
 
   protected readonly product = signal<Product | null>(null);
   protected readonly loading = signal(true);
@@ -88,6 +92,7 @@ export class ProductDetailComponent implements OnInit {
       .getProductBySlug(slug)
       .pipe(
         finalize(() => {
+          this.updateBreadcrumbs();
           this.loading.set(false);
         }),
       )
@@ -100,5 +105,12 @@ export class ProductDetailComponent implements OnInit {
           this.error.set('Failed to load product. Please try again.');
         },
       });
+  }
+
+  private updateBreadcrumbs(): void {
+    this.breadcrumbService.updateBreadcrumbsForProductDetailsPage(
+      this.product()?.name || 'Product',
+      this.product()?.categoryIds[0] || 'Product',
+    );
   }
 }
