@@ -15,6 +15,7 @@ import { ProductFeaturedCardComponent } from '../../shared/ui/product-featured-c
 import { ProductGridComponent } from '../../shared/ui/product-grid/product-grid.component';
 import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories/featured-categories.component';
 import { BannerCarouselComponent } from '../../shared/ui/banner-carousel/banner-carousel.component';
+import { SortDropdownComponent } from '../../shared/ui/sort-dropdown/sort-dropdown.component';
 import {
   ProductFiltersApiParams,
   ProductSortField,
@@ -33,6 +34,7 @@ const DEFAULT_PAGE_SIZE = 20;
     ProductGridComponent,
     FeaturedCategoriesComponent,
     BannerCarouselComponent,
+    SortDropdownComponent,
   ],
   templateUrl: './marketplace.component.html',
   styleUrl: './marketplace.component.scss',
@@ -104,6 +106,14 @@ export class MarketplaceComponent {
 
       untracked(() => {
         this.productsService.loadProducts(filters);
+      });
+    });
+
+    effect(() => {
+      const filters = this.filtersService.filters(); // Read the signal
+
+      untracked(() => {
+        this.productsService.loadProducts(this.filtersService.buildApiParams());
       });
     });
   }
