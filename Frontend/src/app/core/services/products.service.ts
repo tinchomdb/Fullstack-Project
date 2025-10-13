@@ -131,6 +131,10 @@ export class ProductsService {
       params = params.set('categoryId', filters.categoryId);
     }
 
+    if (filters.searchTerm) {
+      params = params.set('searchTerm', filters.searchTerm);
+    }
+
     return this.http.get<PaginatedResponse<ProductApiModel>>(`${this.baseUrl}`, { params }).pipe(
       map((response) => ({
         ...response,

@@ -26,31 +26,40 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         CancellationToken cancellationToken = default)
     {
         var whereClauses = new List<string> { "c.type = @type" };
-
-        if (parameters.MinPrice.HasValue)
-        {
-            whereClauses.Add("c.price >= @minPrice");
-        }
-
-        if (parameters.MaxPrice.HasValue)
-        {
-            whereClauses.Add("c.price <= @maxPrice");
-        }
-
         string[]? categoryIdsToFilter = null;
-        if (!string.IsNullOrEmpty(parameters.CategoryId))
+
+        // When searching, bypass all other filters
+        if (parameters.IsSearching)
         {
-            var descendantCategoryIds = await _categoriesRepository.GetAllDescendantCategoryIdsAsync(
-                parameters.CategoryId,
-                cancellationToken);
-
-            categoryIdsToFilter = descendantCategoryIds.ToArray();
-
-            if (categoryIdsToFilter.Length > 0)
+            whereClauses.Add("(CONTAINS(UPPER(c.name), UPPER(@searchTerm)) OR CONTAINS(UPPER(c.description), UPPER(@searchTerm)))");
+        }
+        else
+        {
+            // Apply filters only when not searching
+            if (parameters.MinPrice.HasValue)
             {
-                var categoryConditions = string.Join(" OR ",
-                    categoryIdsToFilter.Select((_, index) => $"ARRAY_CONTAINS(c.categoryIds, @categoryId{index})"));
-                whereClauses.Add($"({categoryConditions})");
+                whereClauses.Add("c.price >= @minPrice");
+            }
+
+            if (parameters.MaxPrice.HasValue)
+            {
+                whereClauses.Add("c.price <= @maxPrice");
+            }
+
+            if (!string.IsNullOrEmpty(parameters.CategoryId))
+            {
+                var descendantCategoryIds = await _categoriesRepository.GetAllDescendantCategoryIdsAsync(
+                    parameters.CategoryId,
+                    cancellationToken);
+
+                categoryIdsToFilter = descendantCategoryIds.ToArray();
+
+                if (categoryIdsToFilter.Length > 0)
+                {
+                    var categoryConditions = string.Join(" OR ",
+                        categoryIdsToFilter.Select((_, index) => $"ARRAY_CONTAINS(c.categoryIds, @categoryId{index})"));
+                    whereClauses.Add($"({categoryConditions})");
+                }
             }
         }
 
@@ -103,21 +112,28 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
                 .WithParameter("@limit", parameters.PageSize);
         }
 
-        if (parameters.MinPrice.HasValue)
+        if (parameters.IsSearching)
         {
-            query = query.WithParameter("@minPrice", parameters.MinPrice.Value);
+            query = query.WithParameter("@searchTerm", parameters.SearchTerm!);
         }
-
-        if (parameters.MaxPrice.HasValue)
+        else
         {
-            query = query.WithParameter("@maxPrice", parameters.MaxPrice.Value);
-        }
-
-        if (categoryIdsToFilter is not null && categoryIdsToFilter.Length > 0)
-        {
-            for (int i = 0; i < categoryIdsToFilter.Length; i++)
+            if (parameters.MinPrice.HasValue)
             {
-                query = query.WithParameter($"@categoryId{i}", categoryIdsToFilter[i]);
+                query = query.WithParameter("@minPrice", parameters.MinPrice.Value);
+            }
+
+            if (parameters.MaxPrice.HasValue)
+            {
+                query = query.WithParameter("@maxPrice", parameters.MaxPrice.Value);
+            }
+
+            if (categoryIdsToFilter is not null && categoryIdsToFilter.Length > 0)
+            {
+                for (int i = 0; i < categoryIdsToFilter.Length; i++)
+                {
+                    query = query.WithParameter($"@categoryId{i}", categoryIdsToFilter[i]);
+                }
             }
         }
 

@@ -1,12 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  OnInit,
-  OnDestroy,
-  inject,
-  output,
-  input,
-} from '@angular/core';
+import { Directive, ElementRef, OnInit, OnDestroy, inject, output, input } from '@angular/core';
 
 @Directive({
   selector: '[appIntersectionObserver]',

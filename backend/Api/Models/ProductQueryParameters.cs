@@ -22,9 +22,13 @@ public class ProductQueryParameters : IValidatableObject
 
     public string? CategoryId { get; set; }
 
+    public string? SearchTerm { get; set; }
+
     public bool HasFilters => MinPrice.HasValue 
         || MaxPrice.HasValue 
         || !string.IsNullOrEmpty(CategoryId);
+
+    public bool IsSearching => !string.IsNullOrWhiteSpace(SearchTerm);
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

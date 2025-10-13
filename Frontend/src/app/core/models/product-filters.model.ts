@@ -10,6 +10,7 @@ export interface ProductFilters {
   page: number;
   pageSize: number;
   categoryId: string | null;
+  searchTerm: string | null;
 }
 
 export interface ProductFiltersApiParams {
@@ -20,4 +21,5 @@ export interface ProductFiltersApiParams {
   page?: number;
   pageSize?: number;
   categoryId?: string;
+  searchTerm?: string;
 }

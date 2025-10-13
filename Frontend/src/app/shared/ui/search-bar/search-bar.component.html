@@ -1,11 +1,13 @@
-<div class="search-bar">
+<form class="search-bar" (submit)="onSearch(); $event.preventDefault()">
   <input
     type="search"
     class="search-input"
     placeholder="Search for products..."
     aria-label="Search for products"
+    [(ngModel)]="searchTerm"
+    name="searchTerm"
   />
-  <button type="button" class="search-button" aria-label="Search">
+  <button type="submit" class="search-button" aria-label="Search">
     <svg
       width="20"
       height="20"
@@ -20,4 +22,4 @@
       <path d="m21 21-4.35-4.35"></path>
     </svg>
   </button>
-</div>
+</form>

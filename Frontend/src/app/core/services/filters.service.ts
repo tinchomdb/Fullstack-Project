@@ -24,6 +24,7 @@ export class FiltersService {
   private readonly pageSignal = signal(1);
   private readonly pageSizeSignal = signal(DEFAULT_PAGE_SIZE);
   private readonly categoryIdSignal = signal<string | null>(null);
+  private readonly searchTermSignal = signal<string | null>(null);
 
   // Debounced price inputs
   private readonly minPriceSubject = new Subject<number | null>();
@@ -36,6 +37,7 @@ export class FiltersService {
   readonly page = this.pageSignal.asReadonly();
   readonly pageSize = this.pageSizeSignal.asReadonly();
   readonly categoryId = this.categoryIdSignal.asReadonly();
+  readonly searchTerm = this.searchTermSignal.asReadonly();
 
   // Computed signals derived from sort option
   readonly sortBy = computed(() => this.currentSortOption().sortBy);
@@ -46,7 +48,8 @@ export class FiltersService {
       this.minPrice() !== null ||
       this.maxPrice() !== null ||
       this.currentSortOption().value !== DEFAULT_SORT_OPTION.value ||
-      this.categoryId() !== null,
+      this.categoryId() !== null ||
+      this.searchTerm() !== null,
   );
 
   readonly filters = computed<ProductFilters>(() => ({
@@ -57,6 +60,7 @@ export class FiltersService {
     page: this.page(),
     pageSize: this.pageSize(),
     categoryId: this.categoryId(),
+    searchTerm: this.searchTerm(),
   }));
 
   constructor() {
@@ -95,6 +99,13 @@ export class FiltersService {
     this.resetToFirstPage();
   }
 
+  setSearchTerm(searchTerm: string | null): void {
+    const trimmed = searchTerm?.trim() || null;
+    console.log('Setting search term:', trimmed);
+    this.searchTermSignal.set(trimmed);
+    this.resetToFirstPage();
+  }
+
   setAllFilters(filters: Partial<ProductFilters>): void {
     if (filters.minPrice !== undefined) {
       this.setMinPrice(filters.minPrice);
@@ -121,6 +132,9 @@ export class FiltersService {
     } else {
       this.setCategoryId(null);
     }
+    if (filters.searchTerm !== undefined) {
+      this.setSearchTerm(filters.searchTerm);
+    }
   }
 
   resetFilters(): void {
@@ -128,6 +142,7 @@ export class FiltersService {
     this.maxPriceSignal.set(null);
     this.currentSortOptionSignal.set(DEFAULT_SORT_OPTION);
     this.categoryIdSignal.set(null);
+    this.searchTermSignal.set(null);
     this.resetToFirstPage();
   }
 
@@ -156,6 +171,10 @@ export class FiltersService {
       params.categoryId = filters.categoryId;
     }
 
+    if (filters.searchTerm !== null) {
+      params.searchTerm = filters.searchTerm;
+    }
+    console.log('Built API params:', params);
     return params;
   }
 
