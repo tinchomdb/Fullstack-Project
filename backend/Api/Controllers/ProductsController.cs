@@ -14,10 +14,13 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<Product>>> GetAllProducts(CancellationToken cancellationToken)
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<PaginatedResponse<Product>>> GetAllProducts(
+        [FromQuery] ProductQueryParameters parameters,
+        CancellationToken cancellationToken)
     {
-        var products = await repository.GetAllProductsAsync(cancellationToken);
-        return Ok(products);
+        var result = await repository.GetProductsAsync(parameters, cancellationToken);
+        return Ok(result);
     }
 
     [HttpGet("by-seller/{sellerId}")]

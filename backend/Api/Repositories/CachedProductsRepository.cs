@@ -30,6 +30,13 @@ public class CachedProductsRepository : IProductsRepository
         _logger = logger;
     }
 
+    public async Task<PaginatedResponse<Product>> GetProductsAsync(
+        ProductQueryParameters parameters,
+        CancellationToken cancellationToken = default)
+    {
+        return await _inner.GetProductsAsync(parameters, cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Product>> GetAllProductsAsync(CancellationToken cancellationToken = default)
     {
         if (!_cacheSettings.EnableCaching)

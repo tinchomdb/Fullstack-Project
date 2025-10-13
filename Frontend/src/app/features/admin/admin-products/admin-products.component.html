@@ -111,11 +111,11 @@
   }
 
   <div class="products-list">
-    @if ((products()?.length ?? 0) === 0 && !loading()) {
+    @if (products().length === 0 && !loading()) {
       <p class="no-products">No products found. Create your first product!</p>
     }
 
-    @for (product of products() ?? []; track product.id) {
+    @for (product of products(); track product.id) {
       <app-admin-item-card
         [imageUrl]="product.imageUrls.length > 0 ? product.imageUrls[0] : ''"
         [imageAlt]="product.name"

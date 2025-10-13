@@ -1,7 +1,7 @@
 <a
   class="category-card"
   [routerLink]="['/products']"
-  [queryParams]="{ category: category().slug }"
+  [queryParams]="{ category: category().id }"
   [attr.aria-label]="'Browse ' + category().name"
 >
   @if (category().image; as image) {

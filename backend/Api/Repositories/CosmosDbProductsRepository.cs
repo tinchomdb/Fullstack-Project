@@ -18,6 +18,93 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         _container = database.GetContainer(settings.ContainersNames.Products);
     }
 
+    public async Task<PaginatedResponse<Product>> GetProductsAsync(
+        ProductQueryParameters parameters,
+        CancellationToken cancellationToken = default)
+    {
+        var whereClauses = new List<string> { "c.type = @type" };
+
+        if (parameters.MinPrice.HasValue)
+        {
+            whereClauses.Add("c.price >= @minPrice");
+        }
+
+        if (parameters.MaxPrice.HasValue)
+        {
+            whereClauses.Add("c.price <= @maxPrice");
+        }
+
+        if (!string.IsNullOrEmpty(parameters.CategoryId))
+        {
+            whereClauses.Add($"ARRAY_CONTAINS(c.categoryIds, @categoryId)");
+        }
+
+        var whereClause = string.Join(" AND ", whereClauses);
+
+        var sortBy = parameters.SortBy?.ToLowerInvariant();
+        var sortField = sortBy == "price" ? "c.price" : "c.name";
+        var sortDirection = parameters.SortDirection?.ToLowerInvariant() == "desc" ? "DESC" : "ASC";
+
+        var offset = (parameters.Page - 1) * parameters.PageSize;
+
+        var mainQueryText = $"SELECT * FROM c WHERE {whereClause} ORDER BY {sortField} {sortDirection} OFFSET @offset LIMIT @limit";
+        var queryDefinition = BuildQueryWithParameters(mainQueryText, parameters, offset);
+
+        var iterator = _container.GetItemQueryIterator<Product>(queryDefinition);
+        var products = new List<Product>();
+
+        while (iterator.HasMoreResults)
+        {
+            var response = await iterator.ReadNextAsync(cancellationToken);
+            products.AddRange(response);
+        }
+
+        var countQueryText = $"SELECT VALUE COUNT(1) FROM c WHERE {whereClause}";
+        var countQuery = BuildQueryWithParameters(countQueryText, parameters, null);
+
+        var countIterator = _container.GetItemQueryIterator<int>(countQuery);
+        var countResponse = await countIterator.ReadNextAsync(cancellationToken);
+        var totalCount = countResponse.FirstOrDefault();
+
+        return new PaginatedResponse<Product>(
+            products.AsReadOnly(),
+            totalCount,
+            parameters.Page,
+            parameters.PageSize);
+    }
+
+    private static QueryDefinition BuildQueryWithParameters(
+        string queryText,
+        ProductQueryParameters parameters,
+        int? offset)
+    {
+        var query = new QueryDefinition(queryText).WithParameter("@type", "Product");
+
+        if (offset.HasValue)
+        {
+            query = query
+                .WithParameter("@offset", offset.Value)
+                .WithParameter("@limit", parameters.PageSize);
+        }
+
+        if (parameters.MinPrice.HasValue)
+        {
+            query = query.WithParameter("@minPrice", parameters.MinPrice.Value);
+        }
+
+        if (parameters.MaxPrice.HasValue)
+        {
+            query = query.WithParameter("@maxPrice", parameters.MaxPrice.Value);
+        }
+
+        if (!string.IsNullOrEmpty(parameters.CategoryId))
+        {
+            query = query.WithParameter("@categoryId", parameters.CategoryId);
+        }
+
+        return query;
+    }
+
     public async Task<IReadOnlyList<Product>> GetAllProductsAsync(
         CancellationToken cancellationToken = default)
     {

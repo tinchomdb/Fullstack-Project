@@ -4,7 +4,7 @@
   }
 
   @if (displayedCategories().length > 0) {
-    <app-featured-categories [heading]="''" [categories]="displayedCategories()" />
+    <app-featured-categories [heading]="pageHeading()" [categories]="displayedCategories()" />
   }
 
   @if (featuredProduct(); as featured) {
