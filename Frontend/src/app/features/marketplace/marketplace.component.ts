@@ -118,15 +118,16 @@ export class MarketplaceComponent {
       maxPrice: this.filtersService.maxPrice(),
       sortBy: this.filtersService.sortBy(),
       sortDirection: this.filtersService.sortDirection(),
+      searchTerm: this.filtersService.searchTerm(),
     }));
 
     effect(() => {
       const filters = filtersWithoutPage();
-      
+
       untracked(() => {
         // Skip the initial run (currentPage will be 0)
         if (this.productsService.currentPage() === 0) return;
-        
+
         // Reset to page 1 and reload when filters change
         this.filtersService.resetToFirstPage();
         this.productsService.loadProducts(this.filtersService.buildApiParams());
@@ -136,9 +137,9 @@ export class MarketplaceComponent {
 
   protected onLoadMore(): void {
     if (this.loadingMore() || !this.hasMore()) return;
-    
+
     this.filtersService.loadNextPage();
-    
+
     untracked(() => {
       this.productsService.loadMoreProducts(this.filtersService.buildApiParams());
     });

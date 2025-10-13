@@ -17,6 +17,7 @@ public class CachedProductsRepository : IProductsRepository
     private const string ProductsBySellerPrefix = "products_seller_";
     private const string ProductsByCategoryPrefix = "products_category_";
     private const string ProductsByCategoriesPrefix = "products_categories_";
+    private const string ProductsSearchPrefix = "products_search_";
 
     public CachedProductsRepository(
         IProductsRepository inner,
@@ -34,7 +35,31 @@ public class CachedProductsRepository : IProductsRepository
         ProductQueryParameters parameters,
         CancellationToken cancellationToken = default)
     {
-        return await _inner.GetProductsAsync(parameters, cancellationToken);
+        // Only cache search results (search queries are more expensive than filtered queries)
+        if (!_cacheSettings.EnableCaching || !parameters.IsSearching)
+        {
+            return await _inner.GetProductsAsync(parameters, cancellationToken);
+        }
+
+        var cacheKey = GenerateSearchCacheKey(parameters);
+
+        return await _cache.GetOrCreateAsync(
+            cacheKey,
+            async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheSettings.ProductsExpirationMinutes);
+                _logger.LogInformation("Cache miss for search term: {SearchTerm}. Fetching from database.", parameters.SearchTerm);
+                return await _inner.GetProductsAsync(parameters, cancellationToken);
+            }) ?? new PaginatedResponse<Product>([], 0, parameters.Page, parameters.PageSize);
+    }
+
+    private static string GenerateSearchCacheKey(ProductQueryParameters parameters)
+    {
+        var searchTerm = parameters.SearchTerm?.Trim().ToLowerInvariant() ?? string.Empty;
+        var sortBy = parameters.SortBy?.ToLowerInvariant() ?? "name";
+        var sortDirection = parameters.SortDirection?.ToLowerInvariant() ?? "asc";
+        
+        return $"{ProductsSearchPrefix}{searchTerm}_{sortBy}_{sortDirection}_{parameters.Page}_{parameters.PageSize}";
     }
 
     public async Task<IReadOnlyList<Product>> GetAllProductsAsync(CancellationToken cancellationToken = default)
