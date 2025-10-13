@@ -1,0 +1,32 @@
+<div class="sort-dropdown">
+  <button
+    class="sort-button"
+    type="button"
+    (click)="toggleDropdown()"
+    [attr.aria-expanded]="isOpen()"
+    aria-label="Sort products"
+    aria-haspopup="listbox"
+  >
+    <span class="sort-label">{{ displayLabel() }}</span>
+    <app-chevron-icon [class.is-open]="isOpen()" />
+  </button>
+
+  @if (isOpen()) {
+    <ul class="sort-menu" role="listbox">
+      @for (option of sortOptions; track option.value) {
+        <li role="presentation">
+          <button
+            class="sort-option"
+            type="button"
+            role="option"
+            [attr.aria-selected]="option.value === currentSortOption().value"
+            [class.is-selected]="option.value === currentSortOption().value"
+            (click)="selectOption(option)"
+          >
+            {{ option.label }}
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

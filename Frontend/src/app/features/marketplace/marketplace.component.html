@@ -10,7 +10,13 @@
   @if (featuredProduct(); as featured) {
     <app-product-featured-card [product]="featured" />
   }
+
   @if (remainingProducts().length) {
-    <app-product-grid [products]="remainingProducts()" />
+    <div class="products-section">
+      <div class="products-controls">
+        <app-sort-dropdown />
+      </div>
+      <app-product-grid [products]="remainingProducts()" />
+    </div>
   }
 </section>
