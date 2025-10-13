@@ -32,7 +32,9 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () =>
-          import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
+          import('./features/marketplace/marketplace.component').then(
+            (m) => m.MarketplaceComponent,
+          ),
         data: {
           title: 'Products',
         },
@@ -40,7 +42,9 @@ export const routes: Routes = [
       {
         path: '**',
         loadComponent: () =>
-          import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
+          import('./features/marketplace/marketplace.component').then(
+            (m) => m.MarketplaceComponent,
+          ),
         data: { title: 'Category' },
       },
     ],

@@ -7,6 +7,7 @@ import { AdminCategoryTreeItemComponent } from './admin-category-tree-item/admin
 import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-checkbox.component';
 import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.component';
 import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.component';
+import { generateSlug } from '../../../shared/utils/form.utils';
 
 @Component({
   selector: 'app-admin-categories',
@@ -51,9 +52,10 @@ export class AdminCategoriesComponent implements OnInit {
     });
 
     // Auto-generate slug from name when creating new category
-    this.categoryForm.get('name')?.valueChanges.subscribe(() => {
+    this.categoryForm.get('name')?.valueChanges.subscribe((name) => {
       if (!this.editingCategory()) {
-        this.generateSlug();
+        const slug = generateSlug(name || '');
+        this.categoryForm.patchValue({ slug });
       }
     });
   }
@@ -136,14 +138,9 @@ export class AdminCategoriesComponent implements OnInit {
     });
   }
 
-  generateSlug(): void {
+  manuallyGenerateSlug(): void {
     const name = this.categoryForm.get('name')?.value || '';
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
+    const slug = generateSlug(name);
     this.categoryForm.patchValue({ slug });
   }
 

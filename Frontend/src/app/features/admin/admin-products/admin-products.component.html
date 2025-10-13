@@ -22,13 +22,25 @@
           [errorMessage]="'Product name is required (min 3 characters)'"
         />
 
-        <app-form-field
-          [control]="$any(productForm.get('slug'))"
-          [id]="'slug'"
-          [label]="'Slug'"
-          [fullWidth]="true"
-          [errorMessage]="'Slug is required (letters, numbers, hyphens)'"
-        />
+        <div class="slug-field-wrapper">
+          <app-form-field
+            [control]="$any(productForm.get('slug'))"
+            [id]="'slug'"
+            [label]="'Slug'"
+            [fullWidth]="true"
+            [errorMessage]="'Slug is required (letters, numbers, hyphens)'"
+          />
+          <app-button
+            type="button"
+            (click)="manuallyGenerateSlug()"
+            variant="secondary"
+            shape="rounded"
+            class="slug-generate-btn"
+            title="Generate slug from name"
+          >
+            Generate
+          </app-button>
+        </div>
 
         <app-form-field
           [control]="$any(productForm.get('description'))"
