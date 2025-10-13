@@ -30,6 +30,6 @@ export class CategoryTreeItemComponent {
 
   // Derived values for template
   protected readonly categoryName = computed(() => this.category().name);
-  protected readonly categoryQueryParams = computed(() => ({ category: this.category().slug }));
+  protected readonly categoryQueryParams = computed(() => ({ category: this.category().id }));
   protected readonly productsRoute = ['/products'] as const;
 }

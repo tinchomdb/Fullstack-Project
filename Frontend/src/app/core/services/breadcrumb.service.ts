@@ -47,11 +47,11 @@ export class BreadcrumbService {
     }
 
     if (segments.length === 0 || (segments.length === 1 && segments[0].path === 'products')) {
-      const categorySlug = queryParams['category'];
+      const categoryId = queryParams['category'];
 
-      if (categorySlug) {
+      if (categoryId) {
         // Find category by slug
-        const category = categories.find((c) => c.slug === categorySlug);
+        const category = categories.find((c) => c.id === categoryId);
 
         if (category) {
           const categoryPath = this.categoriesService.getCategoryPath(category.id);

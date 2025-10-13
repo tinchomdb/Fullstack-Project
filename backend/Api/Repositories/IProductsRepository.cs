@@ -4,6 +4,8 @@ namespace Api.Repositories;
 
 public interface IProductsRepository
 {
+    Task<PaginatedResponse<Product>> GetProductsAsync(ProductQueryParameters parameters, CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<Product>> GetAllProductsAsync(CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<Product>> GetProductsBySellerAsync(string sellerId, CancellationToken cancellationToken = default);
