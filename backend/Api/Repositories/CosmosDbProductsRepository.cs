@@ -8,14 +8,17 @@ namespace Api.Repositories;
 public sealed class CosmosDbProductsRepository : IProductsRepository
 {
     private readonly Container _container;
+    private readonly ICategoriesRepository _categoriesRepository;
 
     public CosmosDbProductsRepository(
         CosmosClient cosmosClient,
-        IOptions<CosmosDbSettings> cosmosDbSettings)
+        IOptions<CosmosDbSettings> cosmosDbSettings,
+        ICategoriesRepository categoriesRepository)
     {
         var settings = cosmosDbSettings.Value;
         var database = cosmosClient.GetDatabase(settings.DatabaseName);
         _container = database.GetContainer(settings.ContainersNames.Products);
+        _categoriesRepository = categoriesRepository ?? throw new ArgumentNullException(nameof(categoriesRepository));
     }
 
     public async Task<PaginatedResponse<Product>> GetProductsAsync(
@@ -34,9 +37,21 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
             whereClauses.Add("c.price <= @maxPrice");
         }
 
+        string[]? categoryIdsToFilter = null;
         if (!string.IsNullOrEmpty(parameters.CategoryId))
         {
-            whereClauses.Add($"ARRAY_CONTAINS(c.categoryIds, @categoryId)");
+            var descendantCategoryIds = await _categoriesRepository.GetAllDescendantCategoryIdsAsync(
+                parameters.CategoryId,
+                cancellationToken);
+
+            categoryIdsToFilter = descendantCategoryIds.ToArray();
+
+            if (categoryIdsToFilter.Length > 0)
+            {
+                var categoryConditions = string.Join(" OR ",
+                    categoryIdsToFilter.Select((_, index) => $"ARRAY_CONTAINS(c.categoryIds, @categoryId{index})"));
+                whereClauses.Add($"({categoryConditions})");
+            }
         }
 
         var whereClause = string.Join(" AND ", whereClauses);
@@ -48,7 +63,7 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         var offset = (parameters.Page - 1) * parameters.PageSize;
 
         var mainQueryText = $"SELECT * FROM c WHERE {whereClause} ORDER BY {sortField} {sortDirection} OFFSET @offset LIMIT @limit";
-        var queryDefinition = BuildQueryWithParameters(mainQueryText, parameters, offset);
+        var queryDefinition = BuildQueryWithParameters(mainQueryText, parameters, offset, categoryIdsToFilter);
 
         var iterator = _container.GetItemQueryIterator<Product>(queryDefinition);
         var products = new List<Product>();
@@ -60,7 +75,7 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         }
 
         var countQueryText = $"SELECT VALUE COUNT(1) FROM c WHERE {whereClause}";
-        var countQuery = BuildQueryWithParameters(countQueryText, parameters, null);
+        var countQuery = BuildQueryWithParameters(countQueryText, parameters, null, categoryIdsToFilter);
 
         var countIterator = _container.GetItemQueryIterator<int>(countQuery);
         var countResponse = await countIterator.ReadNextAsync(cancellationToken);
@@ -76,7 +91,8 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
     private static QueryDefinition BuildQueryWithParameters(
         string queryText,
         ProductQueryParameters parameters,
-        int? offset)
+        int? offset,
+        string[]? categoryIdsToFilter = null)
     {
         var query = new QueryDefinition(queryText).WithParameter("@type", "Product");
 
@@ -97,9 +113,12 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
             query = query.WithParameter("@maxPrice", parameters.MaxPrice.Value);
         }
 
-        if (!string.IsNullOrEmpty(parameters.CategoryId))
+        if (categoryIdsToFilter is not null && categoryIdsToFilter.Length > 0)
         {
-            query = query.WithParameter("@categoryId", parameters.CategoryId);
+            for (int i = 0; i < categoryIdsToFilter.Length; i++)
+            {
+                query = query.WithParameter($"@categoryId{i}", categoryIdsToFilter[i]);
+            }
         }
 
         return query;
@@ -169,6 +188,27 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         {
             return null;
         }
+    }
+
+    public async Task<Product?> GetProductBySlugAsync(
+        string slug,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new QueryDefinition(
+            "SELECT * FROM c WHERE c.slug = @slug AND c.type = @type")
+            .WithParameter("@slug", slug)
+            .WithParameter("@type", "Product");
+
+        var iterator = _container.GetItemQueryIterator<Product>(query);
+        var products = new List<Product>();
+
+        while (iterator.HasMoreResults)
+        {
+            var response = await iterator.ReadNextAsync(cancellationToken);
+            products.AddRange(response);
+        }
+
+        return products.FirstOrDefault();
     }
 
     public async Task<IReadOnlyList<Product>> GetProductsByCategoryAsync(

@@ -50,4 +50,8 @@ export class NavbarComponent {
   closeMobileMenu(): void {
     this.isMobileMenuOpen.set(false);
   }
+
+  getCategoryUrl(categoryId: string): string {
+    return this.categoriesService.buildCategoryUrl(categoryId);
+  }
 }

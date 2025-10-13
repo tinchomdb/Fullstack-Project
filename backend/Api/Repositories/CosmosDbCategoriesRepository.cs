@@ -97,4 +97,53 @@ public sealed class CosmosDbCategoriesRepository : ICategoriesRepository
             new PartitionKey(categoryId),
             cancellationToken: cancellationToken);
     }
+
+    public async Task<IReadOnlyList<string>> GetAllDescendantCategoryIdsAsync(
+        string categoryId,
+        CancellationToken cancellationToken = default)
+    {
+        var allCategories = await GetCategoriesAsync(cancellationToken);
+        var categoryLookup = allCategories.ToDictionary(c => c.Id);
+
+        if (!categoryLookup.ContainsKey(categoryId))
+        {
+            return Array.Empty<string>();
+        }
+
+        var result = new List<string> { categoryId };
+        var queue = new Queue<string>();
+        queue.Enqueue(categoryId);
+
+        while (queue.Count > 0)
+        {
+            var currentId = queue.Dequeue();
+            
+            // Find all categories that have this category as their parent
+            var children = allCategories.Where(c => c.ParentCategoryId == currentId);
+            
+            foreach (var child in children)
+            {
+                if (!result.Contains(child.Id))
+                {
+                    result.Add(child.Id);
+                    queue.Enqueue(child.Id);
+                }
+            }
+        }
+
+        return result.AsReadOnly();
+    }
+
+    public async Task<IReadOnlyList<Category>> GetChildrenCategoriesAsync(
+        string? parentCategoryId,
+        CancellationToken cancellationToken = default)
+    {
+        var allCategories = await GetCategoriesAsync(cancellationToken);
+        
+        // If parentCategoryId is null, return root categories (those with no parent)
+        return allCategories
+            .Where(c => c.ParentCategoryId == parentCategoryId)
+            .ToList()
+            .AsReadOnly();
+    }
 }

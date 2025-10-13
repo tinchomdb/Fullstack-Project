@@ -109,6 +109,33 @@ export class CategoriesService {
     return this.categoryMap().get(categoryId);
   }
 
+  getCategoryBySlug(slug: string): Category | undefined {
+    return this.categoriesArray().find((c) => c.slug === slug);
+  }
+
+  getCategoryByPath(path: string): Category | undefined {
+    if (!path) return undefined;
+    const slugs = path.split('/').filter((s) => s.length > 0);
+    if (slugs.length === 0) return undefined;
+    const lastCategorySlug = slugs[slugs.length - 1];
+    const categories = this.categoriesArray();
+
+    const currentCategory = categories.find((c) => c.slug === lastCategorySlug);
+    if (!currentCategory) return undefined;
+
+    return currentCategory;
+  }
+
+  buildCategoryPath(categoryId: string): string {
+    const path = this.getCategoryPath(categoryId);
+    return path.map((c) => c.slug).join('/');
+  }
+
+  buildCategoryUrl(categoryId: string): string {
+    const path = this.buildCategoryPath(categoryId);
+    return `/category/${path}`;
+  }
+
   private getAllCategories(): Observable<readonly Category[]> {
     return this.http.get<readonly Category[]>(this.baseUrl);
   }

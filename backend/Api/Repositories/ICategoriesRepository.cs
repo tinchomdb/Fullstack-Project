@@ -13,4 +13,8 @@ public interface ICategoriesRepository
     Task<Category?> UpdateCategoryAsync(Category category, CancellationToken cancellationToken = default);
 
     Task DeleteCategoryAsync(string categoryId, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<string>> GetAllDescendantCategoryIdsAsync(string categoryId, CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<Category>> GetChildrenCategoriesAsync(string? parentCategoryId, CancellationToken cancellationToken = default);
 }

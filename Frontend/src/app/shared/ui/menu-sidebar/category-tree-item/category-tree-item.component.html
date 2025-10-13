@@ -12,12 +12,7 @@
   @if (isExpanded()) {
     <ul class="subcategory-list">
       <li>
-        <a
-          [routerLink]="productsRoute"
-          [queryParams]="categoryQueryParams()"
-          class="category-link is-all"
-          (click)="categoryClick.emit()"
-        >
+        <a [routerLink]="categoryUrl()" class="category-link is-all" (click)="categoryClick.emit()">
           All {{ categoryName() }}
         </a>
       </li>
@@ -37,8 +32,7 @@
   }
 } @else {
   <a
-    [routerLink]="productsRoute"
-    [queryParams]="categoryQueryParams()"
+    [routerLink]="categoryUrl()"
     class="category-link"
     [class.is-nested]="!isRootLevel()"
     (click)="categoryClick.emit()"

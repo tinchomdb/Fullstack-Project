@@ -70,4 +70,20 @@ public sealed class ProductsController(IProductsRepository repository) : Control
 
         return Ok(product);
     }
+
+    [HttpGet("by-slug/{slug}")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Product>> GetProductBySlug(string slug, CancellationToken cancellationToken)
+    {
+        var product = await repository.GetProductBySlugAsync(slug, cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(product);
+    }
 }

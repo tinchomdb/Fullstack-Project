@@ -19,8 +19,6 @@ public sealed record class Category
     
     public string? ParentCategoryId { get; init; }
 
-    public IReadOnlyList<string> SubcategoryIds { get; init; } = [];
-
     [JsonPropertyName("type")]
     public string Type { get; init; } = "Category";
 }

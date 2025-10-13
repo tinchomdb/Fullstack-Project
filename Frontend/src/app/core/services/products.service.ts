@@ -46,7 +46,7 @@ export class ProductsService {
   }
 
   reloadProducts(): void {
-    this.productsResource.reset();
+    this.loadProducts();
   }
 
   createProduct(product: Partial<Product>): Observable<Product> {
@@ -80,6 +80,16 @@ export class ProductsService {
     return this.http
       .get<ProductApiModel>(`${this.baseUrl}/${productId}/seller/${sellerId}`)
       .pipe(map(mapProductFromApi));
+  }
+
+  getProductBySlug(slug: string): Observable<Product> {
+    return this.http
+      .get<ProductApiModel>(`${this.baseUrl}/by-slug/${slug}`)
+      .pipe(map(mapProductFromApi));
+  }
+
+  buildProductUrl(product: Product): string {
+    return `/products/${product.slug}`;
   }
 
   private getFilteredProducts(
