@@ -16,6 +16,7 @@ import { ProductGridComponent } from '../../shared/ui/product-grid/product-grid.
 import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories/featured-categories.component';
 import { BannerCarouselComponent } from '../../shared/ui/banner-carousel/banner-carousel.component';
 import { SortDropdownComponent } from '../../shared/ui/sort-dropdown/sort-dropdown.component';
+import { IntersectionObserverDirective } from '../../shared/ui/intersection-observer.directive';
 import {
   ProductFiltersApiParams,
   ProductSortField,
@@ -25,7 +26,7 @@ import { DEFAULT_SORT_OPTION } from '../../core/models/sort-option.model';
 import { FiltersService } from '../../core/services/filters.service';
 import { combineLatest, map } from 'rxjs';
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 4;
 
 @Component({
   selector: 'app-products-page',
@@ -35,6 +36,7 @@ const DEFAULT_PAGE_SIZE = 20;
     FeaturedCategoriesComponent,
     BannerCarouselComponent,
     SortDropdownComponent,
+    IntersectionObserverDirective,
   ],
   templateUrl: './marketplace.component.html',
   styleUrl: './marketplace.component.scss',
@@ -65,6 +67,8 @@ export class MarketplaceComponent {
   protected readonly products = this.productsService.products;
   protected readonly featuredProduct = this.productsService.featuredProduct;
   protected readonly remainingProducts = this.productsService.remainingProducts;
+  protected readonly loadingMore = this.productsService.loadingMore;
+  protected readonly hasMore = this.productsService.hasMore;
 
   protected readonly displayedCategories = computed(() => {
     const category = this.activeCategory();
@@ -95,26 +99,48 @@ export class MarketplaceComponent {
   );
 
   constructor() {
+    // Handle route changes - this sets up initial filters and loads products
     effect(() => {
-      // Read the signal explicitly here - this is what triggers the effect
       const { categoryPath, queryParams } = this.routeParams();
-
-      // Parse filters without reading any signals
       const filters = this.parseFiltersFromRoute(categoryPath, queryParams);
 
-      this.filtersService.setAllFilters(filters);
-
       untracked(() => {
+        this.filtersService.setAllFilters(filters);
         this.productsService.loadProducts(filters);
       });
     });
 
-    effect(() => {
-      const filters = this.filtersService.filters(); // Read the signal
+    // Handle filter changes (sort, price, category) - but NOT page changes
+    // Track individual filter signals to avoid page dependency
+    const filtersWithoutPage = computed(() => ({
+      categoryId: this.filtersService.categoryId(),
+      minPrice: this.filtersService.minPrice(),
+      maxPrice: this.filtersService.maxPrice(),
+      sortBy: this.filtersService.sortBy(),
+      sortDirection: this.filtersService.sortDirection(),
+    }));
 
+    effect(() => {
+      const filters = filtersWithoutPage();
+      
       untracked(() => {
+        // Skip the initial run (currentPage will be 0)
+        if (this.productsService.currentPage() === 0) return;
+        
+        // Reset to page 1 and reload when filters change
+        this.filtersService.resetToFirstPage();
         this.productsService.loadProducts(this.filtersService.buildApiParams());
       });
+    });
+  }
+
+  protected onLoadMore(): void {
+    if (this.loadingMore() || !this.hasMore()) return;
+    
+    this.filtersService.loadNextPage();
+    
+    untracked(() => {
+      this.productsService.loadMoreProducts(this.filtersService.buildApiParams());
     });
   }
 
@@ -131,14 +157,6 @@ export class MarketplaceComponent {
       sortBy: DEFAULT_SORT_OPTION.sortBy,
       sortDirection: DEFAULT_SORT_OPTION.sortDirection,
     };
-
-    // Parse page
-    if (typeof queryParams['page'] === 'string') {
-      const page = parseInt(queryParams['page'], 10);
-      if (!isNaN(page) && page >= 1) {
-        filters.page = page;
-      }
-    }
 
     // Parse minPrice
     if (typeof queryParams['minPrice'] === 'string') {

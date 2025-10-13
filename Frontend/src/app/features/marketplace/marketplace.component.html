@@ -17,6 +17,25 @@
         <app-sort-dropdown />
       </div>
       <app-product-grid [products]="remainingProducts()" />
+      
+      @if (hasMore()) {
+        <div 
+          class="scroll-sentinel" 
+          appIntersectionObserver 
+          (intersecting)="onLoadMore()"
+          aria-hidden="true">
+          @if (loadingMore()) {
+            <div class="loading-indicator">
+              <div class="spinner"></div>
+              <span>Loading more products...</span>
+            </div>
+          }
+        </div>
+      } @else if (!loadingMore() && remainingProducts().length > 0) {
+        <div class="end-message">
+          <p>You've reached the end of the catalog</p>
+        </div>
+      }
     </div>
   }
 </section>
