@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
-import { CategoryTreeNode } from '../../../../core/services/categories.service';
+import { CategoryTreeNode, CategoriesService } from '../../../../core/services/categories.service';
 import { ChevronIconComponent } from '../../icons/chevron-icon.component';
 
 @Component({
@@ -22,6 +22,8 @@ export class CategoryTreeItemComponent {
   toggleCategory = output<string>();
   categoryClick = output<void>();
 
+  private readonly categoriesService = inject(CategoriesService);
+
   // Core computed values
   protected readonly category = computed(() => this.node().category);
   protected readonly hasChildren = computed(() => this.node().children?.length > 0);
@@ -30,6 +32,7 @@ export class CategoryTreeItemComponent {
 
   // Derived values for template
   protected readonly categoryName = computed(() => this.category().name);
-  protected readonly categoryQueryParams = computed(() => ({ category: this.category().id }));
-  protected readonly productsRoute = ['/products'] as const;
+  protected readonly categoryUrl = computed(() =>
+    this.categoriesService.buildCategoryUrl(this.category().id),
+  );
 }

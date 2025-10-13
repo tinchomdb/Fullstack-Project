@@ -95,4 +95,18 @@ public class CachedCategoriesRepository : ICategoriesRepository
         _cache.Remove($"{CategoryKeyPrefix}{categoryId}");
         _logger.LogInformation("Cache invalidated after deleting category {CategoryId}.", categoryId);
     }
+
+    public async Task<IReadOnlyList<string>> GetAllDescendantCategoryIdsAsync(
+        string categoryId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _inner.GetAllDescendantCategoryIdsAsync(categoryId, cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<Category>> GetChildrenCategoriesAsync(
+        string? parentCategoryId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _inner.GetChildrenCategoriesAsync(parentCategoryId, cancellationToken);
+    }
 }

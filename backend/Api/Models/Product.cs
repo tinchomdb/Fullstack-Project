@@ -11,6 +11,9 @@ public sealed record class Product
 
     public string Description { get; init; } = string.Empty;
 
+    [JsonPropertyName("slug")]
+    public string Slug { get; init; } = string.Empty;
+
     public decimal Price { get; init; }
 
     public string Currency { get; init; } = "USD";

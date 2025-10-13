@@ -2,6 +2,7 @@ import { SellerApiModel } from './seller-api.model';
 
 export type ProductApiModel = {
   readonly id?: string;
+  readonly slug?: string;
   readonly name?: string;
   readonly description?: string;
   readonly price?: number;

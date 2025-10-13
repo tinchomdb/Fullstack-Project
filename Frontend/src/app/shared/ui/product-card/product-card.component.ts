@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 
 import { Product } from '../../../core/models/product.model';
 import { CartService } from '../../../core/services/cart.service';
+import { ProductsService } from '../../../core/services/products.service';
 import { ButtonComponent } from '../button/button.component';
 
 @Component({
@@ -17,15 +18,12 @@ export class ProductCardComponent {
   readonly product = input.required<Product>();
 
   private readonly cartService = inject(CartService);
+  private readonly productsService = inject(ProductsService);
 
   protected readonly isAddingToCart = this.cartService.loading;
   protected readonly productLink = computed(() => {
     const prod = this.product();
-    return ['/products', prod.id];
-  });
-  protected readonly productQueryParams = computed(() => {
-    const prod = this.product();
-    return { sellerId: prod.sellerId };
+    return this.productsService.buildProductUrl(prod);
   });
 
   onAddToCart(): void {

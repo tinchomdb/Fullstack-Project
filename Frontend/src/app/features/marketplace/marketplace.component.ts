@@ -1,14 +1,30 @@
-import { ChangeDetectionStrategy, Component, inject, computed, DestroyRef } from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
-import { distinctUntilChanged, skip } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  computed,
+  effect,
+  untracked,
+} from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Params } from '@angular/router';
 
 import { ProductsService } from '../../core/services/products.service';
 import { CategoriesService } from '../../core/services/categories.service';
-import { FiltersService } from '../../core/services/filters.service';
 import { ProductFeaturedCardComponent } from '../../shared/ui/product-featured-card/product-featured-card.component';
 import { ProductGridComponent } from '../../shared/ui/product-grid/product-grid.component';
 import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories/featured-categories.component';
 import { BannerCarouselComponent } from '../../shared/ui/banner-carousel/banner-carousel.component';
+import {
+  ProductFiltersApiParams,
+  ProductSortField,
+  SortDirection,
+} from '../../core/models/product-filters.model';
+import { DEFAULT_SORT_OPTION } from '../../core/models/sort-option.model';
+import { FiltersService } from '../../core/services/filters.service';
+import { combineLatest, map } from 'rxjs';
+
+const DEFAULT_PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-products-page',
@@ -22,20 +38,18 @@ import { BannerCarouselComponent } from '../../shared/ui/banner-carousel/banner-
   styleUrl: './marketplace.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductsComponent {
+export class MarketplaceComponent {
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly filtersService = inject(FiltersService);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly headingId = 'products-heading';
 
   protected readonly activeCategory = computed(() => {
-    const categoryId = this.filtersService.categoryId();
-    if (!categoryId) return null;
-
-    const categories = this.categoriesService.categories() ?? [];
-    return categories.find((c) => c.id === categoryId) ?? null;
+    const filters = this.filtersService.filters();
+    if (!filters.categoryId) return null;
+    return this.categoriesService.getCategoryById(filters.categoryId) ?? null;
   });
 
   protected readonly loading = computed(
@@ -63,24 +77,94 @@ export class ProductsComponent {
     return category ? category.name : '';
   });
 
+  private readonly routeParams = toSignal(
+    combineLatest([this.route.firstChild?.url ?? this.route.url, this.route.queryParams]).pipe(
+      map(([urlSegments, queryParams]) => {
+        // Extract path after 'category/' prefix
+        const categoryPath =
+          urlSegments
+            .slice(1) // Skip 'category' segment
+            .map((segment) => segment.path)
+            .join('/') || null;
+
+        return {
+          categoryPath,
+          queryParams: queryParams as Params,
+        };
+      }),
+    ),
+    { initialValue: { categoryPath: null, queryParams: {} as Params } },
+  );
+
   constructor() {
-    // Convert filters signal to observable and subscribe to changes
-    // Skip first emission to avoid loading on init (already loaded by app.ts)
-    toObservable(this.filtersService.filters)
-      .pipe(
-        skip(1), // Skip initial value
-        distinctUntilChanged((prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)),
-      )
-      .subscribe((filters) => {
-        this.productsService.loadProducts({
-          page: filters.page,
-          pageSize: filters.pageSize,
-          sortBy: filters.sortBy,
-          sortDirection: filters.sortDirection,
-          ...(filters.minPrice !== null && { minPrice: filters.minPrice }),
-          ...(filters.maxPrice !== null && { maxPrice: filters.maxPrice }),
-          ...(filters.categoryId !== null && { categoryId: filters.categoryId }),
-        });
+    effect(() => {
+      // Read the signal explicitly here - this is what triggers the effect
+      const { categoryPath, queryParams } = this.routeParams();
+
+      // Parse filters without reading any signals
+      const filters = this.parseFiltersFromRoute(categoryPath, queryParams);
+
+      this.filtersService.setAllFilters(filters);
+
+      untracked(() => {
+        this.productsService.loadProducts(filters);
       });
+    });
+  }
+
+  private parseFiltersFromRoute(
+    categoryPath: string | null,
+    queryParams: Params,
+  ): ProductFiltersApiParams {
+    const category = categoryPath ? this.categoriesService.getCategoryByPath(categoryPath) : null;
+    const categoryId = category?.id ?? undefined;
+
+    const filters: ProductFiltersApiParams = {
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      sortBy: DEFAULT_SORT_OPTION.sortBy,
+      sortDirection: DEFAULT_SORT_OPTION.sortDirection,
+    };
+
+    // Parse page
+    if (typeof queryParams['page'] === 'string') {
+      const page = parseInt(queryParams['page'], 10);
+      if (!isNaN(page) && page >= 1) {
+        filters.page = page;
+      }
+    }
+
+    // Parse minPrice
+    if (typeof queryParams['minPrice'] === 'string') {
+      const minPrice = parseFloat(queryParams['minPrice']);
+      if (!isNaN(minPrice) && minPrice >= 0) {
+        filters.minPrice = minPrice;
+      }
+    }
+
+    // Parse maxPrice
+    if (typeof queryParams['maxPrice'] === 'string') {
+      const maxPrice = parseFloat(queryParams['maxPrice']);
+      if (!isNaN(maxPrice) && maxPrice >= 0) {
+        filters.maxPrice = maxPrice;
+      }
+    }
+
+    // Parse sort
+    const sortBy = queryParams['sortBy'];
+    const sortDirection = queryParams['sortDirection'];
+    if (
+      (sortBy === 'name' || sortBy === 'price') &&
+      (sortDirection === 'asc' || sortDirection === 'desc')
+    ) {
+      filters.sortBy = sortBy as ProductSortField;
+      filters.sortDirection = sortDirection as SortDirection;
+    }
+
+    // Add category if present
+
+    filters.categoryId = categoryId;
+
+    return filters;
   }
 }

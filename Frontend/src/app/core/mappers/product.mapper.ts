@@ -7,6 +7,7 @@ import { ensureString, ensureNumber } from '../../shared/utils/normalization.uti
 export function mapProductFromApi(dto: ProductApiModel): Product {
   return {
     id: ensureString(dto.id),
+    slug: ensureString(dto.slug),
     name: ensureString(dto.name, 'Unnamed product'),
     description: ensureString(dto.description, 'No description available.'),
     price: ensureNumber(dto.price),
@@ -32,6 +33,7 @@ export function mapSellerFromApi(dto: SellerApiModel | null | undefined, fallbac
 export function mapProductToApi(product: Product): ProductApiModel {
   return {
     id: product.id,
+    slug: product.slug,
     name: product.name,
     description: product.description,
     price: product.price,

@@ -30,7 +30,7 @@ import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.com
   styleUrl: './admin-products.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminProductsComponent {
+export class AdminProductsComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly fb = inject(FormBuilder);
@@ -46,6 +46,7 @@ export class AdminProductsComponent {
 
   readonly productForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
+    slug: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z0-9-]+$/i)]],
     description: ['', [Validators.required]],
     price: [0, [Validators.required, Validators.min(0)]],
     stock: [0, [Validators.required, Validators.min(0)]],
@@ -63,12 +64,23 @@ export class AdminProductsComponent {
       return field ? field.invalid && field.touched : false;
     });
 
+  ngOnInit(): void {
+    this.productsService.loadProducts();
+  }
+
   openCreateForm(): void {
     this.editingProduct.set(null);
     this.productForm.reset({
+      name: '',
+      slug: '',
+      description: '',
       currency: 'USD',
       stock: 0,
       price: 0,
+      categoryId: '',
+      imageUrls: '',
+      featured: false,
+      sellerId: '',
     });
     this.showForm.set(true);
   }
@@ -77,6 +89,7 @@ export class AdminProductsComponent {
     this.editingProduct.set(product);
     this.productForm.patchValue({
       name: product.name,
+      slug: product.slug,
       description: product.description,
       price: product.price,
       stock: product.stock ?? 0,
@@ -114,9 +127,11 @@ export class AdminProductsComponent {
       : [];
 
     const sellerId = formValue.sellerId ?? '';
+    const slug = (formValue.slug ?? '').trim().toLowerCase();
 
     const productData: Partial<Product> = {
       name: formValue.name,
+      slug,
       description: formValue.description,
       price: formValue.price,
       stock: formValue.stock,

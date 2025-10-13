@@ -23,6 +23,14 @@
         />
 
         <app-form-field
+          [control]="$any(productForm.get('slug'))"
+          [id]="'slug'"
+          [label]="'Slug'"
+          [fullWidth]="true"
+          [errorMessage]="'Slug is required (letters, numbers, hyphens)'"
+        />
+
+        <app-form-field
           [control]="$any(productForm.get('description'))"
           [id]="'description'"
           [label]="'Description'"

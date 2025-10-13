@@ -34,31 +34,28 @@ export class ProductDetailComponent implements OnInit {
   protected readonly quantity = signal(1);
   protected readonly addingToCart = signal(false);
 
-  private productId = '';
-  private sellerId = '';
+  private productSlug = '';
 
   protected onQuantityChange(newQuantity: number): void {
     this.quantity.set(newQuantity);
   }
 
   ngOnInit(): void {
-    const productId = this.route.snapshot.paramMap.get('id');
-    const sellerId = this.route.snapshot.queryParamMap.get('sellerId');
+    const slug = this.route.snapshot.paramMap.get('slug');
 
-    if (!productId || !sellerId) {
-      this.error.set('Invalid product parameters');
+    if (!slug) {
+      this.error.set('Invalid product URL');
       this.loading.set(false);
       return;
     }
 
-    this.productId = productId;
-    this.sellerId = sellerId;
-    this.loadProduct(productId, sellerId);
+    this.productSlug = slug;
+    this.loadProduct(slug);
   }
 
   protected retry(): void {
-    if (this.productId && this.sellerId) {
-      this.loadProduct(this.productId, this.sellerId);
+    if (this.productSlug) {
+      this.loadProduct(this.productSlug);
     }
   }
 
@@ -83,12 +80,12 @@ export class ProductDetailComponent implements OnInit {
     }, 600);
   }
 
-  private loadProduct(productId: string, sellerId: string): void {
+  private loadProduct(slug: string): void {
     this.loading.set(true);
     this.error.set(null);
 
     this.productsService
-      .getProduct(productId, sellerId)
+      .getProductBySlug(slug)
       .pipe(
         finalize(() => {
           this.loading.set(false);

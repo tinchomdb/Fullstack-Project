@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Routes, UrlSegment, UrlMatchResult } from '@angular/router';
 import { MsalGuard } from '@azure/msal-angular';
 import { adminGuard } from './core/auth/admin.guard';
 
@@ -11,19 +11,54 @@ export const routes: Routes = [
   {
     path: 'products',
     loadComponent: () =>
-      import('./features/marketplace/marketplace.component').then((m) => m.ProductsComponent),
+      import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
     data: {
       title: 'Products',
     },
   },
   {
-    path: 'products/:id',
+    path: 'products/:slug',
     loadComponent: () =>
       import('./features/product-detail/product-detail.component').then(
         (m) => m.ProductDetailComponent,
       ),
     data: {
       title: 'Product Details',
+    },
+  },
+  // Matcher route - captures any number of segments after 'category' and provides
+  // them as a single 'categoryPath' parameter (e.g. 'books/fantasy')
+  {
+    matcher: (segments: UrlSegment[]): UrlMatchResult | null => {
+      if (segments.length === 0) return null;
+      // first segment must be 'category'
+      if (segments[0].path !== 'category') return null;
+
+      // if there's only 'category' (no extra segments), do not match here
+      if (segments.length === 1) return null;
+
+      const rest = segments
+        .slice(1)
+        .map((s) => s.path)
+        .join('/');
+
+      return {
+        consumed: segments,
+        posParams: {
+          categoryPath: new UrlSegment(rest, {}),
+        },
+      };
+    },
+    loadComponent: () =>
+      import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
+    data: { title: 'Category' },
+  },
+  {
+    path: 'category',
+    loadComponent: () =>
+      import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
+    data: {
+      title: 'Products',
     },
   },
   {

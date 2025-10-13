@@ -36,4 +36,15 @@ public sealed class CategoriesController(ICategoriesRepository repository) : Con
 
         return Ok(category);
     }
+
+    [HttpGet("by-parent")]
+    [AllowAnonymous]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<Category>>> GetCategoriesByParent(
+        [FromQuery] string? parentId,
+        CancellationToken cancellationToken)
+    {
+        var categories = await repository.GetChildrenCategoriesAsync(parentId, cancellationToken);
+        return Ok(categories);
+    }
 }

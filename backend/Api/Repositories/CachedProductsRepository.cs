@@ -92,6 +92,25 @@ public class CachedProductsRepository : IProductsRepository
             });
     }
 
+    public async Task<Product?> GetProductBySlugAsync(string slug, CancellationToken cancellationToken = default)
+    {
+        if (!_cacheSettings.EnableCaching)
+        {
+            return await _inner.GetProductBySlugAsync(slug, cancellationToken);
+        }
+
+        var cacheKey = $"product_slug_{slug}";
+        
+        return await _cache.GetOrCreateAsync(
+            cacheKey,
+            async entry =>
+            {
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheSettings.SingleItemExpirationMinutes);
+                _logger.LogInformation("Cache miss for product by slug {Slug}. Fetching from database.", slug);
+                return await _inner.GetProductBySlugAsync(slug, cancellationToken);
+            });
+    }
+
     public async Task<IReadOnlyList<Product>> GetProductsByCategoryAsync(string categoryId, CancellationToken cancellationToken = default)
     {
         if (!_cacheSettings.EnableCaching)
@@ -168,6 +187,12 @@ public class CachedProductsRepository : IProductsRepository
         _cache.Remove(AllProductsKey);
         _cache.Remove($"{ProductKeyPrefix}{product.Id}_{product.Seller.Id}");
         _cache.Remove($"{ProductsBySellerPrefix}{product.Seller.Id}");
+        
+        // Invalidate slug-based cache
+        if (!string.IsNullOrEmpty(product.Slug))
+        {
+            _cache.Remove($"product_slug_{product.Slug}");
+        }
         
         // Invalidate category-based caches
         foreach (var categoryId in product.CategoryIds)
