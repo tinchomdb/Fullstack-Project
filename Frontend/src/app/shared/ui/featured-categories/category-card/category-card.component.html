@@ -1,6 +1,8 @@
 <a
   class="category-card"
   [routerLink]="categoryUrl()"
+  routerLinkActive="active"
+  [routerLinkActiveOptions]="{ exact: true }"
   [attr.aria-label]="'Browse ' + category().name"
 >
   @if (category().image; as image) {

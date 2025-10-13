@@ -26,40 +26,24 @@ export const routes: Routes = [
       title: 'Product Details',
     },
   },
-  // Matcher route - captures any number of segments after 'category' and provides
-  // them as a single 'categoryPath' parameter (e.g. 'books/fantasy')
-  {
-    matcher: (segments: UrlSegment[]): UrlMatchResult | null => {
-      if (segments.length === 0) return null;
-      // first segment must be 'category'
-      if (segments[0].path !== 'category') return null;
-
-      // if there's only 'category' (no extra segments), do not match here
-      if (segments.length === 1) return null;
-
-      const rest = segments
-        .slice(1)
-        .map((s) => s.path)
-        .join('/');
-
-      return {
-        consumed: segments,
-        posParams: {
-          categoryPath: new UrlSegment(rest, {}),
-        },
-      };
-    },
-    loadComponent: () =>
-      import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
-    data: { title: 'Category' },
-  },
   {
     path: 'category',
-    loadComponent: () =>
-      import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
-    data: {
-      title: 'Products',
-    },
+    children: [
+      {
+        path: '',
+        loadComponent: () =>
+          import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
+        data: {
+          title: 'Products',
+        },
+      },
+      {
+        path: '**',
+        loadComponent: () =>
+          import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
+        data: { title: 'Category' },
+      },
+    ],
   },
   {
     path: 'cart',
