@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { CategoryTreeNode, CategoriesService } from '../../../../core/services/categories.service';
 import { ChevronIconComponent } from '../../icons/chevron-icon.component';
 
 @Component({
   selector: 'app-category-tree-item',
-  imports: [RouterLink, ChevronIconComponent],
+  imports: [RouterLink, RouterLinkActive, ChevronIconComponent],
   templateUrl: './category-tree-item.component.html',
   styleUrl: './category-tree-item.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

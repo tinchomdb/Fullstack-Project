@@ -78,14 +78,10 @@ export class MarketplaceComponent {
   });
 
   private readonly routeParams = toSignal(
-    combineLatest([this.route.firstChild?.url ?? this.route.url, this.route.queryParams]).pipe(
+    combineLatest([this.route.url, this.route.queryParams]).pipe(
       map(([urlSegments, queryParams]) => {
-        // Extract path after 'category/' prefix
-        const categoryPath =
-          urlSegments
-            .slice(1) // Skip 'category' segment
-            .map((segment) => segment.path)
-            .join('/') || null;
+        // Extract path from URL segments (everything in the component's route)
+        const categoryPath = urlSegments.map((segment) => segment.path).join('/') || null;
 
         return {
           categoryPath,

@@ -23,6 +23,7 @@
           <a
             [routerLink]="getCategoryUrl(category.id)"
             routerLinkActive="is-active"
+            [routerLinkActiveOptions]="{ exact: true }"
             [attr.aria-label]="'Browse ' + category.name"
           >
             {{ category.name }}
