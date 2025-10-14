@@ -25,6 +25,7 @@ import {
 import { DEFAULT_SORT_OPTION } from '../../core/models/sort-option.model';
 import { FiltersService } from '../../core/services/filters.service';
 import { combineLatest, map } from 'rxjs';
+import { HeadingComponent } from '../../shared/ui/heading/heading.component';
 
 const DEFAULT_PAGE_SIZE = 4;
 
@@ -37,6 +38,7 @@ const DEFAULT_PAGE_SIZE = 4;
     BannerCarouselComponent,
     SortDropdownComponent,
     IntersectionObserverDirective,
+    HeadingComponent,
   ],
   templateUrl: './marketplace.component.html',
   styleUrl: './marketplace.component.scss',
