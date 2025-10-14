@@ -15,9 +15,8 @@ public class CachedProductsRepository : IProductsRepository
     private const string AllProductsKey = "products_all";
     private const string ProductKeyPrefix = "product_";
     private const string ProductsBySellerPrefix = "products_seller_";
-    private const string ProductsByCategoryPrefix = "products_category_";
-    private const string ProductsByCategoriesPrefix = "products_categories_";
     private const string ProductsSearchPrefix = "products_search_";
+    private const string ProductsFeaturedPrefix = "products_featured_";
 
     public CachedProductsRepository(
         IProductsRepository inner,
@@ -136,41 +135,25 @@ public class CachedProductsRepository : IProductsRepository
             });
     }
 
-    public async Task<IReadOnlyList<Product>> GetProductsByCategoryAsync(string categoryId, CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<Product>> GetFeaturedProductsAsync(string? categoryId = null, int limit = 20, CancellationToken cancellationToken = default)
     {
         if (!_cacheSettings.EnableCaching)
         {
-            return await _inner.GetProductsByCategoryAsync(categoryId, cancellationToken);
+            return await _inner.GetFeaturedProductsAsync(categoryId, limit, cancellationToken);
         }
 
-        var cacheKey = $"{ProductsByCategoryPrefix}{categoryId}";
+        var cacheKey = string.IsNullOrEmpty(categoryId) 
+            ? $"{ProductsFeaturedPrefix}all_{limit}" 
+            : $"{ProductsFeaturedPrefix}{categoryId}_{limit}";
         
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheSettings.ProductsExpirationMinutes);
-                _logger.LogInformation("Cache miss for products by category {CategoryId}. Fetching from database.", categoryId);
-                return await _inner.GetProductsByCategoryAsync(categoryId, cancellationToken);
-            }) ?? [];
-    }
-
-    public async Task<IReadOnlyList<Product>> GetProductsByCategoriesAsync(string[] categoryIds, CancellationToken cancellationToken = default)
-    {
-        if (!_cacheSettings.EnableCaching)
-        {
-            return await _inner.GetProductsByCategoriesAsync(categoryIds, cancellationToken);
-        }
-
-        var cacheKey = $"{ProductsByCategoriesPrefix}{string.Join("_", categoryIds.OrderBy(x => x))}";
-        
-        return await _cache.GetOrCreateAsync(
-            cacheKey,
-            async entry =>
-            {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheSettings.ProductsExpirationMinutes);
-                _logger.LogInformation("Cache miss for products by multiple categories. Fetching from database.");
-                return await _inner.GetProductsByCategoriesAsync(categoryIds, cancellationToken);
+                _logger.LogInformation("Cache miss for featured products{Category} (limit: {Limit}). Fetching from database.", 
+                    string.IsNullOrEmpty(categoryId) ? "" : $" in category {categoryId}", limit);
+                return await _inner.GetFeaturedProductsAsync(categoryId, limit, cancellationToken);
             }) ?? [];
     }
 
@@ -218,11 +201,16 @@ public class CachedProductsRepository : IProductsRepository
         {
             _cache.Remove($"product_slug_{product.Slug}");
         }
-        
-        // Invalidate category-based caches
-        foreach (var categoryId in product.CategoryIds)
+
+        // Invalidate featured products cache if the product is featured
+        if (product.Featured)
         {
-            _cache.Remove($"{ProductsByCategoryPrefix}{categoryId}");
+            _cache.Remove($"{ProductsFeaturedPrefix}all");
+            
+            foreach (var categoryId in product.CategoryIds)
+            {
+                _cache.Remove($"{ProductsFeaturedPrefix}{categoryId}");
+            }
         }
     }
 }

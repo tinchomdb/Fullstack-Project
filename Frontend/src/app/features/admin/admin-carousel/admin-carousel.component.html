@@ -38,9 +38,9 @@
 
   <!-- Existing Slides List -->
   <div class="slides-section">
-    <h3>Current Slides ({{ slides()?.length ?? 0 }})</h3>
+    <h3>Current Slides ({{ slides().length }})</h3>
 
-    @if ((slides() ?? []).length === 0) {
+    @if (slides().length === 0) {
       <div class="empty-state">
         <p>No slides yet. Add your first slide above.</p>
       </div>
@@ -122,7 +122,7 @@
                 <button
                   class="icon-button"
                   (click)="moveDown(i)"
-                  [disabled]="!slides() || i === (slides()?.length ?? 0) - 1"
+                  [disabled]="!slides() || i === slides().length - 1"
                   title="Move down"
                 >
                   ↓

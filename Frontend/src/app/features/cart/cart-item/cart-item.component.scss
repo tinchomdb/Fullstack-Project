@@ -1,3 +1,5 @@
+@use '../../../../styles/mixins' as *;
+
 .cart-item {
   display: flex;
   gap: var(--space-4);
@@ -28,17 +30,11 @@
 }
 
 .item-name-link {
-  text-decoration: none;
-  color: inherit;
+  @include text-link;
 
   h3 {
+    @include text-heading-small;
     margin: 0 0 var(--space-2) 0;
-    color: var(--color-text-primary);
-    transition: color 0.2s ease;
-  }
-
-  &:hover h3 {
-    color: var(--color-accent-interactive);
   }
 }
 

@@ -65,8 +65,7 @@ export class MarketplaceComponent {
   );
 
   protected readonly products = this.productsService.products;
-  protected readonly featuredProduct = this.productsService.featuredProduct;
-  protected readonly remainingProducts = this.productsService.remainingProducts;
+  protected readonly featuredProduct = this.productsService.featuredProducts;
   protected readonly loadingMore = this.productsService.loadingMore;
   protected readonly hasMore = this.productsService.hasMore;
 
@@ -107,6 +106,7 @@ export class MarketplaceComponent {
       untracked(() => {
         this.filtersService.setAllFilters(filters);
         this.productsService.loadProducts(filters);
+        this.productsService.loadFeaturedProducts(filters.categoryId);
       });
     });
 

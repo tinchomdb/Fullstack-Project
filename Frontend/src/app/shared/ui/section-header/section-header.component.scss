@@ -1,3 +1,5 @@
+@use '../../../../styles/mixins' as *;
+
 .section-header {
   display: flex;
   flex-wrap: wrap;
@@ -12,18 +14,14 @@
 }
 
 .eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  margin: 0;
+  @include text-label-uppercase-spaced;
 }
 
 .subtitle,
 .description {
+  @include text-body;
   max-width: 38rem;
   margin: var(--space-3) 0 0;
-  color: var(--color-text-secondary);
 }
 
 .description {

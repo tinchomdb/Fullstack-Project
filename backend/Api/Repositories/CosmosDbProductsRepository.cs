@@ -227,47 +227,25 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         return products.FirstOrDefault();
     }
 
-    public async Task<IReadOnlyList<Product>> GetProductsByCategoryAsync(
-        string categoryId,
+    public async Task<IReadOnlyList<Product>> GetFeaturedProductsAsync(
+        string? categoryId = null,
+        int limit = 20,
         CancellationToken cancellationToken = default)
     {
-        // Cross-partition query - we could use a materialized view for a real application
-        var query = new QueryDefinition(
-            "SELECT * FROM c WHERE ARRAY_CONTAINS(c.categoryIds, @categoryId) AND c.type = @type")
-            .WithParameter("@categoryId", categoryId)
-            .WithParameter("@type", "Product");
+        const int MaxLimit = 50;
+        var effectiveLimit = Math.Min(Math.Max(1, limit), MaxLimit);
 
-        var iterator = _container.GetItemQueryIterator<Product>(query);
-        var products = new List<Product>();
+        var queryText = string.IsNullOrEmpty(categoryId)
+            ? "SELECT TOP @limit * FROM c WHERE c.featured = true AND c.type = @type ORDER BY c.createdAt DESC"
+            : "SELECT TOP @limit * FROM c WHERE c.featured = true AND ARRAY_CONTAINS(c.categoryIds, @categoryId) AND c.type = @type ORDER BY c.createdAt DESC";
 
-        while (iterator.HasMoreResults)
+        var query = new QueryDefinition(queryText)
+            .WithParameter("@type", "Product")
+            .WithParameter("@limit", effectiveLimit);
+
+        if (!string.IsNullOrEmpty(categoryId))
         {
-            var response = await iterator.ReadNextAsync(cancellationToken);
-            products.AddRange(response);
-        }
-
-        return products.AsReadOnly();
-    }
-
-    public async Task<IReadOnlyList<Product>> GetProductsByCategoriesAsync(
-        string[] categoryIds,
-        CancellationToken cancellationToken = default)
-    {
-        if (categoryIds is null || categoryIds.Length == 0)
-        {
-            return Array.Empty<Product>();
-        }
-
-        // Build a query that checks if any of the product's categoryIds match any of the provided categoryIds
-        var categoryConditions = string.Join(" OR ", 
-            categoryIds.Select((_, index) => $"ARRAY_CONTAINS(c.categoryIds, @categoryId{index})"));
-
-        var queryText = $"SELECT * FROM c WHERE ({categoryConditions}) AND c.type = @type";
-        var query = new QueryDefinition(queryText).WithParameter("@type", "Product");
-
-        for (int i = 0; i < categoryIds.Length; i++)
-        {
-            query = query.WithParameter($"@categoryId{i}", categoryIds[i]);
+            query = query.WithParameter("@categoryId", categoryId);
         }
 
         var iterator = _container.GetItemQueryIterator<Product>(query);

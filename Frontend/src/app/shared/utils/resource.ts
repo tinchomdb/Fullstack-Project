@@ -3,17 +3,17 @@ import { Observable } from 'rxjs';
 import { LoadingOverlayService } from '../../core/services/loading-overlay.service';
 
 export class Resource<T> {
-  private readonly dataSignal: WritableSignal<T | null>;
+  private readonly dataSignal: WritableSignal<T>;
   private readonly loadingSignal = signal(false);
   private readonly errorSignal = signal<string | null>(null);
 
-  readonly data: Signal<T | null>;
+  readonly data: Signal<T>;
   readonly loading: Signal<boolean>;
   readonly error: Signal<string | null>;
   readonly hasData: Signal<boolean>;
 
   constructor(
-    initialValue: T | null = null,
+    private readonly initialValue: T,
     private readonly loadingMessage = 'Loading...',
     private readonly loadingOverlayService?: LoadingOverlayService,
   ) {
@@ -21,7 +21,13 @@ export class Resource<T> {
     this.data = this.dataSignal.asReadonly();
     this.loading = this.loadingSignal.asReadonly();
     this.error = this.errorSignal.asReadonly();
-    this.hasData = computed(() => this.data() !== null);
+    this.hasData = computed(() => {
+      const value = this.data();
+      if (Array.isArray(value)) {
+        return value.length > 0;
+      }
+      return value != null;
+    });
   }
 
   load(source$: Observable<T>): void {
@@ -49,7 +55,7 @@ export class Resource<T> {
   }
 
   reset(): void {
-    this.dataSignal.set(null);
+    this.dataSignal.set(this.initialValue);
     this.loadingSignal.set(false);
     this.errorSignal.set(null);
   }
