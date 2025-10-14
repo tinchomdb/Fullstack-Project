@@ -1,3 +1,4 @@
+<app-heading [level]="'h2'" [content]="'Featured Products'" />
 <section class="featured-section" [class]="gridClass()" aria-label="Featured products">
   @for (product of products(); track product.id) {
     <article class="featured-card">

@@ -1,5 +1,7 @@
 <section class="featured-categories">
-  <h2 class="heading">{{ heading() }}</h2>
+  @if (displayHeading()) {
+    <h2 class="heading">{{ heading() }}</h2>
+  }
 
   <div class="categories-grid">
     @for (category of categories(); track category.id) {

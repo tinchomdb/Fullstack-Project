@@ -1,10 +1,13 @@
 <section class="products-page" [attr.aria-labelledby]="headingId">
+  @if (activeCategory()) {
+    <app-heading [content]="pageHeading()" [level]="'h1'" />
+  }
   @if (!activeCategory()) {
     <app-banner-carousel />
   }
 
   @if (displayedCategories().length > 0) {
-    <app-featured-categories [heading]="pageHeading()" [categories]="displayedCategories()" />
+    <app-featured-categories [categories]="displayedCategories()" />
   }
 
   @if (featuredProduct().length > 0) {
@@ -14,6 +17,7 @@
   @if (products().length) {
     <div class="products-section">
       <div class="products-controls">
+        <app-heading [content]="'All Products'" [level]="'h2'" />
         <app-sort-dropdown />
       </div>
       <app-product-grid [products]="products()" />

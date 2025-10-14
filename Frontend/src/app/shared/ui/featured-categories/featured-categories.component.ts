@@ -13,4 +13,5 @@ import { CategoryCardComponent } from './category-card/category-card.component';
 export class FeaturedCategoriesComponent {
   categories = input.required<readonly Category[]>();
   heading = input<string>('Shop by Category');
+  displayHeading = input<boolean>(false);
 }
