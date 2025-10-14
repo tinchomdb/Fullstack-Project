@@ -7,16 +7,16 @@
     <app-featured-categories [heading]="pageHeading()" [categories]="displayedCategories()" />
   }
 
-  @if (featuredProduct(); as featured) {
-    <app-product-featured-card [product]="featured" />
+  @if (featuredProduct().length > 0) {
+    <app-product-featured-card [products]="featuredProduct()" />
   }
 
-  @if (remainingProducts().length) {
+  @if (products().length) {
     <div class="products-section">
       <div class="products-controls">
         <app-sort-dropdown />
       </div>
-      <app-product-grid [products]="remainingProducts()" />
+      <app-product-grid [products]="products()" />
 
       @if (hasMore()) {
         <div
@@ -32,7 +32,7 @@
             </div>
           }
         </div>
-      } @else if (!loadingMore() && remainingProducts().length > 0) {
+      } @else if (!loadingMore() && products().length > 0) {
         <div class="end-message">
           <p>You've reached the end of the catalog</p>
         </div>

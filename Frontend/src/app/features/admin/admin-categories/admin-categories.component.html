@@ -90,7 +90,7 @@
   }
 
   <div class="categories-tree">
-    @if ((categories()?.length ?? 0) === 0 && !loading()) {
+    @if (categories().length === 0 && !loading()) {
       <p class="no-categories">No categories found. Create your first category!</p>
     }
 

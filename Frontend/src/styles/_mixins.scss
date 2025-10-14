@@ -32,6 +32,110 @@
   font-weight: var(--font-weight-medium);
 }
 
+// Typography mixins
+@mixin text-heading-large {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+@mixin text-heading-medium {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+@mixin text-heading-small {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+@mixin text-body {
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+@mixin text-body-small {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+@mixin text-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+@mixin text-label-uppercase {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wide);
+  color: var(--color-text-muted);
+}
+
+@mixin text-label-uppercase-spaced {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-wider);
+  color: var(--color-text-muted);
+}
+
+@mixin text-price {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-secondary);
+}
+
+@mixin text-price-large {
+  font-size: clamp(var(--font-size-lg), 2vw, var(--font-size-xl));
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent-secondary);
+}
+
+// Text decoration mixins
+@mixin text-link {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--color-accent-interactive);
+  }
+
+  &:focus-visible {
+    outline: var(--border-focus);
+    outline-offset: 2px;
+  }
+}
+
+@mixin text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-line-clamp($lines: 2) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: $lines;
+  line-clamp: $lines;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 // Breakpoint mixins for mobile-first responsive design
 // These mixins can be imported in component styles without adding to bundle size
 @mixin media-xs {

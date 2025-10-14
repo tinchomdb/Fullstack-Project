@@ -12,6 +12,7 @@ export type ProductApiModel = {
   readonly categoryIds?: readonly string[];
   readonly seller?: SellerApiModel | null;
   readonly imageUrls?: readonly string[] | null;
+  readonly featured?: boolean;
   readonly createdAt?: string;
   readonly updatedAt?: string;
   readonly type?: string;

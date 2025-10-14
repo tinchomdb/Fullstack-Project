@@ -16,6 +16,7 @@ export function mapProductFromApi(dto: ProductApiModel): Product {
     categoryIds: dto.categoryIds && dto.categoryIds.length > 0 ? dto.categoryIds : [],
     seller: mapSellerFromApi(dto.seller, ensureString(dto.sellerId)),
     imageUrls: normalizeImageUrls(dto.imageUrls),
+    featured: dto.featured ?? false,
     createdAt: ensureString(dto.createdAt),
     updatedAt: ensureString(dto.updatedAt),
   };
@@ -42,6 +43,7 @@ export function mapProductToApi(product: Product): ProductApiModel {
     sellerId: product.sellerId,
     categoryIds: product.categoryIds,
     imageUrls: product.imageUrls,
+    featured: product.featured ?? false,
     createdAt: product.createdAt,
     updatedAt: product.updatedAt,
     type: 'Product',

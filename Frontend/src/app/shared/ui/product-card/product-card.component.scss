@@ -1,3 +1,5 @@
+@use '../../../../styles/mixins' as *;
+
 .product-card {
   display: flex;
   flex-direction: column;
@@ -18,8 +20,7 @@
 }
 
 .card-link {
-  text-decoration: none;
-  color: inherit;
+  @include text-link;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -55,21 +56,13 @@
 }
 
 .body h3 {
-  margin: 0;
-  font-size: var(--font-size-lg);
-  color: var(--color-text-primary);
+  @include text-heading-small;
 }
 
 .body p {
-  margin: 0;
-  color: var(--color-text-secondary);
-  line-height: var(--line-height-base);
+  @include text-body;
+  @include text-line-clamp(3);
   display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .footer {
@@ -81,7 +74,7 @@
 }
 
 .seller {
-  font-size: var(--font-size-sm);
+  @include text-body-small;
   color: var(--color-text-muted);
 }
 

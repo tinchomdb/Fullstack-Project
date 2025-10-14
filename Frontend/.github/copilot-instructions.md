@@ -1,6 +1,6 @@
 ```instructions
 You are an expert in TypeScript, Angular, Software Architect, Code Quality Specialist and scalable web application development. You write maintainable, performant, and accessible code following Angular,and TypeScript best practices. We use Angular 20.
-Don't create files with summaries explaininng changes, or documentation.
+Don't create documentation unless explicitly asked.
 
 When generating code, follow these best practices:
 

@@ -1,4 +1,4 @@
-import { inject, Injectable, computed } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map, Observable, tap } from 'rxjs';
 
@@ -10,6 +10,7 @@ import { InfiniteScrollResource } from '../../shared/utils/infinite-scroll-resou
 import { PaginatedResponse } from '../models/paginated-response.model';
 import { ProductFiltersApiParams } from '../models/product-filters.model';
 import { LoadingOverlayService } from './loading-overlay.service';
+import { Resource } from '../../shared/utils/resource';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
@@ -33,15 +34,15 @@ export class ProductsService {
   readonly error = this.productsResource.error;
   readonly hasData = this.productsResource.hasData;
 
-  readonly featuredProduct = computed(() => {
-    const items = this.products();
-    return items.length ? items[0] : null;
-  });
+  private readonly featuredProductsResource = new Resource<Product[]>(
+    [],
+    'Loading featured products...',
+    this.loadingOverlayService,
+  );
 
-  readonly remainingProducts = computed(() => {
-    const [, ...rest] = this.products();
-    return rest;
-  });
+  readonly featuredProducts = this.featuredProductsResource.data;
+  readonly featuredProductsLoading = this.featuredProductsResource.loading;
+  readonly featuredProductsError = this.featuredProductsResource.error;
 
   loadProducts(filters: ProductFiltersApiParams = {}): void {
     this.productsResource.load(this.getFilteredProducts(filters));
@@ -53,6 +54,10 @@ export class ProductsService {
 
   reloadProducts(): void {
     this.loadProducts();
+  }
+
+  loadFeaturedProducts(categoryId?: string): void {
+    this.featuredProductsResource.load(this.getFeaturedProducts(categoryId));
   }
 
   createProduct(product: Partial<Product>): Observable<Product> {
@@ -96,6 +101,18 @@ export class ProductsService {
 
   buildProductUrl(product: Product): string {
     return `/products/${product.slug}`;
+  }
+
+  private getFeaturedProducts(categoryId?: string): Observable<Product[]> {
+    let params = new HttpParams();
+
+    if (categoryId) {
+      params = params.set('categoryId', categoryId);
+    }
+
+    return this.http
+      .get<ProductApiModel[]>(`${this.baseUrl}/featured`, { params })
+      .pipe(map((products) => products.map(mapProductFromApi)));
   }
 
   private getFilteredProducts(
