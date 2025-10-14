@@ -108,7 +108,7 @@ export class MarketplaceComponent {
       untracked(() => {
         this.filtersService.setAllFilters(filters);
         this.productsService.loadProducts(filters);
-        this.productsService.loadFeaturedProducts(filters.categoryId);
+        this.productsService.loadFeaturedProducts(filters.categoryId, 4);
       });
     });
 

@@ -56,8 +56,8 @@ export class ProductsService {
     this.loadProducts();
   }
 
-  loadFeaturedProducts(categoryId?: string): void {
-    this.featuredProductsResource.load(this.getFeaturedProducts(categoryId));
+  loadFeaturedProducts(categoryId?: string, limit?: number): void {
+    this.featuredProductsResource.load(this.getFeaturedProducts(categoryId, limit));
   }
 
   createProduct(product: Partial<Product>): Observable<Product> {
@@ -103,11 +103,15 @@ export class ProductsService {
     return `/products/${product.slug}`;
   }
 
-  private getFeaturedProducts(categoryId?: string): Observable<Product[]> {
+  private getFeaturedProducts(categoryId?: string, limit?: number): Observable<Product[]> {
     let params = new HttpParams();
 
     if (categoryId) {
       params = params.set('categoryId', categoryId);
+    }
+
+    if (limit) {
+      params = params.set('limit', limit.toString());
     }
 
     return this.http

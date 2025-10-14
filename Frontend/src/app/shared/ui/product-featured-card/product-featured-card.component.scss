@@ -373,6 +373,13 @@
   }
 }
 
+.featured-badge {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 1;
+}
+
 .overlay {
   position: absolute;
   inset: 0;
