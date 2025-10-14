@@ -26,13 +26,10 @@
   }
 }
 
+// Single product - large horizontal hero
 .grid-single {
   .description {
     display: block;
-  }
-
-  .title {
-    font-size: var(--font-size-xl);
   }
 
   @include media-lg {
@@ -40,44 +37,106 @@
       @include horizontal-layout;
 
       .media {
-        flex: 1.2;
+        flex: 1.3;
+        aspect-ratio: 16 / 10;
       }
 
       .content {
         padding: var(--space-responsive-lg);
       }
+
+      .title {
+        font-size: var(--font-size-2xl);
+      }
+
+      .price {
+        font-size: var(--font-size-xl);
+      }
     }
   }
 }
 
+// Two products - both horizontal
 .grid-dual {
-  @include media-md {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .description {
     display: block;
   }
-}
 
-.grid-triple {
   @include media-md {
     grid-template-columns: repeat(2, 1fr);
 
-    .featured-card:first-child {
-      grid-column: 1 / -1;
+    .featured-card {
       @include horizontal-layout;
 
-      .description {
-        display: block;
+      .media {
+        aspect-ratio: 1 / 1;
+      }
+
+      .title {
+        font-size: var(--font-size-lg);
+      }
+
+      .price {
+        font-size: var(--font-size-md);
       }
     }
   }
 
   @include media-lg {
-    grid-template-columns: repeat(3, 1fr);
+    .title {
+      font-size: var(--font-size-xl);
+    }
+
+    .price {
+      font-size: var(--font-size-lg);
+    }
+  }
+}
+
+// Three products - first card larger (2 cols), other two stacked
+.grid-triple {
+  @include media-md {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: minmax(300px, auto);
 
     .featured-card:first-child {
+      grid-column: 1 / -1;
+      @include horizontal-layout;
+
+      .media {
+        aspect-ratio: 16 / 10;
+      }
+
+      .description {
+        display: block;
+      }
+
+      .title {
+        font-size: var(--font-size-xl);
+      }
+
+      .price {
+        font-size: var(--font-size-lg);
+      }
+    }
+
+    .featured-card:not(:first-child) {
+      .title {
+        font-size: var(--font-size-md);
+      }
+
+      .price {
+        font-size: var(--font-size-base);
+      }
+    }
+  }
+
+  @include media-lg {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+
+    .featured-card:first-child {
+      grid-row: 1 / 3;
       grid-column: 1 / 2;
 
       .card-link {
@@ -88,21 +147,179 @@
         flex: 0 0 auto;
         aspect-ratio: 4 / 3;
       }
+
+      .title {
+        font-size: var(--font-size-2xl);
+      }
+
+      .price {
+        font-size: var(--font-size-xl);
+      }
+    }
+
+    .featured-card:nth-child(2) {
+      grid-row: 1 / 2;
+      grid-column: 2 / 3;
+    }
+
+    .featured-card:nth-child(3) {
+      grid-row: 2 / 3;
+      grid-column: 2 / 3;
+    }
+
+    .featured-card:not(:first-child) {
+      @include horizontal-layout;
+
+      .media {
+        aspect-ratio: 1 / 1;
+      }
+
+      .title {
+        font-size: var(--font-size-lg);
+      }
+
+      .price {
+        font-size: var(--font-size-md);
+      }
     }
   }
 }
 
+// Four products - asymmetric masonry-style grid
 .grid-multi {
   @include media-sm {
     grid-template-columns: repeat(2, 1fr);
   }
 
   @include media-lg {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(200px, auto);
+
+    // All cards in a single row
+    .featured-card {
+    }
+
+    // First card - larger, spans 2 columns
+    .featured-card:first-child {
+      grid-column: 1 / 3;
+      grid-row: 1/3;
+
+      .media {
+        aspect-ratio: 4 / 3;
+      }
+
+      .description {
+        display: block;
+      }
+
+      .title {
+        font-size: var(--font-size-2xl);
+      }
+
+      .price {
+        font-size: var(--font-size-xl);
+      }
+    }
+
+    // Second card - spans 2 columns, horizontal layout
+    .featured-card:nth-child(2) {
+      grid-column: 3 / 5;
+      @include horizontal-layout;
+      .media {
+        aspect-ratio: 1 / 1;
+      }
+
+      .title {
+        font-size: var(--font-size-sm);
+      }
+
+      .price {
+        font-size: var(--font-size-xs);
+      }
+    }
+
+    // Third card - spans 2 columns, horizontal layout
+    .featured-card:nth-child(3) {
+      grid-column: 3 / 5;
+      @include horizontal-layout;
+      .media {
+        aspect-ratio: 1 / 1;
+      }
+
+      .title {
+        font-size: var(--font-size-sm);
+      }
+
+      .price {
+        font-size: var(--font-size-xs);
+      }
+    }
+
+    // Fourth card - spans full width, horizontal layout
+    .featured-card:nth-child(4) {
+      grid-column: 1 / 5;
+      @include horizontal-layout;
+      .media {
+        aspect-ratio: 16 / 9;
+      }
+
+      .description {
+        display: block;
+      }
+
+      .title {
+        font-size: var(--font-size-lg);
+      }
+
+      .price {
+        font-size: var(--font-size-md);
+      }
+    }
+
+    // Fifth card and beyond - vertical layout
+    .featured-card:nth-child(n + 5) {
+      .card-link {
+        flex-direction: column;
+      }
+
+      .media {
+        flex: 0 0 auto;
+        aspect-ratio: 4 / 3;
+      }
+
+      .title {
+        font-size: var(--font-size-sm);
+      }
+
+      .price {
+        font-size: var(--font-size-xs);
+      }
+    }
   }
 
   @include media-xl {
-    grid-template-columns: repeat(4, 1fr);
+    // Larger screens - give more breathing room
+    .featured-card:first-child {
+      .title {
+        font-size: var(--font-size-3xl);
+      }
+
+      .price {
+        font-size: var(--font-size-2xl);
+      }
+    }
+
+    .featured-card:nth-child(2),
+    .featured-card:nth-child(3),
+    .featured-card:nth-child(4) {
+      .title {
+        font-size: var(--font-size-lg);
+      }
+
+      .price {
+        font-size: var(--font-size-md);
+      }
+    }
   }
 }
 
@@ -198,9 +415,11 @@
 .title {
   @include text-heading-medium;
   color: inherit;
+  font-size: var(--font-size-md);
+  line-height: 1.3;
 
   @include media-sm {
-    font-size: clamp(var(--font-size-lg), 2.5vw, var(--font-size-xl));
+    font-size: var(--font-size-lg);
   }
 }
 
@@ -209,6 +428,8 @@
   color: inherit;
   opacity: 0.9;
   display: none;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
 
   @include media-md {
     @include text-line-clamp(2);
@@ -223,8 +444,13 @@
 
 .price {
   @include text-price;
+  font-size: var(--font-size-base);
 
   @include media-sm {
-    font-size: clamp(var(--font-size-lg), 2vw, var(--font-size-xl));
+    font-size: var(--font-size-lg);
   }
+}
+
+.actions {
+  margin-top: var(--space-4);
 }

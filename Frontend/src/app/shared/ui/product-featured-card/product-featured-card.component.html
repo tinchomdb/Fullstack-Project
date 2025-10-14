@@ -31,6 +31,17 @@
               product.price | currency: product.currency : 'symbol' : '1.2-2'
             }}</span>
           </div>
+          <div class="actions">
+            <app-button
+              [disabled]="isAddingToCart()"
+              (click)="onAddToCart(product)"
+              type="button"
+              shape="rounded"
+              size="full"
+            >
+              <span>Add to Cart</span>
+            </app-button>
+          </div>
         </div>
       </a>
     </article>
