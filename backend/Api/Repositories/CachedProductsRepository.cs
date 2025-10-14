@@ -11,6 +11,7 @@ public class CachedProductsRepository : IProductsRepository
     private readonly IMemoryCache _cache;
     private readonly CacheSettings _cacheSettings;
     private readonly ILogger<CachedProductsRepository> _logger;
+    private readonly HashSet<string> _featuredCacheKeys = [];
 
     private const string AllProductsKey = "products_all";
     private const string ProductKeyPrefix = "product_";
@@ -146,11 +147,23 @@ public class CachedProductsRepository : IProductsRepository
             ? $"{ProductsFeaturedPrefix}all_{limit}" 
             : $"{ProductsFeaturedPrefix}{categoryId}_{limit}";
         
+        lock (_featuredCacheKeys)
+        {
+            _featuredCacheKeys.Add(cacheKey);
+        }
+        
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheSettings.ProductsExpirationMinutes);
+                entry.RegisterPostEvictionCallback((key, value, reason, state) =>
+                {
+                    lock (_featuredCacheKeys)
+                    {
+                        _featuredCacheKeys.Remove(key.ToString()!);
+                    }
+                });
                 _logger.LogInformation("Cache miss for featured products{Category} (limit: {Limit}). Fetching from database.", 
                     string.IsNullOrEmpty(categoryId) ? "" : $" in category {categoryId}", limit);
                 return await _inner.GetFeaturedProductsAsync(categoryId, limit, cancellationToken);
@@ -187,6 +200,10 @@ public class CachedProductsRepository : IProductsRepository
         _cache.Remove(AllProductsKey);
         _cache.Remove($"{ProductKeyPrefix}{productId}_{sellerId}");
         _cache.Remove($"{ProductsBySellerPrefix}{sellerId}");
+        
+        // Also invalidate all featured products caches since we don't know if the deleted product was featured
+        InvalidateAllFeaturedProductsCaches();
+        
         _logger.LogInformation("Cache invalidated after deleting product {ProductId}.", productId);
     }
 
@@ -202,15 +219,22 @@ public class CachedProductsRepository : IProductsRepository
             _cache.Remove($"product_slug_{product.Slug}");
         }
 
-        // Invalidate featured products cache if the product is featured
-        if (product.Featured)
+        // Invalidate all featured products caches since they now support descendant categories
+        // and tracking all affected parent categories would be complex
+        InvalidateAllFeaturedProductsCaches();
+    }
+
+    private void InvalidateAllFeaturedProductsCaches()
+    {
+        lock (_featuredCacheKeys)
         {
-            _cache.Remove($"{ProductsFeaturedPrefix}all");
-            
-            foreach (var categoryId in product.CategoryIds)
+            foreach (var key in _featuredCacheKeys.ToList())
             {
-                _cache.Remove($"{ProductsFeaturedPrefix}{categoryId}");
+                _cache.Remove(key);
             }
+            _featuredCacheKeys.Clear();
         }
+        
+        _logger.LogInformation("All featured products caches invalidated.");
     }
 }
