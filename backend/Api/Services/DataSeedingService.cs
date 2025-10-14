@@ -709,6 +709,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "MacBook Pro 16\" M3",
+                Slug = "macbook-pro-16-m3",
                 Description = "Apple MacBook Pro 16-inch with M3 chip, 16GB RAM, 512GB SSD. Perfect for developers and creative professionals.",
                 Price = 2499.99m,
                 Stock = 15,
@@ -728,6 +729,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Dell XPS 15",
+                Slug = "dell-xps-15",
                 Description = "Dell XPS 15 with Intel Core i7, 32GB RAM, 1TB SSD, NVIDIA RTX 4050. Premium build quality.",
                 Price = 2199.99m,
                 Stock = 8,
@@ -746,6 +748,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "iPhone 15 Pro",
+                Slug = "iphone-15-pro",
                 Description = "Apple iPhone 15 Pro with A17 Pro chip, 256GB storage, Titanium finish. Advanced camera system.",
                 Price = 1199.99m,
                 Stock = 25,
@@ -765,6 +768,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Samsung Galaxy S24 Ultra",
+                Slug = "samsung-galaxy-s24-ultra",
                 Description = "Samsung Galaxy S24 Ultra with 512GB storage, S Pen included. Best Android flagship.",
                 Price = 1299.99m,
                 Stock = 18,
@@ -785,6 +789,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Men's Classic Denim Jacket",
+                Slug = "mens-classic-denim-jacket",
                 Description = "Premium denim jacket with vintage wash. 100% cotton, comfortable fit.",
                 Price = 79.99m,
                 Stock = 45,
@@ -803,6 +808,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Women's Summer Dress",
+                Slug = "womens-summer-dress",
                 Description = "Floral print summer dress, lightweight and breathable. Perfect for warm weather.",
                 Price = 59.99m,
                 Stock = 60,
@@ -822,6 +828,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Men's Athletic Sneakers",
+                Slug = "mens-athletic-sneakers",
                 Description = "Comfortable running shoes with excellent cushioning and support.",
                 Price = 89.99m,
                 Stock = 35,
@@ -842,6 +849,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "The Pragmatic Programmer",
+                Slug = "the-pragmatic-programmer",
                 Description = "20th Anniversary Edition. Your journey to mastery. Essential reading for software developers.",
                 Price = 44.99m,
                 Stock = 50,
@@ -860,6 +868,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Clean Code",
+                Slug = "clean-code",
                 Description = "A Handbook of Agile Software Craftsmanship by Robert C. Martin. Must-read for programmers.",
                 Price = 39.99m,
                 Stock = 42,
@@ -878,6 +887,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Atomic Habits",
+                Slug = "atomic-habits",
                 Description = "An Easy & Proven Way to Build Good Habits & Break Bad Ones by James Clear.",
                 Price = 27.99m,
                 Stock = 75,
@@ -898,6 +908,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Professional Yoga Mat",
+                Slug = "professional-yoga-mat",
                 Description = "Extra thick 6mm yoga mat with carrying strap. Non-slip surface, eco-friendly materials.",
                 Price = 34.99m,
                 Stock = 65,
@@ -916,6 +927,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Camping Tent 4-Person",
+                Slug = "camping-tent-4-person",
                 Description = "Waterproof family camping tent with easy setup. Includes carry bag and stakes.",
                 Price = 149.99m,
                 Stock = 20,
@@ -934,6 +946,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Stainless Steel Water Bottle",
+                Slug = "stainless-steel-water-bottle",
                 Description = "Insulated 32oz water bottle keeps drinks cold for 24hrs, hot for 12hrs. BPA-free.",
                 Price = 29.99m,
                 Stock = 100,
@@ -954,6 +967,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Luxury Face Serum",
+                Slug = "luxury-face-serum",
                 Description = "Anti-aging face serum with hyaluronic acid and vitamin C. Reduces fine lines and brightens skin.",
                 Price = 89.99m,
                 Stock = 45,
@@ -966,6 +980,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Matte Liquid Lipstick Set",
+                Slug = "matte-liquid-lipstick-set",
                 Description = "Long-lasting matte lipstick collection with 12 vibrant shades. Waterproof and smudge-proof.",
                 Price = 34.99m,
                 Stock = 62,
@@ -977,6 +992,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Organic Moisturizing Cream",
+                Slug = "organic-moisturizing-cream",
                 Description = "Natural face moisturizer with shea butter and aloe vera. Suitable for all skin types.",
                 Price = 45.99m,
                 Stock = 38,
@@ -988,6 +1004,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Professional Makeup Brush Set",
+                Slug = "professional-makeup-brush-set",
                 Description = "18-piece makeup brush collection with premium synthetic bristles and storage case.",
                 Price = 59.99m,
                 Stock = 27,
@@ -1001,6 +1018,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "LEGO Star Wars Millennium Falcon",
+                Slug = "lego-star-wars-millennium-falcon",
                 Description = "Ultimate Collector Series Millennium Falcon with 7,541 pieces. For advanced builders.",
                 Price = 849.99m,
                 Stock = 12,
@@ -1013,6 +1031,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Monopoly Ultimate Edition",
+                Slug = "monopoly-ultimate-edition",
                 Description = "Classic Monopoly board game with luxury edition featuring gold-plated pieces.",
                 Price = 74.99m,
                 Stock = 34,
@@ -1024,6 +1043,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Remote Control Monster Truck",
+                Slug = "remote-control-monster-truck",
                 Description = "4WD off-road RC truck with 2.4GHz remote. Speeds up to 30mph.",
                 Price = 129.99m,
                 Stock = 23,
@@ -1035,6 +1055,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Chess Set Wooden Premium",
+                Slug = "chess-set-wooden-premium",
                 Description = "Handcrafted wooden chess set with felted pieces and storage drawer.",
                 Price = 89.99m,
                 Stock = 19,
@@ -1048,6 +1069,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Dashboard Camera 4K",
+                Slug = "dashboard-camera-4k",
                 Description = "4K UHD dash cam with night vision, GPS, and 128GB storage. Front and rear cameras.",
                 Price = 199.99m,
                 Stock = 41,
@@ -1059,6 +1081,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Car Vacuum Cleaner Portable",
+                Slug = "car-vacuum-cleaner-portable",
                 Description = "High-power cordless car vacuum with HEPA filter and LED light. 120W suction power.",
                 Price = 59.99m,
                 Stock = 56,
@@ -1070,6 +1093,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "All-Weather Floor Mats Set",
+                Slug = "all-weather-floor-mats-set",
                 Description = "Heavy-duty rubber floor mats for all seasons. Universal fit with anti-slip backing.",
                 Price = 69.99m,
                 Stock = 48,
@@ -1083,6 +1107,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Ergonomic Office Chair",
+                Slug = "ergonomic-office-chair",
                 Description = "Executive mesh office chair with lumbar support, adjustable armrests, and headrest.",
                 Price = 299.99m,
                 Stock = 31,
@@ -1095,6 +1120,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Moleskine Notebook Set",
+                Slug = "moleskine-notebook-set",
                 Description = "Set of 3 premium ruled notebooks with elastic closure and ribbon bookmark.",
                 Price = 44.99m,
                 Stock = 72,
@@ -1106,6 +1132,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Desk Organizer Bamboo",
+                Slug = "desk-organizer-bamboo",
                 Description = "Eco-friendly bamboo desk organizer with compartments for pens, papers, and accessories.",
                 Price = 39.99m,
                 Stock = 58,
@@ -1117,6 +1144,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Wireless Keyboard and Mouse Combo",
+                Slug = "wireless-keyboard-and-mouse-combo",
                 Description = "Slim wireless keyboard and mouse set with 2.4GHz connection and long battery life.",
                 Price = 54.99m,
                 Stock = 44,
@@ -1130,6 +1158,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Automatic Pet Feeder",
+                Slug = "automatic-pet-feeder",
                 Description = "Smart pet feeder with app control, portion control, and voice recording. For cats and dogs.",
                 Price = 119.99m,
                 Stock = 36,
@@ -1141,6 +1170,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Interactive Cat Toy",
+                Slug = "interactive-cat-toy",
                 Description = "Automatic rotating feather toy with LED lights. Keeps cats entertained for hours.",
                 Price = 24.99m,
                 Stock = 89,
@@ -1152,6 +1182,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Orthopedic Dog Bed",
+                Slug = "orthopedic-dog-bed",
                 Description = "Memory foam dog bed with washable cover. Extra large size for big dogs.",
                 Price = 89.99m,
                 Stock = 28,
@@ -1165,6 +1196,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Organic Coffee Bean Collection",
+                Slug = "organic-coffee-bean-collection",
                 Description = "Premium selection of 6 single-origin organic coffee beans from around the world.",
                 Price = 79.99m,
                 Stock = 43,
@@ -1177,6 +1209,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Artisan Tea Gift Set",
+                Slug = "artisan-tea-gift-set",
                 Description = "Luxury tea collection with 12 premium loose leaf teas and bamboo infuser.",
                 Price = 64.99m,
                 Stock = 37,
@@ -1188,6 +1221,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Gourmet Chocolate Truffle Box",
+                Slug = "gourmet-chocolate-truffle-box",
                 Description = "Handcrafted Belgian chocolate truffles in 20 unique flavors. Perfect gift.",
                 Price = 49.99m,
                 Stock = 51,
@@ -1201,6 +1235,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Diamond Stud Earrings",
+                Slug = "diamond-stud-earrings",
                 Description = "0.5 carat total weight diamond earrings in 14K white gold. Certified conflict-free diamonds.",
                 Price = 899.99m,
                 Stock = 14,
@@ -1213,6 +1248,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Luxury Swiss Automatic Watch",
+                Slug = "luxury-swiss-automatic-watch",
                 Description = "Men's automatic watch with sapphire crystal, 100m water resistance, and leather strap.",
                 Price = 1299.99m,
                 Stock = 8,
@@ -1224,6 +1260,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Sterling Silver Necklace",
+                Slug = "sterling-silver-necklace",
                 Description = "Elegant sterling silver pendant necklace with cubic zirconia centerpiece.",
                 Price = 149.99m,
                 Stock = 22,
@@ -1237,6 +1274,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Adjustable Dumbbell Set",
+                Slug = "adjustable-dumbbell-set",
                 Description = "Space-saving adjustable dumbbells from 5-52.5 lbs per dumbbell. Includes stand.",
                 Price = 399.99m,
                 Stock = 19,
@@ -1249,6 +1287,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Smart Fitness Watch",
+                Slug = "smart-fitness-watch",
                 Description = "Fitness tracker with heart rate monitor, GPS, sleep tracking, and 50m water resistance.",
                 Price = 249.99m,
                 Stock = 47,
@@ -1260,6 +1299,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Resistance Bands Set",
+                Slug = "resistance-bands-set",
                 Description = "Professional resistance bands with 5 different resistance levels and carrying bag.",
                 Price = 29.99m,
                 Stock = 93,
@@ -1271,6 +1311,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Folding Treadmill",
+                Slug = "folding-treadmill",
                 Description = "Compact folding treadmill with 12 programs, LCD display, and Bluetooth speakers.",
                 Price = 599.99m,
                 Stock = 11,
@@ -1284,6 +1325,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Acoustic Guitar Bundle",
+                Slug = "acoustic-guitar-bundle",
                 Description = "Full-size acoustic guitar with gig bag, tuner, strings, and instructional book.",
                 Price = 249.99m,
                 Stock = 26,
@@ -1295,6 +1337,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Electric Guitar Stratocaster Style",
+                Slug = "electric-guitar-stratocaster-style",
                 Description = "Professional electric guitar with maple neck, alder body, and 3 single-coil pickups.",
                 Price = 599.99m,
                 Stock = 14,
@@ -1307,6 +1350,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Digital Piano 88 Keys",
+                Slug = "digital-piano-88-keys",
                 Description = "Full-size weighted keys digital piano with 128 polyphony and USB MIDI connectivity.",
                 Price = 799.99m,
                 Stock = 9,
@@ -1320,6 +1364,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Stainless Steel Cookware Set",
+                Slug = "stainless-steel-cookware-set",
                 Description = "10-piece professional cookware set with tri-ply construction and tempered glass lids.",
                 Price = 299.99m,
                 Stock = 32,
@@ -1331,6 +1376,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Stand Mixer Professional",
+                Slug = "stand-mixer-professional",
                 Description = "6-quart stand mixer with 10 speeds, stainless steel bowl, and multiple attachments.",
                 Price = 379.99m,
                 Stock = 18,
@@ -1343,6 +1389,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Chef Knife Set Premium",
+                Slug = "chef-knife-set-premium",
                 Description = "8-piece German steel knife set with wooden block and lifetime warranty.",
                 Price = 199.99m,
                 Stock = 41,
@@ -1354,6 +1401,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Espresso Machine",
+                Slug = "espresso-machine",
                 Description = "15-bar espresso machine with milk frother and programmable settings.",
                 Price = 449.99m,
                 Stock = 23,
@@ -1367,6 +1415,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "PlayStation 5",
+                Slug = "playstation-5",
                 Description = "PS5 console with 825GB SSD, 4K gaming, and DualSense wireless controller.",
                 Price = 499.99m,
                 Stock = 22,
@@ -1379,6 +1428,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Xbox Series X",
+                Slug = "xbox-series-x",
                 Description = "Xbox Series X with 1TB SSD, 4K gaming, and Xbox Wireless Controller.",
                 Price = 499.99m,
                 Stock = 28,
@@ -1391,6 +1441,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Nintendo Switch OLED",
+                Slug = "nintendo-switch-oled",
                 Description = "Nintendo Switch OLED model with 7-inch vibrant screen and 64GB storage.",
                 Price = 349.99m,
                 Stock = 35,
@@ -1402,6 +1453,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Gaming Headset RGB",
+                Slug = "gaming-headset-rgb",
                 Description = "7.1 surround sound gaming headset with noise-canceling mic and RGB lighting.",
                 Price = 89.99m,
                 Stock = 67,
@@ -1413,6 +1465,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Mechanical Gaming Keyboard",
+                Slug = "mechanical-gaming-keyboard",
                 Description = "RGB mechanical keyboard with Cherry MX switches and programmable macro keys.",
                 Price = 129.99m,
                 Stock = 45,
@@ -1426,6 +1479,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Sony WH-1000XM5 Headphones",
+                Slug = "sony-wh-1000xm5-headphones",
                 Description = "Industry-leading noise-canceling wireless headphones with 30-hour battery life.",
                 Price = 399.99m,
                 Stock = 33,
@@ -1438,6 +1492,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Apple AirPods Pro 2",
+                Slug = "apple-airpods-pro-2",
                 Description = "Active noise cancellation, Adaptive Transparency, and spatial audio with MagSafe charging.",
                 Price = 249.99m,
                 Stock = 58,
@@ -1449,6 +1504,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "JBL Bluetooth Speaker",
+                Slug = "jbl-bluetooth-speaker",
                 Description = "Portable waterproof Bluetooth speaker with 20-hour playtime and powerful bass.",
                 Price = 129.99m,
                 Stock = 72,
@@ -1460,6 +1516,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Canon EOS R6 Mirrorless Camera",
+                Slug = "canon-eos-r6-mirrorless-camera",
                 Description = "Full-frame 20MP mirrorless camera with 4K 60fps video and in-body stabilization.",
                 Price = 2499.99m,
                 Stock = 11,
@@ -1472,6 +1529,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "GoPro Hero 12 Black",
+                Slug = "gopro-hero-12-black",
                 Description = "Waterproof action camera with 5.3K video, HyperSmooth stabilization, and live streaming.",
                 Price = 399.99m,
                 Stock = 27,
@@ -1483,6 +1541,7 @@ public class DataSeedingService(
             new()
             {
                 Name = "Bose Smart Soundbar",
+                Slug = "bose-smart-soundbar",
                 Description = "Premium soundbar with Dolby Atmos, voice control, and wireless connectivity.",
                 Price = 899.99m,
                 Stock = 16,

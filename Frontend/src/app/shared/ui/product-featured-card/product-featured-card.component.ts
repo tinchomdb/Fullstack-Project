@@ -5,12 +5,20 @@ import { RouterLink } from '@angular/router';
 import { Product } from '../../../core/models/product.model';
 import { CartService } from '../../../core/services/cart.service';
 import { ProductsService } from '../../../core/services/products.service';
+import { BadgeComponent } from '../badge/badge.component';
 import { ButtonComponent } from '../button/button.component';
 import { HeadingComponent } from '../heading/heading.component';
 
 @Component({
   selector: 'app-product-featured-card',
-  imports: [CurrencyPipe, NgOptimizedImage, RouterLink, HeadingComponent, ButtonComponent],
+  imports: [
+    CurrencyPipe,
+    NgOptimizedImage,
+    RouterLink,
+    HeadingComponent,
+    ButtonComponent,
+    BadgeComponent,
+  ],
   templateUrl: './product-featured-card.component.html',
   styleUrl: './product-featured-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
