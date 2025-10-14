@@ -235,17 +235,44 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
         const int MaxLimit = 50;
         var effectiveLimit = Math.Min(Math.Max(1, limit), MaxLimit);
 
-        var queryText = string.IsNullOrEmpty(categoryId)
-            ? "SELECT TOP @limit * FROM c WHERE c.featured = true AND c.type = @type ORDER BY c.createdAt DESC"
-            : "SELECT TOP @limit * FROM c WHERE c.featured = true AND ARRAY_CONTAINS(c.categoryIds, @categoryId) AND c.type = @type ORDER BY c.createdAt DESC";
+        string queryText;
+        string[]? categoryIdsToFilter = null;
+
+        if (string.IsNullOrEmpty(categoryId))
+        {
+            queryText = "SELECT TOP @limit * FROM c WHERE c.featured = true AND c.type = @type ORDER BY c.createdAt DESC";
+        }
+        else
+        {
+            var descendantCategoryIds = await _categoriesRepository.GetAllDescendantCategoryIdsAsync(
+                categoryId,
+                cancellationToken);
+
+            categoryIdsToFilter = descendantCategoryIds.ToArray();
+
+            if (categoryIdsToFilter.Length > 0)
+            {
+                var categoryConditions = string.Join(" OR ",
+                    categoryIdsToFilter.Select((_, index) => $"ARRAY_CONTAINS(c.categoryIds, @categoryId{index})"));
+                queryText = $"SELECT TOP @limit * FROM c WHERE c.featured = true AND ({categoryConditions}) AND c.type = @type ORDER BY c.createdAt DESC";
+            }
+            else
+            {
+                queryText = "SELECT TOP @limit * FROM c WHERE c.featured = true AND ARRAY_CONTAINS(c.categoryIds, @categoryId0) AND c.type = @type ORDER BY c.createdAt DESC";
+                categoryIdsToFilter = [categoryId];
+            }
+        }
 
         var query = new QueryDefinition(queryText)
             .WithParameter("@type", "Product")
             .WithParameter("@limit", effectiveLimit);
 
-        if (!string.IsNullOrEmpty(categoryId))
+        if (categoryIdsToFilter is not null && categoryIdsToFilter.Length > 0)
         {
-            query = query.WithParameter("@categoryId", categoryId);
+            for (int i = 0; i < categoryIdsToFilter.Length; i++)
+            {
+                query = query.WithParameter($"@categoryId{i}", categoryIdsToFilter[i]);
+            }
         }
 
         var iterator = _container.GetItemQueryIterator<Product>(query);
