@@ -26,6 +26,10 @@
   text-decoration: none;
   color: inherit;
   white-space: nowrap;
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .search-bar-container {
