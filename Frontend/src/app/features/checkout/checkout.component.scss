@@ -1,11 +1,5 @@
 @use '../../../styles/mixins' as *;
 
-.checkout-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--space-responsive-md);
-}
-
 .checkout-container h1 {
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-bold);
