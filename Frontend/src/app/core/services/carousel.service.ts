@@ -1,6 +1,6 @@
 import { Injectable, computed, inject } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { CarouselSlide } from '../../shared/models/carousel-slide.model';
+import { CarouselSlide } from '../models/carousel-slide.model';
 import { CarouselApiService } from './carousel-api.service';
 import {
   CreateCarouselSlideRequest,

@@ -10,7 +10,7 @@ import {
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
 import { CarouselService } from '../../../core/services/carousel.service';
-import { CarouselSlide } from '../../../shared/models/carousel-slide.model';
+import { CarouselSlide } from '../../../core/models/carousel-slide.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.component';
 import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-checkbox.component';

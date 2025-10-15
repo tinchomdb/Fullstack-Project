@@ -86,10 +86,6 @@ export class CategoriesService {
     return this.categoriesArray().filter((c) => c.parentCategoryId === parentCategoryId);
   }
 
-  getAllDescendantCategoryIds(categoryId: string): string[] {
-    return Array.from(this.collectAllDescendants(categoryId));
-  }
-
   getCategoryPath(categoryId: string): Category[] {
     const path: Category[] = [];
     const categoryMap = this.categoryMap();
