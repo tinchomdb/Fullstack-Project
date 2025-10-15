@@ -1,0 +1,18 @@
+<section class="featured-products">
+  @if (displayHeading()) {
+    <app-heading [level]="'h2'" [content]="heading()" />
+  }
+
+  <div class="products-grid" [class]="gridClass()">
+    @for (product of products(); track product.id; let i = $index) {
+      <div class="grid-item">
+        <app-product-featured-card
+          [product]="product"
+          [variant]="cardVariants()[i]"
+          [priority]="i < 2"
+          (addToCart)="onAddToCart($event)"
+        />
+      </div>
+    }
+  </div>
+</section>

@@ -1,0 +1,46 @@
+<article class="featured-card">
+  <a
+    class="card-link"
+    [routerLink]="buildProductLink()"
+    [attr.aria-label]="'View details for ' + product().name"
+  >
+    <div class="media">
+      @if (product().imageUrls.length) {
+        <img
+          [ngSrc]="product().imageUrls[0]"
+          [alt]="product().name"
+          [width]="720"
+          [height]="480"
+          [priority]="priority()"
+        />
+      } @else {
+        <div class="placeholder" aria-hidden="true">No image</div>
+      }
+      <app-badge class="featured-badge" [label]="'Featured'" [variant]="'featured'" [size]="'md'" />
+    </div>
+
+    <div class="content">
+      <div class="content-text">
+        <p class="seller">{{ product().seller.displayName }}</p>
+        <h3 class="title">{{ product().name }}</h3>
+        <p class="description">{{ product().description }}</p>
+        <div class="price-wrapper">
+          <span class="price">{{
+            product().price | currency: product().currency : 'symbol' : '1.2-2'
+          }}</span>
+        </div>
+      </div>
+      <div class="actions">
+        <app-button
+          [disabled]="isAddingToCart()"
+          (click)="onAddToCart($event)"
+          type="button"
+          shape="rounded"
+          size="full"
+        >
+          <span>Add to Cart</span>
+        </app-button>
+      </div>
+    </div>
+  </a>
+</article>
