@@ -1,0 +1,8 @@
+@use '../../../styles/tokens' as *;
+
+.category-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  padding-block: var(--spacing-xl);
+}

@@ -1,6 +1,7 @@
 import { Routes, UrlSegment, UrlMatchResult } from '@angular/router';
 import { MsalGuard } from '@azure/msal-angular';
 import { adminGuard } from './core/auth/admin.guard';
+import { filtersResolver } from './core/resolvers/filters.resolver';
 
 export const routes: Routes = [
   {
@@ -10,8 +11,9 @@ export const routes: Routes = [
   },
   {
     path: 'products',
-    loadComponent: () =>
-      import('./features/marketplace/marketplace.component').then((m) => m.MarketplaceComponent),
+    loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
+    resolve: { filters: filtersResolver },
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
     data: {
       title: 'Products',
     },
@@ -27,14 +29,26 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'search',
+    loadComponent: () =>
+      import('./features/search-results/search-results.component').then(
+        (m) => m.SearchResultsComponent,
+      ),
+    resolve: { filters: filtersResolver },
+    runGuardsAndResolvers: 'paramsOrQueryParamsChange',
+    data: {
+      title: 'Search Results',
+    },
+  },
+  {
     path: 'category',
     children: [
       {
         path: '',
         loadComponent: () =>
-          import('./features/marketplace/marketplace.component').then(
-            (m) => m.MarketplaceComponent,
-          ),
+          import('./features/category/category.component').then((m) => m.CategoryComponent),
+        resolve: { filters: filtersResolver },
+        runGuardsAndResolvers: 'paramsOrQueryParamsChange',
         data: {
           title: 'Products',
         },
@@ -42,9 +56,9 @@ export const routes: Routes = [
       {
         path: '**',
         loadComponent: () =>
-          import('./features/marketplace/marketplace.component').then(
-            (m) => m.MarketplaceComponent,
-          ),
+          import('./features/category/category.component').then((m) => m.CategoryComponent),
+        resolve: { filters: filtersResolver },
+        runGuardsAndResolvers: 'paramsOrQueryParamsChange',
         data: { title: 'Category' },
       },
     ],

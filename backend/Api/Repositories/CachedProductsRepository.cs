@@ -41,25 +41,57 @@ public class CachedProductsRepository : IProductsRepository
             return await _inner.GetProductsAsync(parameters, cancellationToken);
         }
 
+        // Cache the entire search result set (not individual pages)
         var cacheKey = GenerateSearchCacheKey(parameters);
 
-        return await _cache.GetOrCreateAsync(
+        var allResults = await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheSettings.ProductsExpirationMinutes);
-                _logger.LogInformation("Cache miss for search term: {SearchTerm}. Fetching from database.", parameters.SearchTerm);
-                return await _inner.GetProductsAsync(parameters, cancellationToken);
-            }) ?? new PaginatedResponse<Product>([], 0, parameters.Page, parameters.PageSize);
+                _logger.LogInformation("Cache miss for search term: {SearchTerm}. Fetching ALL results from database.", parameters.SearchTerm);
+                
+                // Fetch ALL results for this search (ignore page/pageSize for the database query)
+                var allResultsParameters = new ProductQueryParameters
+                {
+                    SearchTerm = parameters.SearchTerm,
+                    SortBy = parameters.SortBy,
+                    SortDirection = parameters.SortDirection,
+                    Page = 1,
+                    PageSize = _cacheSettings.SearchResultsMaxCacheSize
+                };
+                
+                return await _inner.GetProductsAsync(allResultsParameters, cancellationToken);
+            }) ?? new PaginatedResponse<Product>([], 0, 1, _cacheSettings.SearchResultsMaxCacheSize);
+
+        // Paginate the cached results in memory
+        return PaginateInMemory(allResults.Items, allResults.TotalCount, parameters.Page, parameters.PageSize);
     }
 
     private static string GenerateSearchCacheKey(ProductQueryParameters parameters)
     {
+        // Cache key should NOT include page/pageSize since we cache the entire result set
         var searchTerm = parameters.SearchTerm?.Trim().ToLowerInvariant() ?? string.Empty;
         var sortBy = parameters.SortBy?.ToLowerInvariant() ?? "name";
         var sortDirection = parameters.SortDirection?.ToLowerInvariant() ?? "asc";
         
-        return $"{ProductsSearchPrefix}{searchTerm}_{sortBy}_{sortDirection}_{parameters.Page}_{parameters.PageSize}";
+        return $"{ProductsSearchPrefix}{searchTerm}_{sortBy}_{sortDirection}";
+    }
+
+    private static PaginatedResponse<Product> PaginateInMemory(
+        IReadOnlyList<Product> allItems,
+        int totalCount,
+        int page,
+        int pageSize)
+    {
+        var offset = (page - 1) * pageSize;
+        var pageItems = allItems.Skip(offset).Take(pageSize).ToList().AsReadOnly();
+        
+        return new PaginatedResponse<Product>(
+            pageItems,
+            totalCount,
+            page,
+            pageSize);
     }
 
     public async Task<IReadOnlyList<Product>> GetAllProductsAsync(CancellationToken cancellationToken = default)

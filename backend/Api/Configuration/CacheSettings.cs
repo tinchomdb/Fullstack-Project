@@ -11,4 +11,6 @@ public class CacheSettings
     public int CarouselSlidesExpirationMinutes { get; set; }
     
     public int SingleItemExpirationMinutes { get; set; }
+    
+    public int SearchResultsMaxCacheSize { get; set; } = 500;
 }

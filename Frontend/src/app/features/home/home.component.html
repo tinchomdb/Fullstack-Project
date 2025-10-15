@@ -1,0 +1,18 @@
+<section class="home-page">
+  <app-banner-carousel />
+
+  @if (featuredCategories().length > 0) {
+    <app-featured-categories [categories]="featuredCategories()" />
+  }
+
+  @if (featuredProducts().length > 0) {
+    <app-featured-products [products]="featuredProducts()" />
+  }
+
+  <app-product-list-section
+    [products]="products()"
+    [hasMore]="hasMore()"
+    [loadingMore]="loadingMore()"
+    (loadMore)="onLoadMore()"
+  />
+</section>

@@ -63,6 +63,7 @@ export class InfiniteScrollResource<T> {
    * Append more items to existing list (for infinite scroll)
    */
   loadMore(source$: Observable<PaginatedResponse<T>>): void {
+    // Guards to prevent duplicate requests
     if (this.loadingMoreSignal() || this.loadingSignal() || !this.hasMore()) {
       return;
     }
@@ -72,7 +73,6 @@ export class InfiniteScrollResource<T> {
 
     source$.subscribe({
       next: (response) => {
-        // Append new items to existing ones
         const currentItems = this.accumulatedItemsSignal();
         this.accumulatedItemsSignal.set([...currentItems, ...response.items]);
         this.totalCountSignal.set(response.totalCount);

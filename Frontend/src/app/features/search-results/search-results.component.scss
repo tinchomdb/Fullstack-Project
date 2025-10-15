@@ -1,0 +1,35 @@
+@use '../../../styles/tokens' as *;
+
+.search-results-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  padding-block: var(--spacing-xl);
+}
+
+.search-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.results-count {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.no-results {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  color: var(--text-secondary);
+
+  p {
+    margin: 0;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  .suggestion {
+    font-size: var(--font-size-sm);
+  }
+}

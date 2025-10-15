@@ -5,6 +5,7 @@ import {
   provideAppInitializer,
   inject,
 } from '@angular/core';
+import { IMAGE_CONFIG } from '@angular/common';
 import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 
@@ -28,6 +29,14 @@ export const appConfig: ApplicationConfig = {
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(withInterceptorsFromDi()),
     provideRouter(routes),
+    {
+      provide: IMAGE_CONFIG,
+      useValue: {
+        breakpoints: [
+          16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840,
+        ],
+      },
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,

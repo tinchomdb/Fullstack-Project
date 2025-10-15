@@ -1,0 +1,18 @@
+<section class="category-page" [attr.aria-labelledby]="headingId">
+  <app-heading [content]="pageHeading()" [level]="'h1'" />
+
+  @if (subcategories().length > 0) {
+    <app-featured-categories [categories]="subcategories()" />
+  }
+
+  @if (featuredProducts().length > 0) {
+    <app-featured-products [products]="featuredProducts()" />
+  }
+
+  <app-product-list-section
+    [products]="products()"
+    [hasMore]="hasMore()"
+    [loadingMore]="loadingMore()"
+    (loadMore)="onLoadMore()"
+  />
+</section>
