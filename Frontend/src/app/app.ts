@@ -32,7 +32,7 @@ export class App implements OnInit {
   private readonly carouselService = inject(CarouselService);
   private readonly breadcrumbService = inject(BreadcrumbService);
 
-  protected readonly title = computed(() => 'Fullstack Marketplace');
+  protected readonly title = computed(() => 'Marketplace');
 
   constructor() {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
