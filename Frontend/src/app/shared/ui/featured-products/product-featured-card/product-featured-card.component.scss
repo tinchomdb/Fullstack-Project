@@ -1,0 +1,166 @@
+@use '../../../../../styles/mixins' as *;
+
+.featured-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  border: var(--border-subtle);
+  background: var(--color-surface-primary);
+  color: var(--color-text-primary);
+  box-shadow: var(--shadow-lg);
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--color-accent-interactive);
+    img {
+      transform: scale(1.05);
+    }
+  }
+}
+
+.card-link {
+  @include text-link;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.media {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  flex: 1;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s;
+  }
+}
+
+.featured-badge {
+  position: absolute;
+  top: var(--space-4);
+  left: var(--space-4);
+  z-index: 1;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: var(--gradient-placeholder);
+  @include text-label-uppercase;
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-semibold);
+}
+
+.content {
+  padding: var(--space-responsive-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+  min-height: 0;
+
+  @include media-sm {
+    padding: var(--space-responsive-md);
+    gap: var(--space-5);
+  }
+}
+
+.content-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+  min-height: 0;
+}
+
+.seller {
+  @include text-label-uppercase;
+  margin-top: 0;
+  color: var(--color-text-secondary);
+  display: none;
+  @include media-xl {
+    @include text-line-clamp(1);
+    display: auto;
+  }
+}
+
+.title {
+  @include text-heading-medium;
+  font-size: var(--font-size-md);
+  line-height: 1.3;
+  color: var(--color-text-primary);
+
+  @include media-sm {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.description {
+  @include text-body;
+  color: var(--color-text-secondary);
+  display: none;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+
+  @include media-md {
+    @include text-line-clamp(1);
+    display: -webkit-box;
+  }
+
+  @include media-lg {
+    @include text-line-clamp(2);
+    display: -webkit-box;
+  }
+}
+
+.price-wrapper {
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.price {
+  @include text-price;
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+
+  @include media-sm {
+    font-size: var(--font-size-lg);
+  }
+}
+
+.actions {
+  flex-shrink: 0;
+}
+
+// Horizontal variant
+:host.variant-horizontal {
+  .card-link {
+    flex-direction: row;
+  }
+
+  .media {
+    flex: 0 0 50%;
+    aspect-ratio: 1;
+    max-width: 50%;
+  }
+
+  .content {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+}

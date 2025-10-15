@@ -11,7 +11,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 
 import { ProductsService } from '../../core/services/products.service';
 import { CategoriesService } from '../../core/services/categories.service';
-import { ProductFeaturedCardComponent } from '../../shared/ui/product-featured-card/product-featured-card.component';
+import { FeaturedProductsComponent } from '../../shared/ui/featured-products/featured-products.component';
 import { ProductGridComponent } from '../../shared/ui/product-grid/product-grid.component';
 import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories/featured-categories.component';
 import { BannerCarouselComponent } from '../../shared/ui/banner-carousel/banner-carousel.component';
@@ -32,7 +32,7 @@ const DEFAULT_PAGE_SIZE = 4;
 @Component({
   selector: 'app-products-page',
   imports: [
-    ProductFeaturedCardComponent,
+    FeaturedProductsComponent,
     ProductGridComponent,
     FeaturedCategoriesComponent,
     BannerCarouselComponent,
@@ -108,7 +108,7 @@ export class MarketplaceComponent {
       untracked(() => {
         this.filtersService.setAllFilters(filters);
         this.productsService.loadProducts(filters);
-        this.productsService.loadFeaturedProducts(filters.categoryId, 4);
+        this.productsService.loadFeaturedProducts(filters.categoryId, 6);
       });
     });
 

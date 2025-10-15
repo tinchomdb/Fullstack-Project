@@ -78,9 +78,9 @@
   --space-10: 2.5rem;
   --space-12: 3rem;
 
-  --space-responsive-sm: clamp(var(--space-4), 3vw, var(--space-8));
-  --space-responsive-md: clamp(var(--space-6), 5vw, var(--space-12));
-  --space-responsive-lg: clamp(var(--space-8), 7vw, 6rem);
+  --space-responsive-sm: clamp(var(--space-2), 3vw, var(--space-4));
+  --space-responsive-md: clamp(var(--space-4), 5vw, var(--space-8));
+  --space-responsive-lg: clamp(var(--space-6), 7vw, var(--space-12));
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;

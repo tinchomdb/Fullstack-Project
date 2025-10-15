@@ -1,47 +1,42 @@
 @use '../../../../styles/mixins' as *;
 
-.featured-categories {
+.featured-products {
   margin-bottom: var(--space-responsive-lg);
 }
 
-.heading {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin: 0 0 var(--space-6) 0;
-  line-height: var(--line-height-tight);
-}
-
-.categories-grid {
+.products-grid {
   display: grid;
   gap: var(--space-responsive-sm);
 }
 
-// Grid layout for 1 card
+// Grid layout for 1 product - large horizontal hero
 .grid-1 {
   grid-template-columns: 1fr;
 }
 
-// Grid layout for 2 cards
+// Grid layout for 2 products - both horizontal
 .grid-2 {
   grid-template-columns: 1fr;
 
-  @include media-sm {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   @include media-md {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-areas: 'card1 card2';
+
+    @for $i from 1 through 2 {
+      .grid-item:nth-child(#{$i}) {
+        grid-area: card#{$i};
+      }
+    }
   }
 }
 
-// Grid layout for 3 cards - masonry on lg+
+// Grid layout for 3 products - first card larger (2 cols), other two stacked
 .grid-3 {
   grid-template-columns: repeat(2, 1fr);
 
   @include media-md {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 250px);
+    grid-auto-rows: minmax(300px, auto);
     grid-template-areas:
       'card1 card1'
       'card2 card3';
@@ -55,10 +50,10 @@
 
   @include media-lg {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 300px);
+    grid-template-rows: repeat(2, 1fr);
     grid-template-areas:
-      'card1 card1'
-      'card2 card3';
+      'card1 card2'
+      'card1 card3';
 
     @for $i from 1 through 3 {
       .grid-item:nth-child(#{$i}) {
@@ -68,7 +63,7 @@
   }
 }
 
-// Grid layout for 4 cards - 2x2 grid
+// Grid layout for 4 products - 2x2 grid
 .grid-4 {
   grid-template-columns: repeat(2, 1fr);
 
@@ -88,7 +83,7 @@
   }
 }
 
-// Grid layout for 5 cards - asymmetric
+// Grid layout for 5 products - asymmetric
 .grid-5 {
   grid-template-columns: repeat(2, 1fr);
 
@@ -108,24 +103,21 @@
   }
 }
 
-// Grid layout for 6 cards - mixed variants
+// Grid layout for 6+ products - mixed variants
 .grid-6 {
   grid-template-columns: repeat(2, 1fr);
-
-  @include media-sm {
-    grid-template-columns: repeat(3, 1fr);
-  }
 
   @include media-md {
     grid-template-columns: repeat(3, 1fr);
   }
 
   @include media-lg {
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 300px);
+    grid-template-columns: repeat(12, 1fr);
+    /* grid-template-rows: 300px 300px 400px; */
     grid-template-areas:
-      'card1 card1 card2 card2'
-      'card3 card4 card5 card6';
+      'card1 card1 card1 card1 card1 card1 card2 card2 card2 card2 card2 card2'
+      'card1 card1 card1 card1 card1 card1 card3 card3 card3 card3 card3 card3'
+      'card4 card4 card4 card4 card5 card5 card5 card5 card6 card6 card6 card6';
 
     @for $i from 1 through 6 {
       .grid-item:nth-child(#{$i}) {
@@ -135,16 +127,6 @@
   }
 
   @include media-xl {
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 350px);
-    grid-template-areas:
-      'card1 card1 card2 card2'
-      'card3 card4 card5 card6';
-
-    @for $i from 1 through 6 {
-      .grid-item:nth-child(#{$i}) {
-        grid-area: card#{$i};
-      }
-    }
+    /* grid-template-rows: 350px 350px 450px; */
   }
 }

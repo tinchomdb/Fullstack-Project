@@ -11,7 +11,7 @@
   }
 
   @if (featuredProduct().length > 0) {
-    <app-product-featured-card [products]="featuredProduct()" />
+    <app-featured-products [products]="featuredProduct()" />
   }
 
   @if (products().length) {

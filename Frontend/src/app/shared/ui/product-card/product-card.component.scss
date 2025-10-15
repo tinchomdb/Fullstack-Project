@@ -10,12 +10,17 @@
   border: var(--border-subtle);
   box-shadow: var(--shadow-md);
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    transform 0.3s,
+    box-shadow 0.3s;
 
   &:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+    border-color: var(--color-accent-interactive);
+    img {
+      transform: scale(1.05);
+      transition: transform 0.4s;
+    }
   }
 }
 
