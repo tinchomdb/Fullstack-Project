@@ -1,14 +1,13 @@
 @use '../../../../styles/mixins' as *;
 
-// Shared mixin for horizontal card layout
-@mixin horizontal-layout {
+@mixin horizontal {
   .card-link {
     flex-direction: row;
   }
 
   .media {
     flex: 1 0 0;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1;
   }
 
   .content {
@@ -34,7 +33,7 @@
 
   @include media-lg {
     .featured-card {
-      @include horizontal-layout;
+      @include horizontal;
 
       .media {
         flex: 1.3;
@@ -66,11 +65,7 @@
     grid-template-columns: repeat(2, 1fr);
 
     .featured-card {
-      @include horizontal-layout;
-
-      .media {
-        aspect-ratio: 1 / 1;
-      }
+      @include horizontal;
 
       .title {
         font-size: var(--font-size-lg);
@@ -86,7 +81,6 @@
     .title {
       font-size: var(--font-size-xl);
     }
-
     .price {
       font-size: var(--font-size-lg);
     }
@@ -101,7 +95,7 @@
 
     .featured-card:first-child {
       grid-column: 1 / -1;
-      @include horizontal-layout;
+      @include horizontal;
 
       .media {
         aspect-ratio: 16 / 10;
@@ -137,7 +131,6 @@
 
     .featured-card:first-child {
       grid-row: 1 / 3;
-      grid-column: 1 / 2;
 
       .card-link {
         flex-direction: column;
@@ -159,20 +152,16 @@
 
     .featured-card:nth-child(2) {
       grid-row: 1 / 2;
-      grid-column: 2 / 3;
+      grid-column: 2;
     }
 
     .featured-card:nth-child(3) {
       grid-row: 2 / 3;
-      grid-column: 2 / 3;
+      grid-column: 2;
     }
 
     .featured-card:not(:first-child) {
-      @include horizontal-layout;
-
-      .media {
-        aspect-ratio: 1 / 1;
-      }
+      @include horizontal;
 
       .title {
         font-size: var(--font-size-lg);
@@ -185,7 +174,6 @@
   }
 }
 
-// Four products - asymmetric masonry-style grid
 .grid-multi {
   @include media-sm {
     grid-template-columns: repeat(2, 1fr);
@@ -195,14 +183,9 @@
     grid-template-columns: repeat(4, 1fr);
     grid-auto-rows: minmax(200px, auto);
 
-    // All cards in a single row
-    .featured-card {
-    }
-
-    // First card - larger, spans 2 columns
     .featured-card:first-child {
       grid-column: 1 / 3;
-      grid-row: 1/3;
+      grid-row: 1 / 3;
 
       .media {
         aspect-ratio: 4 / 3;
@@ -221,31 +204,10 @@
       }
     }
 
-    // Second card - spans 2 columns, horizontal layout
-    .featured-card:nth-child(2) {
-      grid-column: 3 / 5;
-      @include horizontal-layout;
-      .media {
-        aspect-ratio: 1 / 1;
-      }
-
-      .title {
-        font-size: var(--font-size-sm);
-      }
-
-      .price {
-        font-size: var(--font-size-xs);
-      }
-    }
-
-    // Third card - spans 2 columns, horizontal layout
+    .featured-card:nth-child(2),
     .featured-card:nth-child(3) {
       grid-column: 3 / 5;
-      @include horizontal-layout;
-      .media {
-        aspect-ratio: 1 / 1;
-      }
-
+      @include horizontal;
       .title {
         font-size: var(--font-size-sm);
       }
@@ -255,10 +217,9 @@
       }
     }
 
-    // Fourth card - spans full width, horizontal layout
     .featured-card:nth-child(4) {
       grid-column: 1 / 5;
-      @include horizontal-layout;
+      @include horizontal;
       .media {
         aspect-ratio: 16 / 9;
       }
@@ -276,7 +237,6 @@
       }
     }
 
-    // Fifth card and beyond - vertical layout
     .featured-card:nth-child(n + 5) {
       .card-link {
         flex-direction: column;
@@ -298,7 +258,6 @@
   }
 
   @include media-xl {
-    // Larger screens - give more breathing room
     .featured-card:first-child {
       .title {
         font-size: var(--font-size-3xl);
@@ -315,7 +274,6 @@
       .title {
         font-size: var(--font-size-lg);
       }
-
       .price {
         font-size: var(--font-size-md);
       }
@@ -334,8 +292,8 @@
   color: var(--color-text-inverse);
   box-shadow: var(--shadow-lg);
   transition:
-    transform 0.3s ease,
-    box-shadow 0.3s ease;
+    transform 0.3s,
+    box-shadow 0.3s;
 
   &:hover {
     transform: translateY(-4px);
@@ -369,7 +327,7 @@
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.4s ease;
+    transition: transform 0.4s;
   }
 }
 
@@ -383,9 +341,9 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.3));
   opacity: 0.1;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s;
   pointer-events: none;
 }
 
@@ -395,7 +353,6 @@
   display: grid;
   place-items: center;
   background: var(--gradient-placeholder);
-  color: var(--color-text-inverse);
   @include text-label-uppercase;
   color: var(--color-text-inverse);
 }
@@ -415,13 +372,11 @@
 
 .seller {
   @include text-label-uppercase;
-  color: inherit;
   opacity: 0.8;
 }
 
 .title {
   @include text-heading-medium;
-  color: inherit;
   font-size: var(--font-size-md);
   line-height: 1.3;
 
@@ -432,7 +387,6 @@
 
 .description {
   @include text-body;
-  color: inherit;
   opacity: 0.9;
   display: none;
   font-size: var(--font-size-sm);

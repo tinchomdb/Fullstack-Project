@@ -39,8 +39,8 @@
           </div>
           <div class="actions">
             <app-button
-              [disabled]="isAddingToCart()"
-              (click)="onAddToCart(product)"
+              [disabled]="isAddingToCart(product.id)"
+              (click)="onAddToCart(product); $event.stopPropagation(); $event.preventDefault()"
               type="button"
               shape="rounded"
               size="full"

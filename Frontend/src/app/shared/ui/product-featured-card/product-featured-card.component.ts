@@ -1,5 +1,5 @@
 import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { Product } from '../../../core/models/product.model';
@@ -29,7 +29,8 @@ export class ProductFeaturedCardComponent {
   private readonly cartService = inject(CartService);
   private readonly productsService = inject(ProductsService);
 
-  protected readonly isAddingToCart = this.cartService.loading;
+  private readonly addingProductId = signal<string | null>(null);
+
   protected readonly gridClass = computed(() => {
     const count = this.products().length;
     if (count === 1) return 'grid-single';
@@ -42,9 +43,18 @@ export class ProductFeaturedCardComponent {
     return this.productsService.buildProductUrl(product);
   }
 
-  onAddToCart(product: Product): void {
-    if (!product) return;
+  protected isAddingToCart(productId: string): boolean {
+    return this.addingProductId() === productId && this.cartService.loading();
+  }
 
+  onAddToCart(product: Product): void {
+    if (!product || this.addingProductId()) return;
+
+    this.addingProductId.set(product.id);
     this.cartService.addToCart(product, 1);
+
+    setTimeout(() => {
+      this.addingProductId.set(null);
+    }, 1000);
   }
 }
