@@ -16,7 +16,8 @@ C# and .NET Best Practices:
 - Async/Await: Use asynchronous programming patterns where appropriate, especially for I/O-bound operations.
 - Magic Numbers: Avoid magic numbers; use named constants or enums.
 - File Organization: One class per file. Organize files into appropriate folders by feature or layer.
--Use primary constructors when makes sense.
+- Use primary constructors when makes sense.
+- Avoid magic strings and numbers; use constants or enums instead.
 
 ### Naming Conventions
 - Classes & Interfaces: PascalCase

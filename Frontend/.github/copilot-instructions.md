@@ -11,6 +11,7 @@ When generating code, follow these best practices:
 - Prefer type inference when the type is obvious
 - Avoid the `any` type; use `unknown` when type is uncertain
 - Avoid comments unless necessary; write self-explanatory code
+- Avoid magic strings and numbers; use constants or enums
 
 ## Angular Best Practices
 

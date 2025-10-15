@@ -14,19 +14,145 @@
 
 .categories-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
   gap: var(--space-4);
+
+  @include media-md {
+    gap: var(--space-5);
+  }
+
+  @include media-lg {
+    gap: var(--space-6);
+  }
+}
+
+// Grid layout for 1 card
+.grid-1 {
+  grid-template-columns: 1fr;
+}
+
+// Grid layout for 2 cards
+.grid-2 {
+  grid-template-columns: 1fr;
+
+  @include media-sm {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include media-md {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Grid layout for 3 cards - masonry on lg+
+.grid-3 {
+  grid-template-columns: repeat(2, 1fr);
+
+  @include media-md {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 250px);
+    grid-template-areas:
+      'card1 card1'
+      'card2 card3';
+
+    @for $i from 1 through 3 {
+      .grid-item:nth-child(#{$i}) {
+        grid-area: card#{$i};
+      }
+    }
+  }
+
+  @include media-lg {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 300px);
+    grid-template-areas:
+      'card1 card1'
+      'card2 card3';
+
+    @for $i from 1 through 3 {
+      .grid-item:nth-child(#{$i}) {
+        grid-area: card#{$i};
+      }
+    }
+  }
+}
+
+// Grid layout for 4 cards - 2x2 grid
+.grid-4 {
+  grid-template-columns: repeat(2, 1fr);
+
+  @include media-lg {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, 300px);
+    grid-template-areas:
+      'card1 card1'
+      'card2 card2'
+      'card3 card4';
+
+    @for $i from 1 through 4 {
+      .grid-item:nth-child(#{$i}) {
+        grid-area: card#{$i};
+      }
+    }
+  }
+}
+
+// Grid layout for 5 cards - asymmetric
+.grid-5 {
+  grid-template-columns: repeat(2, 1fr);
+
+  @include media-md {
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 300px);
+    grid-template-areas:
+      'card1 card1 card1'
+      'card2 card2 card3'
+      'card4 card5 card5';
+
+    @for $i from 1 through 5 {
+      .grid-item:nth-child(#{$i}) {
+        grid-area: card#{$i};
+      }
+    }
+  }
+}
+
+// Grid layout for 6 cards - mixed variants
+.grid-6 {
+  grid-template-columns: repeat(2, 1fr);
 
   @include media-sm {
     grid-template-columns: repeat(3, 1fr);
   }
 
+  @include media-md {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
   @include media-lg {
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-6);
+    grid-template-rows: repeat(2, 300px);
+    grid-template-areas:
+      'card1 card1 card2 card2'
+      'card3 card4 card5 card6';
+
+    @for $i from 1 through 6 {
+      .grid-item:nth-child(#{$i}) {
+        grid-area: card#{$i};
+      }
+    }
   }
 
   @include media-xl {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, 350px);
+    grid-template-areas:
+      'card1 card1 card2 card2'
+      'card3 card4 card5 card6';
+
+    @for $i from 1 through 6 {
+      .grid-item:nth-child(#{$i}) {
+        grid-area: card#{$i};
+      }
+    }
   }
 }

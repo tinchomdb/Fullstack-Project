@@ -3,9 +3,11 @@
     <h2 class="heading">{{ heading() }}</h2>
   }
 
-  <div class="categories-grid">
-    @for (category of categories(); track category.id) {
-      <app-category-card [category]="category" />
+  <div class="categories-grid" [class]="gridClass()">
+    @for (category of categories(); track category.id; let i = $index) {
+      <div class="grid-item">
+        <app-category-card [category]="category" [variant]="cardVariants()[i]" />
+      </div>
     }
   </div>
 </section>
