@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
-import { CarouselSlide } from '../../shared/models/carousel-slide.model';
+import { CarouselSlide } from '../models/carousel-slide.model';
 import {
   CarouselSlideApiModel,
   CreateCarouselSlideRequest,

@@ -9,6 +9,7 @@ import {
 } from '@azure/msal-browser';
 import { Subject, Observable } from 'rxjs';
 import { filter, takeUntil, map } from 'rxjs/operators';
+import { apiScope } from './auth-config';
 
 @Injectable({
   providedIn: 'root',
@@ -114,9 +115,14 @@ export class AuthService {
   }
 
   private refreshTokenClaims(account: AccountInfo): void {
+    // First, update admin status with existing claims to avoid showing stale state
+    this.updateAdminStatus(account);
+
+    // Then try to refresh the token silently with API scope to get roles claim
+    // The API scope is required because roles are included in the access token, not just the ID token
     this.msalService
       .acquireTokenSilent({
-        scopes: ['openid', 'profile', 'email'],
+        scopes: [apiScope],
         account,
       })
       .subscribe({
@@ -126,9 +132,19 @@ export class AuthService {
             this.updateAdminStatus(result.account);
           }
         },
-        error: (error: Error) => {
-          console.error('Error refreshing token claims:', error);
-          this.updateAdminStatus(account);
+        error: (error: any) => {
+          if (error.name === 'InteractionRequiredAuthError') {
+            // Token expired and needs user interaction to refresh
+            // Trigger a redirect to refresh the token and return to the current page
+            console.info('Token expired, redirecting to refresh...');
+            this.msalService.acquireTokenRedirect({
+              scopes: [apiScope],
+              account,
+              redirectStartPage: window.location.href,
+            });
+          } else {
+            console.error('Error refreshing token claims:', error);
+          }
         },
       });
   }

@@ -41,10 +41,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-
-  @include media-md {
-    max-height: 300px;
-  }
 }
 
 .preview-item {
@@ -62,6 +58,7 @@
   object-fit: cover;
   border-radius: var(--radius-sm);
   border: var(--border-subtle);
+  flex-shrink: 0;
 }
 
 .preview-info {
@@ -78,7 +75,8 @@
   color: var(--color-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .preview-quantity {

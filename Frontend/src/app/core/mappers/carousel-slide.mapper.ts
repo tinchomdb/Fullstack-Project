@@ -1,4 +1,4 @@
-import { CarouselSlide } from '../../shared/models/carousel-slide.model';
+import { CarouselSlide } from '../models/carousel-slide.model';
 import { CarouselSlideApiModel } from '../models/api/carousel-slide-api.model';
 import { ensureString, ensureNumber } from '../../shared/utils/normalization.utils';
 

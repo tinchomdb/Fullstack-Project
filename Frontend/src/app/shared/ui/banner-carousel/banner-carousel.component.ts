@@ -11,7 +11,7 @@ import {
 
 import { NavigationArrowComponent } from '../navigation-arrow/navigation-arrow.component';
 import { CarouselService } from '../../../core/services/carousel.service';
-import { CarouselSlide } from '../../../shared/models/carousel-slide.model';
+import { CarouselSlide } from '../../../core/models/carousel-slide.model';
 
 @Component({
   selector: 'app-banner-carousel',
