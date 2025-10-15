@@ -102,8 +102,8 @@ export class FiltersService {
   setSearchTerm(searchTerm: string | null): void {
     const trimmed = searchTerm?.trim() || null;
     console.log('Setting search term:', trimmed);
+    this.resetFilters();
     this.searchTermSignal.set(trimmed);
-    this.resetToFirstPage();
   }
 
   setAllFilters(filters: Partial<ProductFilters>): void {
@@ -118,7 +118,7 @@ export class FiltersService {
         (opt) => opt.sortBy === filters.sortBy && opt.sortDirection === filters.sortDirection,
       );
       if (sortOption) {
-        this.setSortOption(sortOption);
+        this.currentSortOptionSignal.set(sortOption);
       }
     }
     if (filters.page !== undefined) {
@@ -128,12 +128,14 @@ export class FiltersService {
       this.pageSizeSignal.set(filters.pageSize);
     }
     if (filters.categoryId !== undefined) {
-      this.setCategoryId(filters.categoryId);
+      this.categoryIdSignal.set(filters.categoryId);
     } else {
-      this.setCategoryId(null);
+      this.categoryIdSignal.set(null);
     }
     if (filters.searchTerm !== undefined) {
-      this.setSearchTerm(filters.searchTerm);
+      this.searchTermSignal.set(filters.searchTerm?.trim() || null);
+    } else {
+      this.searchTermSignal.set(null);
     }
   }
 
@@ -174,7 +176,7 @@ export class FiltersService {
     if (filters.searchTerm !== null) {
       params.searchTerm = filters.searchTerm;
     }
-    console.log('Built API params:', params);
+
     return params;
   }
 

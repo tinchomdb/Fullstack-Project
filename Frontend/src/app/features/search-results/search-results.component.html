@@ -1,0 +1,26 @@
+<section class="search-results-page" [attr.aria-labelledby]="headingId">
+  <div class="search-header">
+    <app-heading [content]="pageHeading()" [level]="'h1'" />
+    @if (products().length > 0) {
+      <p class="results-count">
+        {{ resultsCount() }} {{ resultsCount() === 1 ? 'product' : 'products' }} found
+      </p>
+    }
+  </div>
+
+  <app-product-list-section
+    [products]="products()"
+    [hasMore]="hasMore()"
+    [loadingMore]="loadingMore()"
+    [showHeading]="false"
+    [endMessage]="'You\'ve reached the end of search results'"
+    (loadMore)="onLoadMore()"
+  />
+
+  @if (products().length === 0 && !loading()) {
+    <div class="no-results">
+      <p>No products found matching your search.</p>
+      <p class="suggestion">Try different keywords or browse our categories.</p>
+    </div>
+  }
+</section>

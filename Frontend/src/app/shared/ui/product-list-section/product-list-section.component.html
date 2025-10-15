@@ -1,0 +1,35 @@
+@if (products().length) {
+  <div class="products-section">
+    <div class="products-controls">
+      @if (showHeading()) {
+        <app-heading [content]="heading()" [level]="'h2'" />
+      }
+      <app-sort-dropdown />
+    </div>
+    <app-product-grid [products]="products()" />
+
+    @if (hasMore() && !loadingMore()) {
+      <div
+        class="scroll-sentinel"
+        appIntersectionObserver
+        (intersecting)="onLoadMore()"
+        aria-hidden="true"
+      >
+        <!-- Sentinel is only in DOM when ready to load -->
+      </div>
+    }
+
+    @if (loadingMore()) {
+      <div class="loading-indicator">
+        <div class="spinner"></div>
+        <span>Loading more products...</span>
+      </div>
+    }
+
+    @if (!hasMore() && !loadingMore() && products().length > 0) {
+      <div class="end-message">
+        <p>{{ endMessage() }}</p>
+      </div>
+    }
+  </div>
+}
