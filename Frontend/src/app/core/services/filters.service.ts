@@ -10,7 +10,7 @@ import {
 } from '../models/product-filters.model';
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, SortOption } from '../models/sort-option.model';
 
-const DEFAULT_PAGE_SIZE = 4;
+const DEFAULT_PAGE_SIZE = 20;
 const PRICE_DEBOUNCE_MS = 500;
 
 @Injectable({ providedIn: 'root' })

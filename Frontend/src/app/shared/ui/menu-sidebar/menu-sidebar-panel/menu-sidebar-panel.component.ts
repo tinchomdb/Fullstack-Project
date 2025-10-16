@@ -5,10 +5,17 @@ import { CategoryTreeNode } from '../../../../core/services/categories.service';
 import { CloseButtonComponent } from '../../close-button/close-button.component';
 import { ThemeToggleComponent } from '../../theme-toggle/theme-toggle.component';
 import { CategoryTreeItemComponent } from '../category-tree-item/category-tree-item.component';
+import { AuthButtonComponent } from '../../auth-button/auth-button.component';
 
 @Component({
   selector: 'app-menu-sidebar-panel',
-  imports: [RouterLink, CloseButtonComponent, ThemeToggleComponent, CategoryTreeItemComponent],
+  imports: [
+    RouterLink,
+    CloseButtonComponent,
+    ThemeToggleComponent,
+    CategoryTreeItemComponent,
+    AuthButtonComponent,
+  ],
   templateUrl: './menu-sidebar-panel.component.html',
   styleUrl: './menu-sidebar-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

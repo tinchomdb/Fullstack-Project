@@ -50,18 +50,15 @@
           </li>
         }
 
-        <li class="theme-toggle-item">
+        <li class="toggle-item">
           <span class="settings-label">Theme</span>
           <app-theme-toggle />
         </li>
 
-        @if (isLoggedIn()) {
-          <li>
-            <button type="button" class="settings-link logout-button" (click)="logoutClick.emit()">
-              Sign Out
-            </button>
-          </li>
-        }
+        <li class="toggle-item">
+          <span class="settings-label">{{ isLoggedIn() ? 'Sign Out' : 'Sign In' }}</span>
+          <app-auth-button class="desktop-only"></app-auth-button>
+        </li>
       </ul>
     </div>
   </div>

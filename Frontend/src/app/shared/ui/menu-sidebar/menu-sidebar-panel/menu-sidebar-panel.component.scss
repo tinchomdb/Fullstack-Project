@@ -103,16 +103,7 @@ $transition-duration: 0.3s;
   text-align: left;
 }
 
-.logout-button {
-  color: var(--color-text-critical);
-  font-weight: var(--font-weight-semibold);
-
-  &:hover {
-    background-color: var(--color-surface-critical);
-  }
-}
-
-.theme-toggle-item {
+.toggle-item {
   @extend %interactive-item;
   display: flex;
   align-items: center;

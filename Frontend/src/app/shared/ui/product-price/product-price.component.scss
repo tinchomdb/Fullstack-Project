@@ -1,10 +1,11 @@
+@use '../../../../styles/mixins' as *;
+
 :host {
   display: inline-block;
 }
 
 .price {
-  font-weight: var(--font-weight-normal);
-  color: var(--color-price);
+  @include text-price;
 }
 
 :host([data-size='sm']) .price {
