@@ -23,6 +23,12 @@ import {
 import { PublicClientApplication, InteractionType } from '@azure/msal-browser';
 import { msalConfig, loginRequest, protectedResourceMap } from './core/auth/auth-config';
 
+import { CategoriesService } from './core/services/categories.service';
+import { firstValueFrom, combineLatest } from 'rxjs';
+import { filter } from 'rxjs/operators';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { CarouselService } from './core/services/carousel.service';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
@@ -62,8 +68,23 @@ export const appConfig: ApplicationConfig = {
       }),
     },
     provideAppInitializer(() => {
+      // MSAL init - let it run in background
       const msalService = inject(MsalService);
-      return msalService.instance.initialize();
+      msalService.instance.initialize();
+
+      // Wait for these critical startup services
+      const categoriesService = inject(CategoriesService);
+      categoriesService.loadCategories();
+
+      const carouselService = inject(CarouselService);
+      carouselService.loadActiveSlides();
+
+      return firstValueFrom(
+        combineLatest([
+          toObservable(categoriesService.loading).pipe(filter((loading) => !loading)),
+          toObservable(carouselService.activeSlidesLoading).pipe(filter((loading) => !loading)),
+        ]),
+      );
     }),
     MsalService,
     MsalBroadcastService,
