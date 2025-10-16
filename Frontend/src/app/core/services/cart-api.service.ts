@@ -10,6 +10,22 @@ import { OrderApiModel } from '../models/api/order-api.model';
 import { mapCartFromApi } from '../mappers/cart.mapper';
 import { mapOrderFromApi } from '../mappers/order.mapper';
 
+export interface AddToCartRequest {
+  productId: string;
+  sellerId: string;
+  quantity: number;
+}
+
+export interface UpdateQuantityRequest {
+  productId: string;
+  sellerId: string;
+  quantity: number;
+}
+
+export interface RemoveFromCartRequest {
+  productId: string;
+}
+
 export interface CheckoutRequest {
   cartId: string;
   shippingCost: number;
@@ -31,14 +47,30 @@ export class CartApiService {
       .pipe(map((response) => (response ? mapCartFromApi(response) : null)));
   }
 
-  upsertCart(userId: string, cart: Cart): Observable<Cart> {
+  addToCart(userId: string, request: AddToCartRequest): Observable<Cart> {
     return this.http
-      .put<CartApiModel>(`${this.baseUrl}/by-user/${userId}`, cart)
+      .post<CartApiModel>(`${this.baseUrl}/by-user/${userId}/items`, request)
       .pipe(map(mapCartFromApi));
   }
 
-  deleteCart(userId: string): Observable<void> {
-    return this.http.delete<void>(`${this.baseUrl}/by-user/${userId}`);
+  removeFromCart(userId: string, request: RemoveFromCartRequest): Observable<Cart> {
+    return this.http
+      .delete<CartApiModel>(`${this.baseUrl}/by-user/${userId}/items/${request.productId}`, {
+        body: request,
+      })
+      .pipe(map(mapCartFromApi));
+  }
+
+  updateQuantity(userId: string, request: UpdateQuantityRequest): Observable<Cart> {
+    return this.http
+      .patch<CartApiModel>(`${this.baseUrl}/by-user/${userId}/items/${request.productId}`, request)
+      .pipe(map(mapCartFromApi));
+  }
+
+  clearCart(userId: string): Observable<Cart> {
+    return this.http
+      .delete<CartApiModel>(`${this.baseUrl}/by-user/${userId}`)
+      .pipe(map(mapCartFromApi));
   }
 
   checkout(userId: string, request: CheckoutRequest): Observable<Order> {

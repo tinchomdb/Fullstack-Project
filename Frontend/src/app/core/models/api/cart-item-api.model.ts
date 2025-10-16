@@ -1,6 +1,7 @@
 export type CartItemApiModel = {
   readonly productId?: string;
   readonly productName?: string;
+  readonly slug?: string;
   readonly imageUrl?: string;
   readonly sellerId?: string;
   readonly sellerName?: string;

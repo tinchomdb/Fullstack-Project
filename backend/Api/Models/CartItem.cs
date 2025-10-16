@@ -5,6 +5,7 @@ public sealed record class CartItem
     public string ProductId { get; init; } = string.Empty;
 
     public string ProductName { get; init; } = string.Empty;
+    public string Slug { get; init; } = string.Empty;
 
     public string ImageUrl { get; init; } = string.Empty;
     

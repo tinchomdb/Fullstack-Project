@@ -5,11 +5,9 @@ import { Cart } from '../models/cart.model';
 import { Order } from '../models/order.model';
 import { Resource } from '../../shared/utils/resource';
 import { Product } from '../models/product.model';
-import { CartItem } from '../models/cart-item.model';
 import { AuthService } from '../auth/auth.service';
 import { LoadingOverlayService } from './loading-overlay.service';
 import { CartApiService } from './cart-api.service';
-import { CartHelperService } from './cart-helper.service';
 
 export type { CheckoutRequest } from './cart-api.service';
 
@@ -18,7 +16,6 @@ export class CartService {
   private readonly authService = inject(AuthService);
   private readonly loadingOverlayService = inject(LoadingOverlayService);
   private readonly cartApi = inject(CartApiService);
-  private readonly cartHelper = inject(CartHelperService);
   private readonly cartResource = new Resource<Cart | null>(
     null,
     'Loading cart...',
@@ -51,52 +48,43 @@ export class CartService {
   }
 
   addToCart(product: Product, quantity: number = 1): void {
-    const currentCart = this.cart();
-
-    if (!currentCart) {
-      const newCart = this.cartHelper.createNewCart(this.getUserId(), product, quantity);
-      this.saveCart(newCart);
-      return;
-    }
-
-    const updatedItems = this.cartHelper.addItemToCart(currentCart.items, product, quantity);
-    this.updateCart(currentCart, updatedItems);
+    const userId = this.getUserId();
+    this.cartResource.load(
+      this.cartApi.addToCart(userId, {
+        productId: product.id,
+        sellerId: product.seller.id,
+        quantity,
+      }),
+    );
   }
 
   removeFromCart(productId: string): void {
-    const currentCart = this.cart();
-    if (!currentCart) return;
-
-    const updatedItems = this.cartHelper.removeItemFromCart(currentCart.items, productId);
-
-    if (updatedItems.length === 0) {
-      this.clearCart();
-      return;
-    }
-
-    this.updateCart(currentCart, updatedItems);
+    const userId = this.getUserId();
+    this.cartResource.load(
+      this.cartApi.removeFromCart(userId, {
+        productId,
+      }),
+    );
   }
 
   updateQuantity(productId: string, quantity: number): void {
-    if (quantity <= 0) {
-      this.removeFromCart(productId);
-      return;
-    }
-
+    const userId = this.getUserId();
     const currentCart = this.cart();
-    if (!currentCart) return;
+    const item = currentCart?.items.find((i) => i.productId === productId);
 
-    const updatedItems = this.cartHelper.updateItemQuantityInCart(
-      currentCart.items,
-      productId,
-      quantity,
+    if (!item) return;
+
+    this.cartResource.load(
+      this.cartApi.updateQuantity(userId, {
+        productId,
+        sellerId: item.sellerId,
+        quantity,
+      }),
     );
-
-    this.updateCart(currentCart, updatedItems);
   }
 
   clearCart(): void {
-    this.cartResource.load(this.cartApi.deleteCart(this.getUserId()).pipe(map(() => null)));
+    this.cartResource.load(this.cartApi.clearCart(this.getUserId()));
   }
 
   checkout(shippingCost: number = 0): Observable<Order> {
@@ -167,14 +155,5 @@ export class CartService {
 
   private getUserId(): string {
     return this.authService.userId();
-  }
-
-  private updateCart(cart: Cart, items: readonly CartItem[]): void {
-    const updatedCart = this.cartHelper.recalculateCartTotals(cart, items);
-    this.saveCart(updatedCart);
-  }
-
-  private saveCart(cart: Cart): void {
-    this.cartResource.load(this.cartApi.upsertCart(this.getUserId(), cart));
   }
 }

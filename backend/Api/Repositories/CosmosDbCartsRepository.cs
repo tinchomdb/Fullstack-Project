@@ -8,14 +8,17 @@ namespace Api.Repositories;
 public sealed class CosmosDbCartsRepository : ICartsRepository
 {
     private readonly Container _container;
+    private readonly ILogger<CosmosDbCartsRepository> _logger;
 
     public CosmosDbCartsRepository(
         CosmosClient cosmosClient,
-        IOptions<CosmosDbSettings> cosmosDbSettings)
+        IOptions<CosmosDbSettings> cosmosDbSettings,
+        ILogger<CosmosDbCartsRepository> logger)
     {
         var settings = cosmosDbSettings.Value;
         var database = cosmosClient.GetDatabase(settings.DatabaseName);
         _container = database.GetContainer(settings.ContainersNames.Carts);
+        _logger = logger;
     }
 
     public async Task<Cart?> GetActiveCartByUserAsync(
@@ -81,22 +84,47 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
         string userId,
         CancellationToken cancellationToken = default)
     {
-        // Get active cart for user and delete it
-        var activeCart = await GetActiveCartByUserAsync(userId, cancellationToken);
+        _logger.LogInformation("Attempting to delete ALL active carts for user {UserId}", userId);
         
-        if (activeCart is not null)
+        try
         {
-            try
+            var query = new QueryDefinition(
+                "SELECT * FROM c WHERE c.userId = @userId AND c.status = @status")
+                .WithParameter("@userId", userId)
+                .WithParameter("@status", CartStatus.Active.ToString());
+
+            var iterator = _container.GetItemQueryIterator<Cart>(query);
+            var deletedCount = 0;
+
+            while (iterator.HasMoreResults)
             {
-                await _container.DeleteItemAsync<Cart>(
-                    activeCart.Id,
-                    new PartitionKey(activeCart.UserId),
-                    cancellationToken: cancellationToken);
+                var results = await iterator.ReadNextAsync(cancellationToken);
+                
+                foreach (var cart in results)
+                {
+                    try
+                    {
+                        await _container.DeleteItemAsync<Cart>(
+                            cart.Id,
+                            new PartitionKey(cart.UserId),
+                            cancellationToken: cancellationToken);
+                        
+                        deletedCount++;
+                        _logger.LogInformation("Deleted cart {CartId} for user {UserId}", cart.Id, userId);
+                    }
+                    catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        _logger.LogWarning("Cart {CartId} for user {UserId} was not found during delete", cart.Id, userId);
+                    }
+                }
             }
-            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                // Item already deleted, ignore
-            }
+            
+            _logger.LogInformation("Deleted {Count} cart(s) for user {UserId}", deletedCount, userId);
+        }
+        catch (CosmosException ex)
+        {
+            _logger.LogError(ex, "Error deleting carts for user {UserId}", userId);
+            throw;
         }
     }
 }

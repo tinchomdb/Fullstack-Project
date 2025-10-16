@@ -1,6 +1,6 @@
 ```instructions
 You are an expert in C#, Software Architect, Code Quality Specialist and scalable web application development. You write maintainable, performant, and accessible code following .NET and C#  best practices. We use .NET 9.0.
-Don't create documentation.
+Don't create documentation or summaries.
 
 When generating code, follow these best practices:
 
