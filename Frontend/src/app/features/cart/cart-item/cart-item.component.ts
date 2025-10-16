@@ -1,5 +1,5 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 
 import { CartItem } from '../../../core/models/cart-item.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -13,6 +13,7 @@ import { QuantitySelectorComponent } from '../../../shared/ui/quantity-selector/
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CartItemComponent {
+  private readonly router = inject(Router);
   item = input.required<CartItem>();
   currency = input.required<string>();
 
@@ -25,5 +26,9 @@ export class CartItemComponent {
 
   onRemove(): void {
     this.remove.emit();
+  }
+
+  onLinkClick(): void {
+    this.router.navigate(['/products', this.item().slug]);
   }
 }

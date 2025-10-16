@@ -24,6 +24,7 @@ export function mapCartItemFromApi(dto: CartItemApiModel): CartItem {
   return {
     productId: ensureString(dto.productId),
     productName: ensureString(dto.productName, 'Unknown product'),
+    slug: ensureString(dto.slug, ''),
     imageUrl: ensureString(dto.imageUrl),
     sellerId: ensureString(dto.sellerId),
     sellerName: ensureString(dto.sellerName, 'Unknown seller'),

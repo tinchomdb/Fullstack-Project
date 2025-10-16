@@ -49,6 +49,11 @@ public static class CosmosDbExtensions
         services.AddSingleton<CosmosDbInitializationService>();
         services.AddSingleton<DataSeedingService>();
 
+        // Register business services
+        services.AddScoped<CartValidator>();
+        services.AddScoped<CartMapper>();
+        services.AddScoped<ICartService, CartService>();
+
         return services;
     }
 

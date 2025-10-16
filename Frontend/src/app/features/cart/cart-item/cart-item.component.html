@@ -1,17 +1,9 @@
 <div class="cart-item">
-  <a
-    class="item-image-link"
-    [routerLink]="['/products', item().productId]"
-    [queryParams]="{ sellerId: item().sellerId }"
-  >
+  <a class="item-image-link" (click)="onLinkClick()">
     <img [src]="item().imageUrl" [alt]="item().productName" />
   </a>
   <div class="item-details">
-    <a
-      class="item-name-link"
-      [routerLink]="['/products', item().productId]"
-      [queryParams]="{ sellerId: item().sellerId }"
-    >
+    <a class="item-name-link" (click)="onLinkClick()">
       <h3>{{ item().productName }}</h3>
     </a>
     <p>Unit Price: {{ currency() }} {{ item().unitPrice.toFixed(2) }}</p>

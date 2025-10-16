@@ -1,5 +1,6 @@
 using Api.Models;
-using Api.Repositories;
+using Api.Models.DTOs;
+using Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,192 +8,153 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class CartsController(ICartsRepository cartsRepository, IOrdersRepository ordersRepository) : ControllerBase
+public sealed class CartsController(ICartService cartService) : ControllerBase
 {
-    private readonly ICartsRepository cartsRepository = cartsRepository ?? throw new ArgumentNullException(nameof(cartsRepository));
-    private readonly IOrdersRepository ordersRepository = ordersRepository ?? throw new ArgumentNullException(nameof(ordersRepository));
+    private readonly ICartService _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
 
+    /// <summary>
+    /// Get the active cart for a user
+    /// </summary>
     [HttpGet("by-user/{userId}/active")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Cart>> GetActiveCartByUser(string userId, CancellationToken cancellationToken)
+    [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CartResponse>> GetActiveCartByUser(string userId, CancellationToken cancellationToken)
     {
-        var activeCart = await cartsRepository.GetActiveCartByUserAsync(userId, cancellationToken);
-
-        return Ok(activeCart);
+        var cart = await _cartService.GetActiveCartAsync(userId, cancellationToken);
+        return Ok(cart);
     }
 
-    [HttpGet("admin/all-carts")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<Cart>>> GetAllCarts(CancellationToken cancellationToken)
-    {
-        var carts = await cartsRepository.GetAllCartsAsync(cancellationToken);
-        return Ok(carts);
-    }
-
-    [HttpPut("by-user/{userId}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<Cart>> UpsertCart(string userId, [FromBody] Cart cart, CancellationToken cancellationToken)
-    {
-        if (cart.UserId != userId)
-        {
-            return BadRequest("Cart userId must match route parameter");
-        }
-
-        // Update the LastUpdatedAt timestamp
-        var updatedCart = cart with { LastUpdatedAt = DateTime.UtcNow };
-        var upsertedCart = await cartsRepository.UpsertCartAsync(updatedCart, cancellationToken);
-        return Ok(upsertedCart);
-    }
-
-    [Authorize] // Checkout requires authentication
-    [HttpPost("by-user/{userId}/checkout")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    /// <summary>
+    /// Add a product to the cart - Frontend only sends productId and quantity
+    /// </summary>
+    [HttpPost("by-user/{userId}/items")]
+    [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Order>> CheckoutCart(string userId, [FromBody] CheckoutRequest request, CancellationToken cancellationToken)
-    {
-        var cart = await cartsRepository.GetActiveCartByUserAsync(userId, cancellationToken);
-
-        if (cart is null)
-        {
-            return NotFound($"No active cart found for user {userId}");
-        }
-
-        if (cart.Id != request.CartId)
-        {
-            return BadRequest("The provided cart ID does not match the user's active cart");
-        }
-
-        if (cart.Status != CartStatus.Active)
-        {
-            return BadRequest("Only active carts can be checked out");
-        }
-
-        if (cart.Items.Count == 0)
-        {
-            return BadRequest("Cannot checkout an empty cart");
-        }
-
-        // Mark cart as completed
-        var completedCart = cart with 
-        { 
-            Status = CartStatus.Completed,
-            LastUpdatedAt = DateTime.UtcNow
-        };
-        await cartsRepository.UpsertCartAsync(completedCart, cancellationToken);
-
-        // Create order from cart
-        var order = new Order
-        {
-            Id = Guid.NewGuid().ToString(),
-            UserId = userId,
-            OriginalCartId = cart.Id,
-            OrderDate = DateTime.UtcNow,
-            Status = OrderStatus.Pending,
-            Items = cart.Items.Select(cartItem => new OrderItem
-            {
-                ProductId = cartItem.ProductId,
-                ProductName = cartItem.ProductName,
-                Quantity = cartItem.Quantity,
-                UnitPrice = cartItem.UnitPrice,
-                LineTotal = cartItem.LineTotal
-            }).ToList(),
-            Subtotal = cart.Subtotal,
-            ShippingCost = request.ShippingCost,
-            Total = cart.Total + request.ShippingCost,
-            Currency = cart.Currency
-        };
-
-        var createdOrder = await ordersRepository.CreateOrderAsync(order, cancellationToken);
-        return Ok(createdOrder);
-    }
-
-    [HttpDelete("by-user/{userId}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteCart(string userId, CancellationToken cancellationToken)
+    public async Task<ActionResult<CartResponse>> AddItemToCart(
+        string userId,
+        [FromBody] AddToCartRequest request,
+        CancellationToken cancellationToken)
     {
         try
         {
-            await cartsRepository.DeleteCartAsync(userId, cancellationToken);
-            return NoContent();
+            var cart = await _cartService.AddItemToCartAsync(userId, request, cancellationToken);
+            return Ok(cart);
         }
-        catch (Exception ex)
+        catch (ArgumentException ex)
         {
-            return NotFound($"Could not delete cart for user {userId}: {ex.Message}");
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
         }
     }
 
+    /// <summary>
+    /// Update the quantity of an item in the cart
+    /// </summary>
+    [HttpPatch("by-user/{userId}/items/{productId}")]
+    [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CartResponse>> UpdateCartItem(
+        string userId,
+        string productId,
+        [FromBody] UpdateCartItemRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Ensure the productId from route matches the request body
+            if (request.ProductId != productId)
+            {
+                return BadRequest(new { error = "Product ID in route must match request body" });
+            }
+
+            var cart = await _cartService.UpdateCartItemAsync(userId, request, cancellationToken);
+            return Ok(cart);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Remove an item from the cart
+    /// </summary>
+    [HttpDelete("by-user/{userId}/items/{productId}")]
+    [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<CartResponse>> RemoveItemFromCart(
+        string userId,
+        RemoveFromCartRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var cart = await _cartService.RemoveItemFromCartAsync(userId, request, cancellationToken);
+            return Ok(cart);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return NotFound(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Clear all items from the cart
+    /// </summary>
+    [HttpDelete("by-user/{userId}")]
+    [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
+    public async Task<ActionResult<CartResponse>> ClearCart(string userId, CancellationToken cancellationToken)
+    {
+        var cart = await _cartService.ClearCartAsync(userId, cancellationToken);
+        return Ok(cart);
+    }
+
+    /// <summary>
+    /// Checkout the cart and create an order - Validates all prices and stock again
+    /// </summary>
+    [Authorize] // Checkout requires authentication
+    [HttpPost("by-user/{userId}/checkout")]
+    [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Order>> CheckoutCart(
+        string userId,
+        [FromBody] CheckoutRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var order = await _cartService.CheckoutCartAsync(
+                userId,
+                request.ShippingCost,
+                cancellationToken);
+            
+            return Ok(order);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { error = ex.Message });
+        }
+    }
+
+    /// <summary>
+    /// Migrate guest cart to authenticated user cart
+    /// </summary>
     [Authorize] // Cart migration requires authentication (user must be logged in)
     [HttpPost("migrate")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> MigrateGuestCart([FromBody] MigrateCartRequest request, CancellationToken cancellationToken)
-    {        
-        var guestCart = await cartsRepository.GetActiveCartByUserAsync(request.GuestId, cancellationToken);
-        
-        if (guestCart is null || guestCart.Items.Count == 0)
-        {            
-            return Ok();
-        }
-
-        var userCart = await cartsRepository.GetActiveCartByUserAsync(request.UserId, cancellationToken);
-        
-        if (userCart is null)
-        {            
-            userCart = guestCart with 
-            { 
-                Id = Guid.NewGuid().ToString(),
-                UserId = request.UserId,
-                LastUpdatedAt = DateTime.UtcNow
-            };
-        }
-        else
-        {            
-            var mergedItems = userCart.Items.ToList();
-            
-            foreach (var guestItem in guestCart.Items)
-            {
-                var existingItem = mergedItems.FirstOrDefault(i => i.ProductId == guestItem.ProductId);
-                
-                if (existingItem is not null)
-                {                    
-                    var index = mergedItems.IndexOf(existingItem);
-                    var newQuantity = existingItem.Quantity + guestItem.Quantity;
-                    mergedItems[index] = existingItem with 
-                    { 
-                        Quantity = newQuantity,
-                        LineTotal = existingItem.UnitPrice * newQuantity
-                    };
-                }
-                else
-                {                   
-                    mergedItems.Add(guestItem);
-                }
-            }
-            
-            var subtotal = mergedItems.Sum(item => item.LineTotal);
-            userCart = userCart with 
-            { 
-                Items = mergedItems,
-                Subtotal = subtotal,
-                Total = subtotal,
-                LastUpdatedAt = DateTime.UtcNow
-            };
-        }
-
-        await cartsRepository.UpsertCartAsync(userCart, cancellationToken);
-       
-        try
-        {
-            await cartsRepository.DeleteCartAsync(request.GuestId, cancellationToken);
-        }
-        catch
-        {
-            // Ignore errors when deleting guest cart
-        }
-
+    public async Task<IActionResult> MigrateGuestCart(
+        [FromBody] MigrateCartRequest request,
+        CancellationToken cancellationToken)
+    {
+        await _cartService.MigrateGuestCartAsync(request.GuestId, request.UserId, cancellationToken);
         return Ok();
     }
 }
