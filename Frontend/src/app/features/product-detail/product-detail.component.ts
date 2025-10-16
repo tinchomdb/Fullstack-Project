@@ -10,7 +10,6 @@ import { ProductImageGalleryComponent } from './product-image-gallery/product-im
 import { ProductBuyBoxComponent } from './product-buy-box/product-buy-box.component';
 import { ProductInfoComponent } from './product-info/product-info.component';
 import { BreadcrumbService } from '../../core/services/breadcrumb.service';
-import { CategoriesService } from '../../core/services/categories.service';
 
 @Component({
   selector: 'app-product-detail',
@@ -29,7 +28,6 @@ export class ProductDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly productsService = inject(ProductsService);
   private readonly cartService = inject(CartService);
-  private readonly categoryService = inject(CategoriesService);
   private readonly breadcrumbService = inject(BreadcrumbService);
 
   protected readonly product = signal<Product | null>(null);

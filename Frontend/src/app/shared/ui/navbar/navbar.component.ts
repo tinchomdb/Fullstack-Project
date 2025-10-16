@@ -8,7 +8,6 @@ import { ThemeToggleComponent } from '../theme-toggle/theme-toggle.component';
 import { MenuSidebarComponent } from '../menu-sidebar/menu-sidebar.component';
 import { CartButtonComponent } from '../cart-button/cart-button.component';
 import { SearchBarComponent } from '../search-bar/search-bar.component';
-import { CloseButtonComponent } from '../close-button/close-button.component';
 
 export interface NavItem {
   label: string;
@@ -26,7 +25,6 @@ export interface NavItem {
     MenuSidebarComponent,
     CartButtonComponent,
     SearchBarComponent,
-    CloseButtonComponent,
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
@@ -37,7 +35,6 @@ export class NavbarComponent {
   private readonly categoriesService = inject(CategoriesService);
 
   title = input.required<string>();
-  navigation = input.required<readonly NavItem[]>();
 
   protected readonly cartItemCount = this.cartService.itemCount;
   protected readonly isMobileMenuOpen = signal(false);

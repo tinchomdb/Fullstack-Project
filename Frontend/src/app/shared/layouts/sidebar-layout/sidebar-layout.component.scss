@@ -7,13 +7,8 @@
   align-items: start;
 
   @include media-lg {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: var(--space-5);
-  }
-
-  @include media-lg {
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-6);
   }
 }
 

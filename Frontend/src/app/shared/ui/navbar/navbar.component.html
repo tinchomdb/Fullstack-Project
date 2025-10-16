@@ -33,23 +33,3 @@
     </ul>
   </nav>
 </div>
-
-<!-- Mobile Navigation Overlay -->
-@if (isMobileMenuOpen()) {
-  <div class="mobile-nav-overlay" (click)="closeMobileMenu()">
-    <nav class="mobile-nav" aria-label="Mobile menu" (click)="$event.stopPropagation()">
-      <!-- Close button -->
-      <div class="mobile-nav-header">
-        <app-close-button
-          variant="default"
-          size="lg"
-          ariaLabel="Close menu"
-          (clicked)="closeMobileMenu()"
-        />
-      </div>
-      <div class="mobile-auth">
-        <app-auth-button [additionalClick]="closeMobileMenu"></app-auth-button>
-      </div>
-    </nav>
-  </div>
-}

@@ -723,7 +723,13 @@ public class DataSeedingService(
                     AverageRating = techProSeller.SellerProfile.AverageRating,
                     TotalProducts = 8
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800",
+                    "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=800",
+                    "https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=800",
+                    "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -743,7 +749,12 @@ public class DataSeedingService(
                     AverageRating = techProSeller.SellerProfile.AverageRating,
                     TotalProducts = 8
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?w=800",
+                    "https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=800",
+                    "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800"
+                ]
             },
             new()
             {
@@ -762,7 +773,13 @@ public class DataSeedingService(
                     AverageRating = techProSeller.SellerProfile.AverageRating,
                     TotalProducts = 8
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=800",
+                    "https://images.unsplash.com/photo-1510557880182-3d4d3cba35a5?w=800",
+                    "https://images.unsplash.com/photo-1592286927505-697d91740a40?w=800",
+                    "https://images.unsplash.com/photo-1580910051074-3eb694886505?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -782,7 +799,12 @@ public class DataSeedingService(
                     AverageRating = techProSeller.SellerProfile.AverageRating,
                     TotalProducts = 8
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=800",
+                    "https://images.unsplash.com/photo-1585060544812-6b45742d762f?w=800",
+                    "https://images.unsplash.com/photo-1598327105666-5b89351aff97?w=800"
+                ]
             },
 
             // Fashion - Fashion Hub
@@ -803,7 +825,12 @@ public class DataSeedingService(
                     AverageRating = fashionSeller.SellerProfile.AverageRating,
                     TotalProducts = 6
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=800",
+                    "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?w=800",
+                    "https://images.unsplash.com/photo-1520975954732-35dd22299614?w=800"
+                ]
             },
             new()
             {
@@ -822,7 +849,12 @@ public class DataSeedingService(
                     AverageRating = fashionSeller.SellerProfile.AverageRating,
                     TotalProducts = 6
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800",
+                    "https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=800",
+                    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -842,7 +874,12 @@ public class DataSeedingService(
                     AverageRating = fashionSeller.SellerProfile.AverageRating,
                     TotalProducts = 6
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
+                    "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=800",
+                    "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?w=800"
+                ]
             },
 
             // Books - Bookworm Paradise
@@ -863,7 +900,12 @@ public class DataSeedingService(
                     AverageRating = bookwormSeller.SellerProfile.AverageRating,
                     TotalProducts = 5
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800",
+                    "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=800",
+                    "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=800"
+                ]
             },
             new()
             {
@@ -882,7 +924,12 @@ public class DataSeedingService(
                     AverageRating = bookwormSeller.SellerProfile.AverageRating,
                     TotalProducts = 5
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1589998059171-988d887df646?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1589998059171-988d887df646?w=800",
+                    "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800",
+                    "https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=800"
+                ]
             },
             new()
             {
@@ -901,7 +948,11 @@ public class DataSeedingService(
                     AverageRating = bookwormSeller.SellerProfile.AverageRating,
                     TotalProducts = 5
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=800",
+                    "https://images.unsplash.com/photo-1491841573634-28140fc7ced7?w=800"
+                ]
             },
 
             // Sports & Outdoors - Outdoor Gear Co
@@ -922,7 +973,12 @@ public class DataSeedingService(
                     AverageRating = outdoorSeller.SellerProfile.AverageRating,
                     TotalProducts = 4
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=800",
+                    "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800",
+                    "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800"
+                ]
             },
             new()
             {
@@ -941,7 +997,12 @@ public class DataSeedingService(
                     AverageRating = outdoorSeller.SellerProfile.AverageRating,
                     TotalProducts = 4
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=800",
+                    "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=800",
+                    "https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=800"
+                ]
             },
             new()
             {
@@ -960,7 +1021,11 @@ public class DataSeedingService(
                     AverageRating = outdoorSeller.SellerProfile.AverageRating,
                     TotalProducts = 4
                 },
-                ImageUrls = ["https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=800",
+                    "https://images.unsplash.com/photo-1523362628745-0c100150b504?w=800"
+                ]
             },
 
             // Beauty & Personal Care - Beauty Haven
@@ -974,7 +1039,12 @@ public class DataSeedingService(
                 SellerId = beautySeller.Id,
                 CategoryIds = ["cat-beauty", "cat-skincare"],
                 Seller = new Seller { Id = beautySeller.Id, DisplayName = beautySeller.SellerProfile!.StoreName, Email = beautySeller.Email, AverageRating = beautySeller.SellerProfile.AverageRating, TotalProducts = 12 },
-                ImageUrls = ["https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=800",
+                    "https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=800",
+                    "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -987,7 +1057,12 @@ public class DataSeedingService(
                 SellerId = beautySeller.Id,
                 CategoryIds = ["cat-beauty", "cat-makeup"],
                 Seller = new Seller { Id = beautySeller.Id, DisplayName = beautySeller.SellerProfile!.StoreName, Email = beautySeller.Email, AverageRating = beautySeller.SellerProfile.AverageRating, TotalProducts = 12 },
-                ImageUrls = ["https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1586495777744-4413f21062fa?w=800",
+                    "https://images.unsplash.com/photo-1631214524020-7e18db9a8f92?w=800",
+                    "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=800"
+                ]
             },
             new()
             {
@@ -999,7 +1074,12 @@ public class DataSeedingService(
                 SellerId = beautySeller.Id,
                 CategoryIds = ["cat-beauty", "cat-skincare"],
                 Seller = new Seller { Id = beautySeller.Id, DisplayName = beautySeller.SellerProfile!.StoreName, Email = beautySeller.Email, AverageRating = beautySeller.SellerProfile.AverageRating, TotalProducts = 12 },
-                ImageUrls = ["https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800",
+                    "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?w=800",
+                    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=800"
+                ]
             },
             new()
             {
@@ -1011,7 +1091,11 @@ public class DataSeedingService(
                 SellerId = beautySeller.Id,
                 CategoryIds = ["cat-beauty", "cat-makeup"],
                 Seller = new Seller { Id = beautySeller.Id, DisplayName = beautySeller.SellerProfile!.StoreName, Email = beautySeller.Email, AverageRating = beautySeller.SellerProfile.AverageRating, TotalProducts = 12 },
-                ImageUrls = ["https://images.unsplash.com/photo-1596704017254-9b121068ec31?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1596704017254-9b121068ec31?w=800",
+                    "https://images.unsplash.com/photo-1583241800698-3ec93e41c9c5?w=800"
+                ]
             },
 
             // Toys & Games - Toys R Us
@@ -1025,7 +1109,12 @@ public class DataSeedingService(
                 SellerId = toysSeller.Id,
                 CategoryIds = ["cat-toys", "cat-action-figures"],
                 Seller = new Seller { Id = toysSeller.Id, DisplayName = toysSeller.SellerProfile!.StoreName, Email = toysSeller.Email, AverageRating = toysSeller.SellerProfile.AverageRating, TotalProducts = 15 },
-                ImageUrls = ["https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=800",
+                    "https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=800",
+                    "https://images.unsplash.com/photo-1585366119957-e9730b6d0f60?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1038,7 +1127,11 @@ public class DataSeedingService(
                 SellerId = toysSeller.Id,
                 CategoryIds = ["cat-toys", "cat-board-games"],
                 Seller = new Seller { Id = toysSeller.Id, DisplayName = toysSeller.SellerProfile!.StoreName, Email = toysSeller.Email, AverageRating = toysSeller.SellerProfile.AverageRating, TotalProducts = 15 },
-                ImageUrls = ["https://images.unsplash.com/photo-1566694271453-390536dd1f0d?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1566694271453-390536dd1f0d?w=800",
+                    "https://images.unsplash.com/photo-1632239776255-0a7f24814df2?w=800"
+                ]
             },
             new()
             {
@@ -1050,7 +1143,12 @@ public class DataSeedingService(
                 SellerId = toysSeller.Id,
                 CategoryIds = ["cat-toys"],
                 Seller = new Seller { Id = toysSeller.Id, DisplayName = toysSeller.SellerProfile!.StoreName, Email = toysSeller.Email, AverageRating = toysSeller.SellerProfile.AverageRating, TotalProducts = 15 },
-                ImageUrls = ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800",
+                    "https://images.unsplash.com/photo-1560174038-da43ac74f01b?w=800",
+                    "https://images.unsplash.com/photo-1529699211952-734e80c4d42b?w=800"
+                ]
             },
             new()
             {
@@ -1062,7 +1160,11 @@ public class DataSeedingService(
                 SellerId = toysSeller.Id,
                 CategoryIds = ["cat-toys", "cat-board-games"],
                 Seller = new Seller { Id = toysSeller.Id, DisplayName = toysSeller.SellerProfile!.StoreName, Email = toysSeller.Email, AverageRating = toysSeller.SellerProfile.AverageRating, TotalProducts = 15 },
-                ImageUrls = ["https://images.unsplash.com/photo-1586165368502-1bad197a6461?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1586165368502-1bad197a6461?w=800",
+                    "https://images.unsplash.com/photo-1611195974226-ef4b57547e95?w=800"
+                ]
             },
 
             // Automotive - AutoParts Plus
@@ -1076,7 +1178,12 @@ public class DataSeedingService(
                 SellerId = autoSeller.Id,
                 CategoryIds = ["cat-automotive", "cat-car-accessories"],
                 Seller = new Seller { Id = autoSeller.Id, DisplayName = autoSeller.SellerProfile!.StoreName, Email = autoSeller.Email, AverageRating = autoSeller.SellerProfile.AverageRating, TotalProducts = 10 },
-                ImageUrls = ["https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?w=800",
+                    "https://images.unsplash.com/photo-1606041011872-596597976b25?w=800",
+                    "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800"
+                ]
             },
             new()
             {
@@ -1088,7 +1195,11 @@ public class DataSeedingService(
                 SellerId = autoSeller.Id,
                 CategoryIds = ["cat-automotive", "cat-car-accessories"],
                 Seller = new Seller { Id = autoSeller.Id, DisplayName = autoSeller.SellerProfile!.StoreName, Email = autoSeller.Email, AverageRating = autoSeller.SellerProfile.AverageRating, TotalProducts = 10 },
-                ImageUrls = ["https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1628177142898-93e36e4e3a50?w=800",
+                    "https://images.unsplash.com/photo-1583121274602-3e2820c69888?w=800"
+                ]
             },
             new()
             {
@@ -1100,7 +1211,11 @@ public class DataSeedingService(
                 SellerId = autoSeller.Id,
                 CategoryIds = ["cat-automotive", "cat-car-accessories"],
                 Seller = new Seller { Id = autoSeller.Id, DisplayName = autoSeller.SellerProfile!.StoreName, Email = autoSeller.Email, AverageRating = autoSeller.SellerProfile.AverageRating, TotalProducts = 10 },
-                ImageUrls = ["https://images.unsplash.com/photo-1600712242805-5f78671b24da?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1600712242805-5f78671b24da?w=800",
+                    "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800"
+                ]
             },
 
             // Office Supplies - OfficeMax
@@ -1114,7 +1229,12 @@ public class DataSeedingService(
                 SellerId = officeSeller.Id,
                 CategoryIds = ["cat-office"],
                 Seller = new Seller { Id = officeSeller.Id, DisplayName = officeSeller.SellerProfile!.StoreName, Email = officeSeller.Email, AverageRating = officeSeller.SellerProfile.AverageRating, TotalProducts = 14 },
-                ImageUrls = ["https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1580480055273-228ff5388ef8?w=800",
+                    "https://images.unsplash.com/photo-1611269154421-4e27233ac5c7?w=800",
+                    "https://images.unsplash.com/photo-1505843513577-22bb7d21e455?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1127,7 +1247,12 @@ public class DataSeedingService(
                 SellerId = officeSeller.Id,
                 CategoryIds = ["cat-office", "cat-stationery"],
                 Seller = new Seller { Id = officeSeller.Id, DisplayName = officeSeller.SellerProfile!.StoreName, Email = officeSeller.Email, AverageRating = officeSeller.SellerProfile.AverageRating, TotalProducts = 14 },
-                ImageUrls = ["https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1531346878377-a5be20888e57?w=800",
+                    "https://images.unsplash.com/photo-1517842645767-c639042777db?w=800",
+                    "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800"
+                ]
             },
             new()
             {
@@ -1139,7 +1264,11 @@ public class DataSeedingService(
                 SellerId = officeSeller.Id,
                 CategoryIds = ["cat-office", "cat-stationery"],
                 Seller = new Seller { Id = officeSeller.Id, DisplayName = officeSeller.SellerProfile!.StoreName, Email = officeSeller.Email, AverageRating = officeSeller.SellerProfile.AverageRating, TotalProducts = 14 },
-                ImageUrls = ["https://images.unsplash.com/photo-1572297794514-31e0217bfcaa?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1572297794514-31e0217bfcaa?w=800",
+                    "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800"
+                ]
             },
             new()
             {
@@ -1151,7 +1280,12 @@ public class DataSeedingService(
                 SellerId = officeSeller.Id,
                 CategoryIds = ["cat-office", "cat-electronics"],
                 Seller = new Seller { Id = officeSeller.Id, DisplayName = officeSeller.SellerProfile!.StoreName, Email = officeSeller.Email, AverageRating = officeSeller.SellerProfile.AverageRating, TotalProducts = 14 },
-                ImageUrls = ["https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800",
+                    "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800",
+                    "https://images.unsplash.com/photo-1625948515291-69613efd103f?w=800"
+                ]
             },
 
             // Pet Supplies - Petco
@@ -1165,7 +1299,12 @@ public class DataSeedingService(
                 SellerId = petSeller.Id,
                 CategoryIds = ["cat-pets"],
                 Seller = new Seller { Id = petSeller.Id, DisplayName = petSeller.SellerProfile!.StoreName, Email = petSeller.Email, AverageRating = petSeller.SellerProfile.AverageRating, TotalProducts = 11 },
-                ImageUrls = ["https://images.unsplash.com/photo-1591768575197-9710c8e9583f?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1591768575197-9710c8e9583f?w=800",
+                    "https://images.unsplash.com/photo-1604924795956-1f99b5f1c567?w=800",
+                    "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=800"
+                ]
             },
             new()
             {
@@ -1177,7 +1316,12 @@ public class DataSeedingService(
                 SellerId = petSeller.Id,
                 CategoryIds = ["cat-pets", "cat-pet-toys"],
                 Seller = new Seller { Id = petSeller.Id, DisplayName = petSeller.SellerProfile!.StoreName, Email = petSeller.Email, AverageRating = petSeller.SellerProfile.AverageRating, TotalProducts = 11 },
-                ImageUrls = ["https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1545249390-6bdfa286032f?w=800",
+                    "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=800",
+                    "https://images.unsplash.com/photo-1415369629372-26f2fe60c467?w=800"
+                ]
             },
             new()
             {
@@ -1189,7 +1333,11 @@ public class DataSeedingService(
                 SellerId = petSeller.Id,
                 CategoryIds = ["cat-pets"],
                 Seller = new Seller { Id = petSeller.Id, DisplayName = petSeller.SellerProfile!.StoreName, Email = petSeller.Email, AverageRating = petSeller.SellerProfile.AverageRating, TotalProducts = 11 },
-                ImageUrls = ["https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800",
+                    "https://images.unsplash.com/photo-1623944889138-5f4aa53eaf2f?w=800"
+                ]
             },
 
             // Food & Beverages - Gourmet Foods
@@ -1203,7 +1351,12 @@ public class DataSeedingService(
                 SellerId = gourmetSeller.Id,
                 CategoryIds = ["cat-food", "cat-coffee-tea"],
                 Seller = new Seller { Id = gourmetSeller.Id, DisplayName = gourmetSeller.SellerProfile!.StoreName, Email = gourmetSeller.Email, AverageRating = gourmetSeller.SellerProfile.AverageRating, TotalProducts = 9 },
-                ImageUrls = ["https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800",
+                    "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=800",
+                    "https://images.unsplash.com/photo-1511537190424-bbbab87ac5eb?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1216,7 +1369,12 @@ public class DataSeedingService(
                 SellerId = gourmetSeller.Id,
                 CategoryIds = ["cat-food", "cat-coffee-tea"],
                 Seller = new Seller { Id = gourmetSeller.Id, DisplayName = gourmetSeller.SellerProfile!.StoreName, Email = gourmetSeller.Email, AverageRating = gourmetSeller.SellerProfile.AverageRating, TotalProducts = 9 },
-                ImageUrls = ["https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=800",
+                    "https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=800",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"
+                ]
             },
             new()
             {
@@ -1228,7 +1386,11 @@ public class DataSeedingService(
                 SellerId = gourmetSeller.Id,
                 CategoryIds = ["cat-food"],
                 Seller = new Seller { Id = gourmetSeller.Id, DisplayName = gourmetSeller.SellerProfile!.StoreName, Email = gourmetSeller.Email, AverageRating = gourmetSeller.SellerProfile.AverageRating, TotalProducts = 9 },
-                ImageUrls = ["https://images.unsplash.com/photo-1481391243133-f96216dcb5d2?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1481391243133-f96216dcb5d2?w=800",
+                    "https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=800"
+                ]
             },
 
             // Jewelry & Watches - Jewelry Gallery
@@ -1242,7 +1404,12 @@ public class DataSeedingService(
                 SellerId = jewelrySeller.Id,
                 CategoryIds = ["cat-jewelry"],
                 Seller = new Seller { Id = jewelrySeller.Id, DisplayName = jewelrySeller.SellerProfile!.StoreName, Email = jewelrySeller.Email, AverageRating = jewelrySeller.SellerProfile.AverageRating, TotalProducts = 8 },
-                ImageUrls = ["https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=800",
+                    "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=800",
+                    "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1255,7 +1422,12 @@ public class DataSeedingService(
                 SellerId = jewelrySeller.Id,
                 CategoryIds = ["cat-jewelry", "cat-watches"],
                 Seller = new Seller { Id = jewelrySeller.Id, DisplayName = jewelrySeller.SellerProfile!.StoreName, Email = jewelrySeller.Email, AverageRating = jewelrySeller.SellerProfile.AverageRating, TotalProducts = 8 },
-                ImageUrls = ["https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=800",
+                    "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=800",
+                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800"
+                ]
             },
             new()
             {
@@ -1267,7 +1439,11 @@ public class DataSeedingService(
                 SellerId = jewelrySeller.Id,
                 CategoryIds = ["cat-jewelry"],
                 Seller = new Seller { Id = jewelrySeller.Id, DisplayName = jewelrySeller.SellerProfile!.StoreName, Email = jewelrySeller.Email, AverageRating = jewelrySeller.SellerProfile.AverageRating, TotalProducts = 8 },
-                ImageUrls = ["https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
+                    "https://images.unsplash.com/photo-1611652022419-a9419f74343a?w=800"
+                ]
             },
 
             // Health & Fitness - Fitness World
@@ -1281,7 +1457,12 @@ public class DataSeedingService(
                 SellerId = fitnessSeller.Id,
                 CategoryIds = ["cat-health-fitness", "cat-fitness-equipment"],
                 Seller = new Seller { Id = fitnessSeller.Id, DisplayName = fitnessSeller.SellerProfile!.StoreName, Email = fitnessSeller.Email, AverageRating = fitnessSeller.SellerProfile.AverageRating, TotalProducts = 13 },
-                ImageUrls = ["https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800",
+                    "https://images.unsplash.com/photo-1434494878577-86c23bcb06b9?w=800",
+                    "https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1294,7 +1475,12 @@ public class DataSeedingService(
                 SellerId = fitnessSeller.Id,
                 CategoryIds = ["cat-health-fitness", "cat-electronics"],
                 Seller = new Seller { Id = fitnessSeller.Id, DisplayName = fitnessSeller.SellerProfile!.StoreName, Email = fitnessSeller.Email, AverageRating = fitnessSeller.SellerProfile.AverageRating, TotalProducts = 13 },
-                ImageUrls = ["https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=800",
+                    "https://images.unsplash.com/photo-1611672585731-fa10603fb9e0?w=800",
+                    "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800"
+                ]
             },
             new()
             {
@@ -1306,7 +1492,11 @@ public class DataSeedingService(
                 SellerId = fitnessSeller.Id,
                 CategoryIds = ["cat-health-fitness", "cat-fitness-equipment"],
                 Seller = new Seller { Id = fitnessSeller.Id, DisplayName = fitnessSeller.SellerProfile!.StoreName, Email = fitnessSeller.Email, AverageRating = fitnessSeller.SellerProfile.AverageRating, TotalProducts = 13 },
-                ImageUrls = ["https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=800",
+                    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800"
+                ]
             },
             new()
             {
@@ -1318,7 +1508,11 @@ public class DataSeedingService(
                 SellerId = fitnessSeller.Id,
                 CategoryIds = ["cat-health-fitness", "cat-fitness-equipment"],
                 Seller = new Seller { Id = fitnessSeller.Id, DisplayName = fitnessSeller.SellerProfile!.StoreName, Email = fitnessSeller.Email, AverageRating = fitnessSeller.SellerProfile.AverageRating, TotalProducts = 13 },
-                ImageUrls = ["https://images.unsplash.com/photo-1576678927484-cc907957088c?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1576678927484-cc907957088c?w=800",
+                    "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=800"
+                ]
             },
 
             // Musical Instruments - Music Store
@@ -1332,7 +1526,12 @@ public class DataSeedingService(
                 SellerId = musicSeller.Id,
                 CategoryIds = ["cat-music", "cat-guitars"],
                 Seller = new Seller { Id = musicSeller.Id, DisplayName = musicSeller.SellerProfile!.StoreName, Email = musicSeller.Email, AverageRating = musicSeller.SellerProfile.AverageRating, TotalProducts = 10 },
-                ImageUrls = ["https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=800",
+                    "https://images.unsplash.com/photo-1525201548942-d8732f6617a0?w=800",
+                    "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800"
+                ]
             },
             new()
             {
@@ -1344,7 +1543,12 @@ public class DataSeedingService(
                 SellerId = musicSeller.Id,
                 CategoryIds = ["cat-music", "cat-guitars"],
                 Seller = new Seller { Id = musicSeller.Id, DisplayName = musicSeller.SellerProfile!.StoreName, Email = musicSeller.Email, AverageRating = musicSeller.SellerProfile.AverageRating, TotalProducts = 10 },
-                ImageUrls = ["https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=800",
+                    "https://images.unsplash.com/photo-1510915228340-29c85a43dcfe?w=800",
+                    "https://images.unsplash.com/photo-1552422535-c45813c61732?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1357,7 +1561,11 @@ public class DataSeedingService(
                 SellerId = musicSeller.Id,
                 CategoryIds = ["cat-music"],
                 Seller = new Seller { Id = musicSeller.Id, DisplayName = musicSeller.SellerProfile!.StoreName, Email = musicSeller.Email, AverageRating = musicSeller.SellerProfile.AverageRating, TotalProducts = 10 },
-                ImageUrls = ["https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=800",
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800"
+                ]
             },
 
             // Kitchen & Dining - Kitchen Pro
@@ -1371,7 +1579,12 @@ public class DataSeedingService(
                 SellerId = kitchenSeller.Id,
                 CategoryIds = ["cat-kitchen", "cat-cookware"],
                 Seller = new Seller { Id = kitchenSeller.Id, DisplayName = kitchenSeller.SellerProfile!.StoreName, Email = kitchenSeller.Email, AverageRating = kitchenSeller.SellerProfile.AverageRating, TotalProducts = 12 },
-                ImageUrls = ["https://images.unsplash.com/photo-1584990347449-39b14e22c31e?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1584990347449-39b14e22c31e?w=800",
+                    "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800",
+                    "https://images.unsplash.com/photo-1556912173-46c336c7fd55?w=800"
+                ]
             },
             new()
             {
@@ -1383,7 +1596,12 @@ public class DataSeedingService(
                 SellerId = kitchenSeller.Id,
                 CategoryIds = ["cat-kitchen"],
                 Seller = new Seller { Id = kitchenSeller.Id, DisplayName = kitchenSeller.SellerProfile!.StoreName, Email = kitchenSeller.Email, AverageRating = kitchenSeller.SellerProfile.AverageRating, TotalProducts = 12 },
-                ImageUrls = ["https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=800",
+                    "https://images.unsplash.com/photo-1593618998160-e34014e67546?w=800",
+                    "https://images.unsplash.com/photo-1594756202469-9ff9799b2e4e?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1396,7 +1614,11 @@ public class DataSeedingService(
                 SellerId = kitchenSeller.Id,
                 CategoryIds = ["cat-kitchen", "cat-cookware"],
                 Seller = new Seller { Id = kitchenSeller.Id, DisplayName = kitchenSeller.SellerProfile!.StoreName, Email = kitchenSeller.Email, AverageRating = kitchenSeller.SellerProfile.AverageRating, TotalProducts = 12 },
-                ImageUrls = ["https://images.unsplash.com/photo-1593618998160-e34014e67546?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1593618998160-e34014e67546?w=800",
+                    "https://images.unsplash.com/photo-1592182177462-ac9272e9e6c6?w=800"
+                ]
             },
             new()
             {
@@ -1408,7 +1630,11 @@ public class DataSeedingService(
                 SellerId = kitchenSeller.Id,
                 CategoryIds = ["cat-kitchen"],
                 Seller = new Seller { Id = kitchenSeller.Id, DisplayName = kitchenSeller.SellerProfile!.StoreName, Email = kitchenSeller.Email, AverageRating = kitchenSeller.SellerProfile.AverageRating, TotalProducts = 12 },
-                ImageUrls = ["https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=800",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800"
+                ]
             },
 
             // Video Games - GameStop
@@ -1422,7 +1648,12 @@ public class DataSeedingService(
                 SellerId = gameSeller.Id,
                 CategoryIds = ["cat-gaming", "cat-gaming-consoles"],
                 Seller = new Seller { Id = gameSeller.Id, DisplayName = gameSeller.SellerProfile!.StoreName, Email = gameSeller.Email, AverageRating = gameSeller.SellerProfile.AverageRating, TotalProducts = 16 },
-                ImageUrls = ["https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=800",
+                    "https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?w=800",
+                    "https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1435,7 +1666,12 @@ public class DataSeedingService(
                 SellerId = gameSeller.Id,
                 CategoryIds = ["cat-gaming", "cat-gaming-consoles"],
                 Seller = new Seller { Id = gameSeller.Id, DisplayName = gameSeller.SellerProfile!.StoreName, Email = gameSeller.Email, AverageRating = gameSeller.SellerProfile.AverageRating, TotalProducts = 16 },
-                ImageUrls = ["https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=800",
+                    "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800",
+                    "https://images.unsplash.com/photo-1616004655123-818cbd4b3143?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1448,7 +1684,11 @@ public class DataSeedingService(
                 SellerId = gameSeller.Id,
                 CategoryIds = ["cat-gaming", "cat-gaming-consoles"],
                 Seller = new Seller { Id = gameSeller.Id, DisplayName = gameSeller.SellerProfile!.StoreName, Email = gameSeller.Email, AverageRating = gameSeller.SellerProfile.AverageRating, TotalProducts = 16 },
-                ImageUrls = ["https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800",
+                    "https://images.unsplash.com/photo-1605901309584-5694630c3a37?w=800"
+                ]
             },
             new()
             {
@@ -1460,7 +1700,12 @@ public class DataSeedingService(
                 SellerId = gameSeller.Id,
                 CategoryIds = ["cat-gaming", "cat-gaming-accessories"],
                 Seller = new Seller { Id = gameSeller.Id, DisplayName = gameSeller.SellerProfile!.StoreName, Email = gameSeller.Email, AverageRating = gameSeller.SellerProfile.AverageRating, TotalProducts = 16 },
-                ImageUrls = ["https://images.unsplash.com/photo-1599669454699-248893623440?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1599669454699-248893623440?w=800",
+                    "https://images.unsplash.com/photo-1560762484-813fc97650a0?w=800",
+                    "https://images.unsplash.com/photo-1541140532154-b024d705b90a?w=800"
+                ]
             },
             new()
             {
@@ -1472,7 +1717,11 @@ public class DataSeedingService(
                 SellerId = gameSeller.Id,
                 CategoryIds = ["cat-gaming", "cat-gaming-accessories"],
                 Seller = new Seller { Id = gameSeller.Id, DisplayName = gameSeller.SellerProfile!.StoreName, Email = gameSeller.Email, AverageRating = gameSeller.SellerProfile.AverageRating, TotalProducts = 16 },
-                ImageUrls = ["https://images.unsplash.com/photo-1595225476474-87563907a212?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1595225476474-87563907a212?w=800",
+                    "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=800"
+                ]
             },
 
             // More Electronics - TechPro (Audio & Cameras)
@@ -1486,7 +1735,12 @@ public class DataSeedingService(
                 SellerId = techProSeller.Id,
                 CategoryIds = ["cat-audio", "cat-headphones"],
                 Seller = new Seller { Id = techProSeller.Id, DisplayName = techProSeller.SellerProfile!.StoreName, Email = techProSeller.Email, AverageRating = techProSeller.SellerProfile.AverageRating, TotalProducts = 18 },
-                ImageUrls = ["https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800",
+                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
+                    "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1499,7 +1753,12 @@ public class DataSeedingService(
                 SellerId = techProSeller.Id,
                 CategoryIds = ["cat-audio", "cat-headphones"],
                 Seller = new Seller { Id = techProSeller.Id, DisplayName = techProSeller.SellerProfile!.StoreName, Email = techProSeller.Email, AverageRating = techProSeller.SellerProfile.AverageRating, TotalProducts = 18 },
-                ImageUrls = ["https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800",
+                    "https://images.unsplash.com/photo-1558584673-c834fb1cc1ba?w=800",
+                    "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800"
+                ]
             },
             new()
             {
@@ -1511,7 +1770,11 @@ public class DataSeedingService(
                 SellerId = techProSeller.Id,
                 CategoryIds = ["cat-audio", "cat-speakers"],
                 Seller = new Seller { Id = techProSeller.Id, DisplayName = techProSeller.SellerProfile!.StoreName, Email = techProSeller.Email, AverageRating = techProSeller.SellerProfile.AverageRating, TotalProducts = 18 },
-                ImageUrls = ["https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=800",
+                    "https://images.unsplash.com/photo-1545127398-14699f92334b?w=800"
+                ]
             },
             new()
             {
@@ -1523,7 +1786,12 @@ public class DataSeedingService(
                 SellerId = techProSeller.Id,
                 CategoryIds = ["cat-cameras"],
                 Seller = new Seller { Id = techProSeller.Id, DisplayName = techProSeller.SellerProfile!.StoreName, Email = techProSeller.Email, AverageRating = techProSeller.SellerProfile.AverageRating, TotalProducts = 18 },
-                ImageUrls = ["https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800"],
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=800",
+                    "https://images.unsplash.com/photo-1606800052052-bde980d73743?w=800",
+                    "https://images.unsplash.com/photo-1617035683688-b0788b46cf27?w=800"
+                ],
                 Featured = true
             },
             new()
@@ -1536,7 +1804,12 @@ public class DataSeedingService(
                 SellerId = techProSeller.Id,
                 CategoryIds = ["cat-cameras"],
                 Seller = new Seller { Id = techProSeller.Id, DisplayName = techProSeller.SellerProfile!.StoreName, Email = techProSeller.Email, AverageRating = techProSeller.SellerProfile.AverageRating, TotalProducts = 18 },
-                ImageUrls = ["https://images.unsplash.com/photo-1519638399535-1b036603ac77?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1519638399535-1b036603ac77?w=800",
+                    "https://images.unsplash.com/photo-1611117775350-ac3950990985?w=800",
+                    "https://images.unsplash.com/photo-1545127398-14699f92334b?w=800"
+                ]
             },
             new()
             {
@@ -1548,7 +1821,11 @@ public class DataSeedingService(
                 SellerId = techProSeller.Id,
                 CategoryIds = ["cat-audio", "cat-speakers"],
                 Seller = new Seller { Id = techProSeller.Id, DisplayName = techProSeller.SellerProfile!.StoreName, Email = techProSeller.Email, AverageRating = techProSeller.SellerProfile.AverageRating, TotalProducts = 18 },
-                ImageUrls = ["https://images.unsplash.com/photo-1545127398-14699f92334b?w=800"]
+                ImageUrls = 
+                [
+                    "https://images.unsplash.com/photo-1545127398-14699f92334b?w=800",
+                    "https://images.unsplash.com/photo-1588421357574-87938a86fa28?w=800"
+                ]
             }
         };
 

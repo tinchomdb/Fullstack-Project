@@ -3,10 +3,11 @@ import { Product } from '../../../core/models/product.model';
 import { QuantitySelectorComponent } from '../../../shared/ui/quantity-selector/quantity-selector.component';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { SellerInfoComponent } from '../../../shared/ui/seller-info/seller-info.component';
+import { ProductPriceComponent } from '../../../shared/ui/product-price/product-price.component';
 
 @Component({
   selector: 'app-product-buy-box',
-  imports: [QuantitySelectorComponent, ButtonComponent, SellerInfoComponent],
+  imports: [QuantitySelectorComponent, ButtonComponent, SellerInfoComponent, ProductPriceComponent],
   templateUrl: './product-buy-box.component.html',
   styleUrl: './product-buy-box.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

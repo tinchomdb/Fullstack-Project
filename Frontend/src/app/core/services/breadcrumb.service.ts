@@ -1,15 +1,32 @@
 import { inject, Injectable, signal } from '@angular/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 import { BreadcrumbItem } from '../models/breadcrumb.model';
 import { CategoriesService } from './categories.service';
 
 @Injectable({ providedIn: 'root' })
 export class BreadcrumbService {
+  private readonly router = inject(Router);
   private readonly categoryService = inject(CategoriesService);
   private readonly breadcrumbsState = signal<BreadcrumbItem[]>([]);
   readonly breadcrumbs = this.breadcrumbsState.asReadonly();
 
-  updateBreadcrumbs(segments: string[]): void {
+  constructor() {
+    this.updateBreadcrumbsFromCurrentRoute();
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe(() => {
+      this.updateBreadcrumbsFromCurrentRoute();
+    });
+  }
+
+  private updateBreadcrumbsFromCurrentRoute(): void {
+    const url = this.router.url;
+    const urlTree = this.router.parseUrl(url);
+    const segments = urlTree.root.children['primary']?.segments || [];
+    this.updateBreadcrumbs(segments.map((s) => s.path));
+  }
+
+  private updateBreadcrumbs(segments: string[]): void {
     const breadcrumbs = this.buildBreadcrumbs(segments);
     this.breadcrumbsState.set(breadcrumbs);
   }

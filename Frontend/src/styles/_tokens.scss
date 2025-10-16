@@ -32,7 +32,7 @@
   --color-button-primary-hover: #f7ca00;
   --color-button-secondary-bg: #ffa41c;
   --color-button-secondary-hover: #ff9900;
-  --color-price: #b12704;
+  --color-price: #f08804;
   --color-prime: #00a8e1;
   --color-rating-star: #ffa41c;
   --gradient-accent: linear-gradient(
@@ -53,6 +53,8 @@
   --font-size-base: 1rem;
   --font-size-lg: 1.1rem;
   --font-size-xl: clamp(1.5rem, 3vw, 2.25rem);
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.75rem;
   --font-size-logo: clamp(1.3rem, 3vw, 1.75rem);
   --font-weight-normal: 400;
   --font-weight-medium: 500;
@@ -82,6 +84,11 @@
   --space-responsive-md: clamp(var(--space-4), 5vw, var(--space-8));
   --space-responsive-lg: clamp(var(--space-6), 7vw, var(--space-12));
 
+  --icon-size-sm: 16px;
+  --icon-size-md: 20px;
+  --icon-size-lg: 24px;
+  --icon-size-xl: 32px;
+
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
   --radius-lg: 1rem;
@@ -101,6 +108,10 @@
   --shadow-sm-strong: 0 12px 24px rgba(59, 130, 246, 0.25);
   --shadow-md: 0 12px 24px rgba(15, 23, 42, 0.3);
   --shadow-lg: 0 24px 40px -24px rgba(15, 23, 42, 0.65);
+
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
 
   --z-index-base: 1;
   --z-index-dropdown: 50;
@@ -150,7 +161,7 @@
   --color-button-primary-hover: #f7ca00;
   --color-button-secondary-bg: #ffa41c;
   --color-button-secondary-hover: #ff9900;
-  --color-price: #b12704;
+  --color-price: #febd69;
   --color-prime: #00a8e1;
   --color-rating-star: #ffa41c;
 

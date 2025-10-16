@@ -1,64 +1,55 @@
-<div class="buy-box">
-  <div class="buy-box-content">
-    <div class="price-box">
-      <span class="price">{{ priceFormatted() }}</span>
+<div class="buy-box-content">
+  <app-product-price [price]="product().price" [currency]="product().currency" [size]="'lg'" />
+
+  @if (inStock()) {
+    <div class="delivery-info">
+      <span class="delivery-text">FREE delivery</span>
     </div>
 
-    @if (inStock()) {
-      <div class="delivery-info">
-        <span class="delivery-text">FREE delivery</span>
-      </div>
+    <div class="stock-info success">
+      <svg class="icon" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+        <path
+          fill-rule="evenodd"
+          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+          clip-rule="evenodd"
+        ></path>
+      </svg>
+      <span>{{ stockText() }}</span>
+    </div>
 
-      <div class="stock-info success">
-        <svg
-          class="icon"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-            clip-rule="evenodd"
-          ></path>
-        </svg>
-        <span>{{ stockText() }}</span>
-      </div>
+    <app-quantity-selector
+      [quantity]="quantity()"
+      [maxStock]="product().stock"
+      [disabled]="addingToCart()"
+      (quantityChange)="onQuantityChange($event)"
+    />
 
-      <app-quantity-selector
-        [quantity]="quantity()"
-        [maxStock]="product().stock"
-        [disabled]="addingToCart()"
-        (quantityChange)="onQuantityChange($event)"
-      />
+    <app-button
+      [variant]="'primary'"
+      [size]="'full'"
+      [disabled]="addingToCart()"
+      (click)="onAddToCart()"
+    >
+      @if (addingToCart()) {
+        <span>Adding...</span>
+      } @else {
+        <span>Add to Cart</span>
+      }
+    </app-button>
 
-      <app-button
-        [variant]="'primary'"
-        [size]="'full'"
-        [disabled]="addingToCart()"
-        (click)="onAddToCart()"
-      >
-        @if (addingToCart()) {
-          <span>Adding...</span>
-        } @else {
-          <span>Add to Cart</span>
-        }
-      </app-button>
+    <app-button
+      [variant]="'secondary'"
+      [size]="'full'"
+      [disabled]="addingToCart()"
+      (click)="onBuyNow()"
+    >
+      Buy Now
+    </app-button>
+  } @else {
+    <div class="stock-info out-of-stock">
+      <span>Currently unavailable</span>
+    </div>
+  }
 
-      <app-button
-        [variant]="'secondary'"
-        [size]="'full'"
-        [disabled]="addingToCart()"
-        (click)="onBuyNow()"
-      >
-        Buy Now
-      </app-button>
-    } @else {
-      <div class="stock-info out-of-stock">
-        <span>Currently unavailable</span>
-      </div>
-    }
-
-    <app-seller-info [seller]="product().seller" [variant]="'box'" />
-  </div>
+  <app-seller-info [seller]="product().seller" [variant]="'box'" />
 </div>
