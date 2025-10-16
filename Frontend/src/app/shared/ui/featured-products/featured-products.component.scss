@@ -2,6 +2,10 @@
 
 .featured-products {
   margin-bottom: var(--space-responsive-lg);
+  --row-height-sm: 200px;
+  --row-height-md: 250px;
+  --row-height-lg: 300px;
+  --row-height-xl: 450px;
 }
 
 .products-grid {
@@ -9,17 +13,28 @@
   gap: var(--space-responsive-sm);
 }
 
+.grid-item {
+  min-width: 0;
+  min-height: 0;
+}
+
 // Grid layout for 1 product - large horizontal hero
 .grid-1 {
   grid-template-columns: 1fr;
+  grid-template-rows: var(--row-height-xl);
 }
 
 // Grid layout for 2 products - both horizontal
 .grid-2 {
   grid-template-columns: 1fr;
+  @include media-sm {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: var(--row-height-xl);
+  }
 
   @include media-md {
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: var(--row-height-xl);
     grid-template-areas: 'card1 card2';
 
     @for $i from 1 through 2 {
@@ -32,11 +47,11 @@
 
 // Grid layout for 3 products - first card larger (2 cols), other two stacked
 .grid-3 {
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: 2, 1fr;
 
-  @include media-md {
+  @include media-sm {
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: minmax(300px, auto);
+    grid-template-rows: var(--row-height-xl);
     grid-template-areas:
       'card1 card1'
       'card2 card3';
@@ -113,7 +128,6 @@
 
   @include media-lg {
     grid-template-columns: repeat(12, 1fr);
-    /* grid-template-rows: 300px 300px 400px; */
     grid-template-areas:
       'card1 card1 card1 card1 card1 card1 card2 card2 card2 card2 card2 card2'
       'card1 card1 card1 card1 card1 card1 card3 card3 card3 card3 card3 card3'
@@ -124,9 +138,5 @@
         grid-area: card#{$i};
       }
     }
-  }
-
-  @include media-xl {
-    /* grid-template-rows: 350px 350px 450px; */
   }
 }
