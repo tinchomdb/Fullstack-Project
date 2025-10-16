@@ -6,7 +6,9 @@
   [routerLinkActiveOptions]="{ exact: true }"
   [attr.aria-label]="'Browse ' + category().name"
 >
-  <app-badge class="featured-badge" [label]="'Featured'" [variant]="'featured'" [size]="'sm'" />
+  @if (category().featured) {
+    <app-badge class="featured-badge" [label]="'Featured'" [variant]="'featured'" [size]="'sm'" />
+  }
   @if (category().image; as image) {
     <div class="category-image">
       <img [ngSrc]="image" [alt]="category().name" width="300" height="300" priority />

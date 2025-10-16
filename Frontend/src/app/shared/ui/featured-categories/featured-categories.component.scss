@@ -2,6 +2,10 @@
 
 .featured-categories {
   margin-bottom: var(--space-responsive-lg);
+  --row-height-sm: 200px;
+  --row-height-md: 250px;
+  --row-height-lg: 300px;
+  --row-height-xl: 350px;
 }
 
 .heading {
@@ -20,6 +24,7 @@
 // Grid layout for 1 card
 .grid-1 {
   grid-template-columns: 1fr;
+  grid-template-rows: var(--row-height-xl);
 }
 
 // Grid layout for 2 cards
@@ -28,10 +33,7 @@
 
   @include media-sm {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  @include media-md {
-    grid-template-columns: 1fr;
+    grid-template-rows: var(--row-height-md);
   }
 }
 
@@ -41,7 +43,7 @@
 
   @include media-md {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 250px);
+    grid-template-rows: repeat(2, var(--row-height-md));
     grid-template-areas:
       'card1 card1'
       'card2 card3';
@@ -55,7 +57,7 @@
 
   @include media-lg {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(2, 300px);
+    grid-template-rows: repeat(2, var(--row-height-lg));
     grid-template-areas:
       'card1 card1'
       'card2 card3';
@@ -74,7 +76,7 @@
 
   @include media-lg {
     grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(3, 300px);
+    grid-template-rows: repeat(3, var(--row-height-lg));
     grid-template-areas:
       'card1 card1'
       'card2 card2'
@@ -94,7 +96,7 @@
 
   @include media-md {
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(3, 300px);
+    grid-template-rows: repeat(3, var(--row-height-lg));
     grid-template-areas:
       'card1 card1 card1'
       'card2 card2 card3'
@@ -122,7 +124,7 @@
 
   @include media-lg {
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 300px);
+    grid-template-rows: repeat(2, var(--row-height-lg));
     grid-template-areas:
       'card1 card1 card2 card2'
       'card3 card4 card5 card6';
@@ -136,7 +138,7 @@
 
   @include media-xl {
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 350px);
+    grid-template-rows: repeat(2, var(--row-height-xl));
     grid-template-areas:
       'card1 card1 card2 card2'
       'card3 card4 card5 card6';
