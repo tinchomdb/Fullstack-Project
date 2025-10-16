@@ -1,5 +1,5 @@
 import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 
 import { CartItem } from '../../../core/models/cart-item.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -7,7 +7,7 @@ import { QuantitySelectorComponent } from '../../../shared/ui/quantity-selector/
 
 @Component({
   selector: 'app-cart-item',
-  imports: [RouterLink, ButtonComponent, QuantitySelectorComponent],
+  imports: [ButtonComponent, QuantitySelectorComponent],
   templateUrl: './cart-item.component.html',
   styleUrl: './cart-item.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
