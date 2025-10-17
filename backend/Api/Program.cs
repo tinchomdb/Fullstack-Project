@@ -11,6 +11,7 @@ builder.Services.AddAuthenticationAndAuthorization(builder.Configuration);
 builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.AddSwagger();
 builder.Services.AddControllersWithOptions();
+builder.Services.AddStripePayment(builder.Configuration);
 
 var app = builder.Build();
 

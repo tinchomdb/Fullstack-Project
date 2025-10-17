@@ -1,18 +1,21 @@
 <div class="checkout-container">
   <h1>Checkout</h1>
 
-  @if (cart(); as cartData) {
-    @if (!isEmpty()) {
+  @if (checkout.cart(); as cartData) {
+    @if (!checkout.isEmpty()) {
       <app-sidebar-layout>
         <div main>
           <form (ngSubmit)="processCheckout()">
-            <app-shipping-information-form [form]="shippingForm" />
-            <app-shipping-options [form]="shippingForm2" [options]="shippingOptions" />
-            <app-payment-method [form]="paymentForm" />
+            <app-shipping-information-form [form]="checkout.shippingForm" />
+            <app-shipping-options
+              [form]="checkout.shippingOptionForm"
+              [options]="checkout.shippingOptions"
+            />
+            <app-payment-method [form]="checkout.paymentForm" />
 
-            @if (error()) {
+            @if (checkout.error()) {
               <div class="error-banner">
-                {{ error() }}
+                {{ checkout.error() }}
               </div>
             }
 
@@ -23,12 +26,12 @@
         </div>
         <div sidebar>
           <app-order-summary-panel
-            [cart]="cart()"
-            [additionalCost]="selectedShippingCost"
+            [cart]="checkout.cart()"
+            [additionalCost]="checkout.selectedShippingCost() ?? 0"
             [additionalCostLabel]="'Shipping'"
             [showItemDetails]="true"
-            [ctaLabel]="isProcessing() ? 'Processing...' : 'Place Order'"
-            [ctaDisabled]="!isFormValid || isProcessing()"
+            [ctaLabel]="checkout.isProcessing() ? 'Processing...' : 'Place Order'"
+            [ctaDisabled]="!checkout.isFormValid() || checkout.isProcessing()"
             (ctaClick)="processCheckout()"
           />
         </div>
