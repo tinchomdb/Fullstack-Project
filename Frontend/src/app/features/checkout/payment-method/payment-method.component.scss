@@ -1,10 +1,18 @@
-app-form-radio-group {
-  margin-bottom: var(--space-4);
+@use '../../../../styles/tokens';
+@use '../../../../styles/mixins';
+
+.loading-payment {
+  padding: var(--space-4);
+  text-align: center;
+  color: var(--color-text-muted);
+  @include mixins.text-body-small;
 }
 
-.payment-note {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  font-style: italic;
-  margin: 0;
+.error-message {
+  padding: var(--space-3);
+  background-color: var(--color-surface-critical);
+  color: var(--color-text-critical);
+  border: var(--border-critical);
+  border-radius: var(--radius-sm);
+  @include mixins.text-body-small;
 }

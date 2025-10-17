@@ -1,0 +1,37 @@
+@use '../../../../styles/tokens';
+@use '../../../../styles/mixins';
+
+.stripe-payment-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.payment-element {
+  min-height: 120px;
+  border-radius: var(--radius-sm);
+}
+
+.error-message {
+  padding: var(--space-3);
+  background-color: var(--color-surface-critical);
+  color: var(--color-text-critical);
+  border: var(--border-critical);
+  border-radius: var(--radius-sm);
+  @include mixins.text-body-small;
+}
+
+.demo-note {
+  @include mixins.text-body-small;
+  color: var(--color-text-muted);
+  margin: 0;
+  padding: var(--space-3);
+  background-color: var(--color-surface-muted);
+  border-radius: var(--radius-sm);
+  border-left: var(--border-width-thick) solid var(--color-accent-primary);
+
+  strong {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-secondary);
+  }
+}

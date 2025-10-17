@@ -1,9 +1,21 @@
-import { inject, Injectable, signal, computed } from '@angular/core';
+import { inject, Injectable, signal, computed, effect, untracked } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
-import { Observable, catchError, throwError, finalize, combineLatest, map, startWith } from 'rxjs';
+import {
+  Observable,
+  catchError,
+  throwError,
+  finalize,
+  combineLatest,
+  map,
+  startWith,
+  switchMap,
+  from,
+  tap,
+} from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 import { CartService } from './cart.service';
+import { StripeService } from './stripe.service';
 import { Order } from '../models/order.model';
 
 export interface CheckoutRequest {
@@ -37,7 +49,6 @@ const SHIPPING_OPTIONS: readonly ShippingOption[] = [
 ] as const;
 
 const DEFAULT_SHIPPING = 'standard';
-const DEFAULT_PAYMENT = 'credit-card';
 const DEFAULT_COUNTRY = 'United States';
 
 const PHONE_PATTERN = /^\+?[\d\s\-\(\)]+$/;
@@ -46,6 +57,7 @@ const ZIP_PATTERN = /^\d{5}(-\d{4})?$/;
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
   private readonly cartService = inject(CartService);
+  readonly stripeService = inject(StripeService);
   private readonly fb = inject(FormBuilder);
 
   readonly cart = this.cartService.cart;
@@ -58,15 +70,50 @@ export class CheckoutService {
 
   readonly shippingForm = this.createShippingForm();
   readonly shippingOptionForm = this.createShippingOptionForm();
-  readonly paymentForm = this.createPaymentForm();
 
-  private readonly forms = [this.shippingForm, this.shippingOptionForm, this.paymentForm];
+  private readonly forms = [this.shippingForm, this.shippingOptionForm];
+
+  private readonly emailValue = toSignal(
+    this.shippingForm.get('email')!.valueChanges.pipe(startWith('')),
+  );
+
+  constructor() {
+    // Auto-initialize payment when email becomes valid
+    effect(() => {
+      const email = this.emailValue();
+      const emailControl = this.shippingForm.get('email');
+
+      if (email && emailControl?.valid) {
+        untracked(() => {
+          const total = this.totalWithShipping();
+          const hasSecret = this.stripeService.clientSecret();
+          const isInitializing = this.stripeService.isInitializing();
+
+          if (total > 0 && !hasSecret && !isInitializing) {
+            this.initializePayment().subscribe({
+              error: (err) => console.error('Payment initialization failed:', err),
+            });
+          }
+        });
+      }
+    });
+  }
 
   readonly isFormValid = toSignal(
     combineLatest(this.forms.map((form) => form.statusChanges.pipe(startWith(form.status)))).pipe(
       map((statuses) => statuses.every((status) => status === 'VALID')),
     ),
   );
+
+  readonly canSubmit = computed(() => {
+    const formsValid = this.isFormValid() ?? false;
+    const stripeReady = this.stripeService.isReady();
+    const stripeFormComplete = this.stripeService.isFormComplete();
+    const hasClientSecret = !!this.stripeService.clientSecret();
+    const notProcessing = !this.isProcessing();
+
+    return formsValid && stripeReady && stripeFormComplete && hasClientSecret && notProcessing;
+  });
 
   readonly selectedShippingCost = toSignal(
     (this.shippingOptionForm.get('shippingOption') as FormControl).valueChanges.pipe(
@@ -80,13 +127,36 @@ export class CheckoutService {
     return (cart?.total ?? 0) + (this.selectedShippingCost() ?? 0);
   });
 
-  submitCheckout(): Observable<Order> {
-    if (!this.isFormValid() || this.isProcessing()) {
+  initializePayment(): Observable<void> {
+    const email = this.shippingForm.value.email ?? '';
+    const amount = Math.round(this.totalWithShipping() * 100); // Convert to cents
+
+    this.error.set(null);
+
+    return this.stripeService.initializePayment(amount, email).pipe(
+      catchError((error) => {
+        console.error('Payment initialization error:', error);
+        this.error.set('Failed to initialize payment. Please try again.');
+        return throwError(() => error);
+      }),
+    );
+  }
+
+  submitCheckout(returnUrl: string): Observable<Order> {
+    if (!this.isFormValid() || this.isProcessing() || !this.stripeService.isReady()) {
       this.markAllFormsAsTouched();
       return throwError(() => new Error('Form validation failed'));
     }
 
-    return this.processCheckout(this.buildCheckoutRequest());
+    return from(this.stripeService.confirmPayment(returnUrl)).pipe(
+      tap(() => console.log('Stripe payment confirmed successfully')),
+      switchMap(() => this.processCheckout(this.buildCheckoutRequest())),
+      catchError((error) => {
+        console.error('Stripe payment failed:', error);
+        this.error.set('Payment failed. Please try again.');
+        return throwError(() => error);
+      }),
+    );
   }
 
   private processCheckout(request: CheckoutRequest): Observable<Order> {
@@ -106,7 +176,7 @@ export class CheckoutService {
     return {
       shippingCost: this.selectedShippingCost() ?? 0,
       shippingDetails: this.shippingForm.getRawValue(),
-      paymentMethod: this.paymentForm.value.method ?? DEFAULT_PAYMENT,
+      paymentMethod: 'stripe',
     };
   }
 
@@ -135,12 +205,6 @@ export class CheckoutService {
   private createShippingOptionForm(): FormGroup {
     return this.fb.nonNullable.group({
       shippingOption: [DEFAULT_SHIPPING, [Validators.required]],
-    });
-  }
-
-  private createPaymentForm(): FormGroup {
-    return this.fb.nonNullable.group({
-      method: [DEFAULT_PAYMENT, [Validators.required]],
     });
   }
 }

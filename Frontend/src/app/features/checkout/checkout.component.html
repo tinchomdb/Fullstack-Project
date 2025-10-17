@@ -11,7 +11,7 @@
               [form]="checkout.shippingOptionForm"
               [options]="checkout.shippingOptions"
             />
-            <app-payment-method [form]="checkout.paymentForm" />
+            <app-payment-method />
 
             @if (checkout.error()) {
               <div class="error-banner">
@@ -31,7 +31,7 @@
             [additionalCostLabel]="'Shipping'"
             [showItemDetails]="true"
             [ctaLabel]="checkout.isProcessing() ? 'Processing...' : 'Place Order'"
-            [ctaDisabled]="!checkout.isFormValid() || checkout.isProcessing()"
+            [ctaDisabled]="!checkout.canSubmit()"
             (ctaClick)="processCheckout()"
           />
         </div>
