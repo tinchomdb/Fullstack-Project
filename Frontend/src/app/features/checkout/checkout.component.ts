@@ -39,7 +39,9 @@ export class CheckoutComponent {
   }
 
   processCheckout(): void {
-    this.checkout.submitCheckout().subscribe({
+    const returnUrl = `${window.location.origin}/checkout`;
+
+    this.checkout.submitCheckout(returnUrl).subscribe({
       next: (order) => {
         this.router.navigate(['/orders', order.id]);
       },
