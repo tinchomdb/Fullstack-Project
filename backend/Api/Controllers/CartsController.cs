@@ -117,26 +117,25 @@ public sealed class CartsController(ICartService cartService) : ControllerBase
     }
 
     /// <summary>
-    /// Checkout the cart and create an order - Validates all prices and stock again
+    /// Validate cart before payment - Checks prices, stock, and cart validity
+    /// Returns the calculated shipping cost based on subtotal
+    /// NOTE: Order creation happens via Stripe webhook after successful payment
     /// </summary>
-    [Authorize] // Checkout requires authentication
-    [HttpPost("by-user/{userId}/checkout")]
-    [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+    [Authorize] // Validation requires authentication
+    [HttpPost("by-user/{userId}/validate-checkout")]
+    [ProducesResponseType(typeof(CartValidationResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<Order>> CheckoutCart(
+    public async Task<ActionResult<CartValidationResponse>> ValidateCheckout(
         string userId,
-        [FromBody] CheckoutRequest request,
         CancellationToken cancellationToken)
     {
         try
         {
-            var order = await _cartService.CheckoutCartAsync(
+            var validationResult = await _cartService.ValidateCartForCheckoutAsync(
                 userId,
-                request.ShippingCost,
                 cancellationToken);
             
-            return Ok(order);
+            return Ok(validationResult);
         }
         catch (InvalidOperationException ex)
         {
@@ -159,14 +158,18 @@ public sealed class CartsController(ICartService cartService) : ControllerBase
     }
 }
 
-public sealed record CheckoutRequest
-{
-    public string CartId { get; init; } = string.Empty;
-    public decimal ShippingCost { get; init; } = 0m;
-}
-
 public sealed record MigrateCartRequest
 {
     public string GuestId { get; init; } = string.Empty;
     public string UserId { get; init; } = string.Empty;
+}
+
+public sealed record CartValidationResponse
+{
+    public bool IsValid { get; init; }
+    public string CartId { get; init; } = string.Empty;
+    public decimal Subtotal { get; init; }
+    public decimal ShippingCost { get; init; }
+    public decimal Total { get; init; }
+    public List<string> Warnings { get; init; } = [];
 }

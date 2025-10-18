@@ -31,6 +31,15 @@ export interface CheckoutRequest {
   shippingCost: number;
 }
 
+export interface ValidateCheckoutResponse {
+  isValid: boolean;
+  cartId: string;
+  subtotal: number;
+  shippingCost: number;
+  total: number;
+  warnings: string[];
+}
+
 export interface MigrateCartRequest {
   guestId: string;
   userId: string;
@@ -77,6 +86,13 @@ export class CartApiService {
     return this.http
       .post<OrderApiModel>(`${this.baseUrl}/by-user/${userId}/checkout`, request)
       .pipe(map(mapOrderFromApi));
+  }
+
+  validateCheckout(userId: string, cartId: string): Observable<ValidateCheckoutResponse> {
+    return this.http.post<ValidateCheckoutResponse>(
+      `${this.baseUrl}/by-user/${userId}/validate-checkout`,
+      { cartId },
+    );
   }
 
   migrateGuestCart(request: MigrateCartRequest): Observable<void> {

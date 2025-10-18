@@ -30,7 +30,10 @@ namespace Api.Controllers
 
             try
             {
-                var response = await paymentService.CreatePaymentIntentAsync(request);
+                var response = await paymentService.CreatePaymentIntentAsync(
+                    request, 
+                    request.CartId, 
+                    request.UserId);
                 return Ok(response);
             }
             catch (StripeException ex)

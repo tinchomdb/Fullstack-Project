@@ -1,6 +1,7 @@
 import { Routes, UrlSegment, UrlMatchResult } from '@angular/router';
 import { MsalGuard } from '@azure/msal-angular';
 import { adminGuard } from './core/auth/admin.guard';
+import { cartNotEmptyGuard } from './core/guards/cart-not-empty.guard';
 import { filtersResolver } from './core/resolvers/filters.resolver';
 
 export const routes: Routes = [
@@ -74,9 +75,20 @@ export const routes: Routes = [
     path: 'checkout',
     loadComponent: () =>
       import('./features/checkout/checkout.component').then((m) => m.CheckoutComponent),
-    canActivate: [MsalGuard],
+    canActivate: [MsalGuard, cartNotEmptyGuard],
     data: {
       title: 'Checkout',
+    },
+  },
+  {
+    path: 'order-success',
+    loadComponent: () =>
+      import('./features/order-success/order-success.component').then(
+        (m) => m.OrderSuccessComponent,
+      ),
+    canActivate: [MsalGuard],
+    data: {
+      title: 'Order Success',
     },
   },
   {

@@ -13,7 +13,11 @@ public sealed record class Order
 
     public string? OriginalCartId { get; init; }
 
+    public string? PaymentIntentId { get; init; }
+
     public DateTime OrderDate { get; init; } = DateTime.UtcNow;
+
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
     [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
     public OrderStatus Status { get; init; }

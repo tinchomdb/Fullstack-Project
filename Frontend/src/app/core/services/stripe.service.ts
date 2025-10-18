@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
-import { Observable, from, switchMap } from 'rxjs';
+import { Observable, from, switchMap, tap, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { PaymentApiService } from './payment-api.service';
@@ -18,6 +18,7 @@ export class StripeService {
   readonly isInitializing = signal(false);
   readonly isMounted = signal(false);
   readonly clientSecret = signal<string | null>(null);
+  readonly paymentIntentId = signal<string | null>(null);
 
   private readonly elementId = 'payment-element';
 
@@ -47,9 +48,15 @@ export class StripeService {
   }
 
   initializePayment(amount: number, email: string): Observable<void> {
-    return this.paymentApi
-      .createPaymentIntent({ amount, email })
-      .pipe(switchMap((response) => from(this.initialize(response.clientSecret))));
+    return this.paymentApi.createPaymentIntent({ amount, email }).pipe(
+      switchMap((response) => {
+        // Capture the payment intent ID for later use
+        if (response.paymentIntentId) {
+          this.paymentIntentId.set(response.paymentIntentId);
+        }
+        return from(this.initialize(response.clientSecret));
+      }),
+    );
   }
 
   mountPaymentElement(): void {
@@ -94,10 +101,47 @@ export class StripeService {
     }
   }
 
+  /**
+   * Completes payment after Stripe confirmation.
+   * In development, calls the test endpoint to simulate the webhook.
+   * In production, the real Stripe webhook will handle order creation.
+   */
+  completePayment(cartId: string, userId: string, email: string, amount: number): Observable<void> {
+    const paymentIntentId = this.paymentIntentId();
+
+    if (!paymentIntentId) {
+      return throwError(() => new Error('Payment intent ID not available'));
+    }
+
+    // In development, call the test endpoint to simulate the webhook
+    if (environment.isDevelopment) {
+      return this.paymentApi
+        .testCompletePayment({
+          paymentIntentId,
+          cartId,
+          userId,
+          email,
+          amount,
+        })
+        .pipe(
+          tap(() => console.log('Test payment endpoint called successfully')),
+          switchMap(() => from(Promise.resolve())),
+          catchError((error) => {
+            console.error('Test payment endpoint failed:', error);
+            return throwError(() => error);
+          }),
+        );
+    }
+
+    // In production, return success (real Stripe webhook will handle order creation)
+    return from(Promise.resolve());
+  }
+
   reset(): void {
     this.unmountPaymentElement();
     this.elements = null;
     this.clientSecret.set(null);
+    this.paymentIntentId.set(null);
     this.isReady.set(false);
     this.isInitializing.set(false);
   }

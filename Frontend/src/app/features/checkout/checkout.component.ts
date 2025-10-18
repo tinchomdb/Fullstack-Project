@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy, effect } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -30,20 +30,17 @@ export class CheckoutComponent {
 
   protected readonly checkout = inject(CheckoutService);
 
-  constructor() {
-    effect(() => {
-      if (this.checkout.isEmpty()) {
-        this.router.navigate(['/']);
-      }
-    });
-  }
-
   processCheckout(): void {
-    const returnUrl = `${window.location.origin}/checkout`;
+    // Return URL is used by Stripe only when redirect is required (e.g., 3D Secure)
+    const returnUrl = `${window.location.origin}/order-success`;
 
     this.checkout.submitCheckout(returnUrl).subscribe({
-      next: (order) => {
-        this.router.navigate(['/orders', order.id]);
+      next: () => {
+        // Order is automatically stored in OrderStateService by CartService
+        this.router.navigate(['/order-success']);
+      },
+      error: (error) => {
+        console.error('Checkout failed:', error);
       },
     });
   }
