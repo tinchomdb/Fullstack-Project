@@ -1,23 +1,18 @@
-import { Component, ChangeDetectionStrategy, signal, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { FiltersService } from '../../../core/services/filters.service';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { SearchComponent } from '../search/search.component';
 
 @Component({
   selector: 'app-search-bar',
-  imports: [FormsModule],
+  imports: [SearchComponent],
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchBarComponent {
   private readonly router = inject(Router);
-  readonly searchTerm = signal('');
 
-  onSearch(): void {
-    const term = this.searchTerm().trim();
-    if (!term) return;
-
+  onSearch(term: string): void {
     this.router.navigate(['/search'], {
       queryParams: { q: term },
     });

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, input, output } from '@angular/core
 import { Product } from '../../../core/models/product.model';
 import { ProductGridComponent } from '../product-grid/product-grid.component';
 import { SortDropdownComponent } from '../sort-dropdown/sort-dropdown.component';
+import { LoadingIndicatorComponent } from '../loading-indicator/loading-indicator.component';
 import { IntersectionObserverDirective } from '../intersection-observer.directive';
 import { HeadingComponent } from '../heading/heading.component';
 
@@ -10,6 +11,7 @@ import { HeadingComponent } from '../heading/heading.component';
   imports: [
     ProductGridComponent,
     SortDropdownComponent,
+    LoadingIndicatorComponent,
     IntersectionObserverDirective,
     HeadingComponent,
   ],
