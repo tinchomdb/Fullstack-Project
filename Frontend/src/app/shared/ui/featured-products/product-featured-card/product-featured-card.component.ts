@@ -1,5 +1,13 @@
 import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { Product } from '../../../../core/models/product.model';
@@ -50,11 +58,10 @@ export class ProductFeaturedCardComponent {
     event.stopPropagation();
     event.preventDefault();
 
-    const product = this.product();
-    if (!product || this.addingProductId()) return;
+    if (this.addingProductId()) return;
 
-    this.addingProductId.set(product.id);
-    this.addToCart.emit(product);
+    this.addingProductId.set(this.product().id);
+    this.addToCart.emit(this.product());
 
     setTimeout(() => {
       this.addingProductId.set(null);

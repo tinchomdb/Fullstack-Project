@@ -1,53 +1,7 @@
-@use '../../../../styles/mixins' as *;
+:host {
+  display: block;
+}
 
 .search-bar {
-  display: flex;
-  width: 100%;
-  border: 2px solid var(--color-border-subtle);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--color-surface-secondary);
-  transition: border-color 200ms ease;
-
-  &:focus-within {
-    border-color: var(--color-accent-interactive);
-  }
-}
-
-.search-input {
-  flex: 1;
-  padding: var(--space-3) var(--space-4);
-  border: none;
-  background: transparent;
-  font-size: var(--font-size-base);
-  color: var(--color-text-primary);
-  outline: none;
-
-  &::placeholder {
-    color: var(--color-text-tertiary);
-  }
-}
-
-.search-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-3) var(--space-5);
-  border: none;
-  background: var(--gradient-accent);
-  color: var(--color-text-inverse);
-  cursor: pointer;
-  transition: opacity 200ms ease;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:active {
-    opacity: 0.8;
-  }
-
-  svg {
-    display: block;
-  }
+  display: block;
 }

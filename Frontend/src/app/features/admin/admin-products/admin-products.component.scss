@@ -12,15 +12,39 @@
     }
   }
 
+  .filters-section {
+    display: flex;
+    gap: var(--space-4);
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+    align-items: center;
+
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    app-dropdown {
+      min-width: 180px;
+    }
+  }
+
+  .products-list {
+    display: grid;
+    gap: var(--space-6);
+  }
+
   .no-products {
     text-align: center;
     padding: var(--space-12);
     color: var(--color-text-secondary);
   }
 
-  .products-list {
-    display: grid;
-    gap: var(--space-6);
+  .end-message {
+    text-align: center;
+    padding: var(--space-8);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
   }
 
   .slug-field-wrapper {

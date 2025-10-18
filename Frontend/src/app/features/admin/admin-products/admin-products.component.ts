@@ -5,9 +5,12 @@ import {
   signal,
   ChangeDetectionStrategy,
   computed,
+  effect,
+  untracked,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductsService } from '../../../core/services/products.service';
+import { AdminProductsFiltersService } from '../../../core/services/admin-products-filters.service';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Product } from '../../../core/models/product.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -15,7 +18,11 @@ import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.com
 import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-checkbox.component';
 import { AdminItemCardComponent } from '../../../shared/ui/admin-item-card/admin-item-card.component';
 import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.component';
+import { DropdownComponent } from '../../../shared/ui/dropdown/dropdown.component';
+import { SearchComponent } from '../../../shared/ui/search/search.component';
+import { LoadingIndicatorComponent } from '../../../shared/ui/loading-indicator/loading-indicator.component';
 import { generateSlug } from '../../../shared/utils/form.utils';
+import { IntersectionObserverDirective } from '../../../shared/ui/intersection-observer.directive';
 
 @Component({
   selector: 'app-admin-products',
@@ -26,6 +33,10 @@ import { generateSlug } from '../../../shared/utils/form.utils';
     FormCheckboxComponent,
     AdminItemCardComponent,
     ModalFormComponent,
+    DropdownComponent,
+    SearchComponent,
+    LoadingIndicatorComponent,
+    IntersectionObserverDirective,
   ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
@@ -33,17 +44,32 @@ import { generateSlug } from '../../../shared/utils/form.utils';
 })
 export class AdminProductsComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
+  private readonly filtersService = inject(AdminProductsFiltersService);
   private readonly categoriesService = inject(CategoriesService);
   private readonly fb = inject(FormBuilder);
+
+  // Expose filters service for template
+  protected readonly filters = this.filtersService;
 
   readonly products = this.productsService.products;
   readonly categories = this.categoriesService.categories;
   readonly loading = this.productsService.loading;
+  readonly loadingMore = this.productsService.loadingMore;
+  readonly hasMore = this.productsService.hasMore;
   readonly error = this.productsService.error;
 
   readonly showForm = signal(false);
   readonly editingProduct = signal<Product | null>(null);
   readonly formError = signal<string | null>(null);
+
+  readonly categoryOptions = computed(() =>
+    this.categories().map((cat) => ({ value: cat.id, label: cat.name })),
+  );
+
+  readonly categoryDropdownOptions = computed(() => [
+    { value: '', label: 'All Categories' },
+    ...this.categoryOptions(),
+  ]);
 
   readonly productForm = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
@@ -65,9 +91,30 @@ export class AdminProductsComponent implements OnInit {
       return field ? field.invalid && field.touched : false;
     });
 
+  constructor() {
+    let isFirstRun = true;
+    effect(() => {
+      this.filtersService.categoryId();
+      this.filtersService.searchTerm();
+      this.filtersService.sortBy();
+      this.filtersService.sortDirection();
+
+      if (isFirstRun) {
+        isFirstRun = false;
+        return;
+      }
+
+      untracked(() => this.reloadProducts());
+    });
+  }
+
   ngOnInit(): void {
-    this.productsService.loadProducts();
+    this.loadInitialProducts();
     this.initFormSubscriptions();
+  }
+
+  private loadInitialProducts(): void {
+    this.productsService.loadProducts(this.filtersService.buildApiParams());
   }
 
   private initFormSubscriptions(): void {
@@ -123,6 +170,32 @@ export class AdminProductsComponent implements OnInit {
       stock: 0,
       price: 0,
     });
+  }
+
+  onSearchChange(term: string): void {
+    this.filtersService.setSearchTerm(term || null);
+  }
+
+  onCategoryChange(categoryId: string): void {
+    this.filtersService.setCategoryId(categoryId || null);
+  }
+
+  onLoadMore(): void {
+    if (this.loadingMore() || !this.hasMore()) {
+      return;
+    }
+    this.filtersService.loadNextPage();
+    this.productsService.loadMoreProducts(this.filtersService.buildApiParams());
+  }
+
+  clearFilters(): void {
+    this.filtersService.clearFilters();
+    this.reloadProducts();
+  }
+
+  private reloadProducts(): void {
+    this.filtersService.resetToFirstPage();
+    this.loadInitialProducts();
   }
 
   saveProduct(): void {

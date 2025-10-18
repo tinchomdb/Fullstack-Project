@@ -4,6 +4,25 @@
     <app-button (click)="openCreateForm()" shape="rounded">Add New Product</app-button>
   </div>
 
+  <div class="filters-section">
+    <app-search
+      placeholder="Search products..."
+      (search)="onSearchChange($event)"
+      class="search-input"
+    />
+    <app-dropdown
+      [options]="categoryDropdownOptions()"
+      [selectedValue]="filters.categoryId() || ''"
+      placeholder="All Categories"
+      (selectionChange)="onCategoryChange($event)"
+    />
+    @if (filters.hasActiveFilters()) {
+      <app-button (click)="clearFilters()" variant="secondary" shape="rounded">
+        Clear Filters
+      </app-button>
+    }
+  </div>
+
   @if (showForm()) {
     <app-modal-form
       [title]="editingProduct() ? 'Edit Product' : 'Create New Product'"
@@ -130,26 +149,53 @@
     </app-modal-form>
   }
 
-  <div class="products-list">
-    @if (products().length === 0 && !loading()) {
-      <p class="no-products">No products found. Create your first product!</p>
+  @if (loading() && products().length === 0) {
+    <app-loading-indicator message="Loading products..." />
+  }
+
+  @if (!loading() && products().length === 0) {
+    <p class="no-products">No products found. Create your first product!</p>
+  }
+
+  @if (products().length > 0) {
+    <div class="products-list">
+      @for (product of products(); track product.id) {
+        <app-admin-item-card
+          [imageUrl]="product.imageUrls.length > 0 ? product.imageUrls[0] : ''"
+          [imageAlt]="product.name"
+          [title]="product.name"
+          [description]="product.description"
+          [badges]="product.featured ? [{ label: '⭐ Featured', variant: 'featured' }] : []"
+          [metadata]="[
+            { label: 'Price', value: product.price + ' ' + product.currency },
+            { label: 'Stock', value: (product.stock ?? 0).toString() },
+            { label: 'Seller', value: product.seller.displayName },
+          ]"
+          (edit)="openEditForm(product)"
+          (delete)="deleteProduct(product)"
+        />
+      }
+    </div>
+
+    @if (hasMore() && !loadingMore()) {
+      <div
+        class="scroll-sentinel"
+        appIntersectionObserver
+        (intersecting)="onLoadMore()"
+        aria-hidden="true"
+      >
+        <!-- Sentinel is only in DOM when ready to load -->
+      </div>
     }
 
-    @for (product of products(); track product.id) {
-      <app-admin-item-card
-        [imageUrl]="product.imageUrls.length > 0 ? product.imageUrls[0] : ''"
-        [imageAlt]="product.name"
-        [title]="product.name"
-        [description]="product.description"
-        [badges]="product.featured ? [{ label: '⭐ Featured', variant: 'featured' }] : []"
-        [metadata]="[
-          { label: 'Price', value: product.price + ' ' + product.currency },
-          { label: 'Stock', value: (product.stock ?? 0).toString() },
-          { label: 'Seller', value: product.seller.displayName },
-        ]"
-        (edit)="openEditForm(product)"
-        (delete)="deleteProduct(product)"
-      />
+    @if (loadingMore()) {
+      <app-loading-indicator message="Loading more products..." />
     }
-  </div>
+
+    @if (!hasMore() && !loadingMore()) {
+      <div class="end-message">
+        <p>You've reached the end of the product list</p>
+      </div>
+    }
+  }
 </div>
