@@ -1,41 +1,37 @@
 <div class="checkout-container">
   <h1>Checkout</h1>
 
-  @if (checkout.cart(); as cartData) {
-    @if (!checkout.isEmpty()) {
-      <app-sidebar-layout>
-        <div main>
-          <form (ngSubmit)="processCheckout()">
-            <app-shipping-information-form [form]="checkout.shippingForm" />
-            <app-shipping-options
-              [form]="checkout.shippingOptionForm"
-              [options]="checkout.shippingOptions"
-            />
-            <app-payment-method />
+  <app-sidebar-layout>
+    <div main>
+      <form (ngSubmit)="processCheckout()">
+        <app-shipping-information-form [form]="checkout.shippingForm" />
+        <app-shipping-options
+          [form]="checkout.shippingOptionForm"
+          [options]="checkout.shippingOptions"
+        />
+        <app-payment-method />
 
-            @if (checkout.error()) {
-              <div class="error-banner">
-                {{ checkout.error() }}
-              </div>
-            }
+        @if (checkout.error()) {
+          <div class="error-banner">
+            {{ checkout.error() }}
+          </div>
+        }
 
-            <div class="checkout-actions">
-              <app-button type="button" (click)="goBackToCart()"> Back to Cart </app-button>
-            </div>
-          </form>
+        <div class="checkout-actions">
+          <app-button type="button" (click)="goBackToCart()"> Back to Cart </app-button>
         </div>
-        <div sidebar>
-          <app-order-summary-panel
-            [cart]="checkout.cart()"
-            [additionalCost]="checkout.selectedShippingCost() ?? 0"
-            [additionalCostLabel]="'Shipping'"
-            [showItemDetails]="true"
-            [ctaLabel]="checkout.isProcessing() ? 'Processing...' : 'Place Order'"
-            [ctaDisabled]="!checkout.canSubmit()"
-            (ctaClick)="processCheckout()"
-          />
-        </div>
-      </app-sidebar-layout>
-    }
-  }
+      </form>
+    </div>
+    <div sidebar>
+      <app-order-summary-panel
+        [cart]="checkout.cart()"
+        [additionalCost]="checkout.selectedShippingCost() ?? 0"
+        [additionalCostLabel]="'Shipping'"
+        [showItemDetails]="true"
+        [ctaLabel]="checkout.isProcessing() ? 'Processing...' : 'Place Order'"
+        [ctaDisabled]="!checkout.canSubmit()"
+        (ctaClick)="processCheckout()"
+      />
+    </div>
+  </app-sidebar-layout>
 </div>

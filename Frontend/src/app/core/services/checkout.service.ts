@@ -16,7 +16,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 import { CartService } from './cart.service';
 import { StripeService } from './stripe.service';
+import { OrderStateService } from './order-state.service';
+import { AuthService } from '../auth/auth.service';
 import { Order } from '../models/order.model';
+import { OrderStatus } from '../models/order-status.model';
 
 export interface CheckoutRequest {
   shippingCost: number;
@@ -58,10 +61,12 @@ const ZIP_PATTERN = /^\d{5}(-\d{4})?$/;
 export class CheckoutService {
   private readonly cartService = inject(CartService);
   readonly stripeService = inject(StripeService);
+  private readonly orderState = inject(OrderStateService);
+  private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
 
   readonly cart = this.cartService.cart;
-  readonly isEmpty = this.cartService.isEmpty;
+  readonly cartIsEmpty = this.cartService.isEmpty;
 
   readonly isProcessing = signal(false);
   readonly error = signal<string | null>(null);
@@ -142,6 +147,22 @@ export class CheckoutService {
     );
   }
 
+  validateCart(): Observable<any> {
+    this.error.set(null);
+    return this.cartService.validateCheckout().pipe(
+      tap((response) => {
+        if (!response.isValid && response.warnings?.length) {
+          this.error.set(`Cart issues: ${response.warnings.join(', ')}`);
+        }
+      }),
+      catchError((error) => {
+        console.error('Cart validation error:', error);
+        this.error.set('Failed to validate cart. Please try again.');
+        return throwError(() => error);
+      }),
+    );
+  }
+
   submitCheckout(returnUrl: string): Observable<Order> {
     if (!this.isFormValid() || this.isProcessing() || !this.stripeService.isReady()) {
       this.markAllFormsAsTouched();
@@ -150,7 +171,7 @@ export class CheckoutService {
 
     return from(this.stripeService.confirmPayment(returnUrl)).pipe(
       tap(() => console.log('Stripe payment confirmed successfully')),
-      switchMap(() => this.processCheckout(this.buildCheckoutRequest())),
+      switchMap(() => this.handlePaymentSuccess()),
       catchError((error) => {
         console.error('Stripe payment failed:', error);
         this.error.set('Payment failed. Please try again.');
@@ -159,17 +180,58 @@ export class CheckoutService {
     );
   }
 
-  private processCheckout(request: CheckoutRequest): Observable<Order> {
+  private handlePaymentSuccess(): Observable<Order> {
     this.isProcessing.set(true);
     this.error.set(null);
 
-    return this.cartService.checkout(request.shippingCost).pipe(
-      catchError((error) => {
-        this.error.set('Checkout failed. Please try again.');
-        return throwError(() => error);
-      }),
-      finalize(() => this.isProcessing.set(false)),
-    );
+    const cart = this.cart();
+    const email = this.shippingForm.value.email ?? '';
+    const userId = this.authService.userId();
+    const shippingCost = this.selectedShippingCost() ?? 0;
+
+    if (!cart || !userId) {
+      this.error.set('Payment details missing. Please try again.');
+      this.isProcessing.set(false);
+      return throwError(() => new Error('Payment details missing'));
+    }
+
+    // Let StripeService handle the test endpoint call if in development
+    // In development: test endpoint creates order and closes cart
+    // In production: real Stripe webhook creates order and closes cart
+    // Either way, no need to call checkout endpoint - order is already created
+    return this.stripeService
+      .completePayment(cart.id, userId, email, Math.round(this.totalWithShipping() * 100))
+      .pipe(
+        tap(() => {
+          console.log('Payment completion handled successfully');
+          // NOTE: Do NOT reload cart here - it would make the cart empty
+          // and could interfere with navigation. The cart state will be
+          // automatically updated when the user navigates to cart page.
+        }),
+        map(() => {
+          // Return a dummy order object - the real order was created by the webhook
+          // TODO: The component will redirect to order success page and fetch the real order there
+          const dummyOrder: Order = {
+            id: '',
+            userId,
+            orderDate: new Date().toISOString(),
+            status: OrderStatus.Pending,
+            items: [],
+            subtotal: cart.subtotal,
+            shippingCost,
+            total: this.totalWithShipping(),
+            currency: 'USD',
+          };
+          // Store the order in OrderStateService so the success page can access it
+          this.orderState.setLastOrder(dummyOrder);
+          return dummyOrder;
+        }),
+        catchError((error) => {
+          this.error.set('Payment processing failed. Please try again.');
+          return throwError(() => error);
+        }),
+        finalize(() => this.isProcessing.set(false)),
+      );
   }
 
   private buildCheckoutRequest(): CheckoutRequest {

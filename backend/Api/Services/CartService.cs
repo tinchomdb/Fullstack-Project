@@ -1,3 +1,4 @@
+using Api.Controllers;
 using Api.Models;
 using Api.Models.DTOs;
 using Api.Repositories;
@@ -35,7 +36,8 @@ public sealed class CartService(
     {
         _cartValidator.ValidateAddToCartRequest(request);
 
-        var product = await GetValidatedProductAsync(request.ProductId, cancellationToken);
+        // Note: sellerId comes from the product request
+        var product = await GetValidatedProductAsync(request.ProductId, request.SellerId, cancellationToken);
         var cart = await GetOrCreateCartAsync(userId, cancellationToken);
 
         var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == request.ProductId);
@@ -79,7 +81,7 @@ public sealed class CartService(
 
         var cart = await GetCartOrThrowAsync(userId, cancellationToken);
         var existingItem = GetCartItemOrThrow(cart, request.ProductId);
-        var product = await GetValidatedProductAsync(request.ProductId, cancellationToken);
+        var product = await GetValidatedProductAsync(request.ProductId, request.SellerId, cancellationToken);
         
         _cartValidator.ValidateStock(product, request.Quantity);
 
@@ -128,9 +130,51 @@ public sealed class CartService(
         return _cartMapper.CreateEmptyCartResponse(userId);
     }
 
+    public async Task<CartValidationResponse> ValidateCartForCheckoutAsync(
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        var cart = await GetCartOrThrowAsync(userId, cancellationToken);
+        var warnings = new List<string>();
+
+        try
+        {
+            _cartValidator.ValidateCheckout(cart);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return new CartValidationResponse
+            {
+                IsValid = false,
+                CartId = cart.Id,
+                Warnings = [ex.Message]
+            };
+        }
+
+        var validatedItems = await ValidateAndRecalculateCartItemsAsync(cart.Items, cancellationToken);
+        
+        if (validatedItems.Count < cart.Items.Count)
+        {
+            warnings.Add("Some items were removed due to availability issues");
+        }
+
+        var subtotal = validatedItems.Sum(i => i.LineTotal);
+        var shippingCost = CalculateShippingCost(subtotal);
+        var total = subtotal + shippingCost;
+
+        return new CartValidationResponse
+        {
+            IsValid = true,
+            CartId = cart.Id,
+            Subtotal = subtotal,
+            ShippingCost = shippingCost,
+            Total = total,
+            Warnings = warnings
+        };
+    }
+
     public async Task<Order> CheckoutCartAsync(
         string userId,
-        decimal shippingCost,
         CancellationToken cancellationToken = default)
     {
         var cart = await GetCartOrThrowAsync(userId, cancellationToken);
@@ -138,13 +182,14 @@ public sealed class CartService(
 
         var validatedItems = await ValidateAndRecalculateCartItemsAsync(cart.Items, cancellationToken);
         var subtotal = validatedItems.Sum(i => i.LineTotal);
+        var shippingCost = CalculateShippingCost(subtotal);
 
         var completedCart = cart with
         {
             Status = CartStatus.Completed,
             Items = validatedItems,
             Subtotal = subtotal,
-            Total = subtotal,
+            Total = subtotal + shippingCost,
             LastUpdatedAt = DateTime.UtcNow
         };
         
@@ -286,6 +331,11 @@ public sealed class CartService(
         return cart.ExpiresAt.HasValue && cart.ExpiresAt.Value < DateTime.UtcNow;
     }
 
+    private static decimal CalculateShippingCost(decimal subtotal)
+    {
+        return subtotal > 50 ? 0 : 5.99m;
+    }
+
     private static void MergeCartItem(List<CartItem> targetItems, CartItem itemToMerge)
     {
         var existingItem = targetItems.FirstOrDefault(i => i.ProductId == itemToMerge.ProductId);
@@ -327,14 +377,23 @@ public sealed class CartService(
             existingItem.SellerName);
     }
 
-    private async Task<Product> GetValidatedProductAsync(string productId, CancellationToken cancellationToken)
+    private async Task<Product> GetValidatedProductAsync(
+        string productId,
+        string sellerId,
+        CancellationToken cancellationToken)
     {
-        var allProducts = await _productsRepository.GetAllProductsAsync(cancellationToken);
-        var product = allProducts.FirstOrDefault(p => p.Id == productId) ?? throw new InvalidOperationException($"Product {productId} not found");
-        if (product.Stock <= 0)
+        var product = await _productsRepository.GetProductAsync(productId, sellerId, cancellationToken);
+
+        if (product == null)
+        {
+            throw new InvalidOperationException($"Product {productId} not found");
+        }
+        
+        //TODO: Review stock validation logic
+        /* if (product.Stock <= 0)
         {
             throw new InvalidOperationException($"Product {product.Name} is out of stock");
-        }
+        } */
 
         return product;
     }
@@ -347,8 +406,8 @@ public sealed class CartService(
         
         foreach (var item in items)
         {
-            var product = await GetValidatedProductAsync(item.ProductId, cancellationToken);
-            _cartValidator.ValidateStock(product, item.Quantity);
+            var product = await GetValidatedProductAsync(item.ProductId, item.SellerId, cancellationToken);
+            /* _cartValidator.ValidateStock(product, item.Quantity); */
 
             var updatedItem = _cartMapper.UpdateCartItemFromProduct(
                 product,

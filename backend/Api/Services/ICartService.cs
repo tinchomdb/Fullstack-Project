@@ -1,3 +1,4 @@
+using Api.Controllers;
 using Api.Models;
 using Api.Models.DTOs;
 
@@ -15,7 +16,9 @@ public interface ICartService
     
     Task<CartResponse> ClearCartAsync(string userId, CancellationToken cancellationToken = default);
     
-    Task<Order> CheckoutCartAsync(string userId, decimal shippingCost, CancellationToken cancellationToken = default);
+    Task<CartValidationResponse> ValidateCartForCheckoutAsync(string userId, CancellationToken cancellationToken = default);
+    
+    Task<Order> CheckoutCartAsync(string userId, CancellationToken cancellationToken = default);
     
     Task MigrateGuestCartAsync(string guestId, string userId, CancellationToken cancellationToken = default);
 }

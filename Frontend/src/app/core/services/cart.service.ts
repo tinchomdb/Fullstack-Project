@@ -1,5 +1,5 @@
 import { inject, Injectable, computed, effect, untracked } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 
 import { Cart } from '../models/cart.model';
 import { Order } from '../models/order.model';
@@ -8,14 +8,17 @@ import { Product } from '../models/product.model';
 import { AuthService } from '../auth/auth.service';
 import { LoadingOverlayService } from './loading-overlay.service';
 import { CartApiService } from './cart-api.service';
+import { OrderStateService } from './order-state.service';
 
 export type { CheckoutRequest } from './cart-api.service';
+export type { ValidateCheckoutResponse } from './cart-api.service';
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly authService = inject(AuthService);
   private readonly loadingOverlayService = inject(LoadingOverlayService);
   private readonly cartApi = inject(CartApiService);
+  private readonly orderState = inject(OrderStateService);
   private readonly cartResource = new Resource<Cart | null>(
     null,
     'Loading cart...',
@@ -100,11 +103,22 @@ export class CartService {
         shippingCost,
       })
       .pipe(
+        tap((order) => this.orderState.setLastOrder(order)),
         map((order) => {
           this.cartResource.reset();
           return order;
         }),
       );
+  }
+
+  validateCheckout(): Observable<any> {
+    const currentCart = this.cart();
+
+    if (!currentCart) {
+      throw new Error('No active cart to validate');
+    }
+
+    return this.cartApi.validateCheckout(this.getUserId(), currentCart.id);
   }
 
   private setupAuthEffect(): void {

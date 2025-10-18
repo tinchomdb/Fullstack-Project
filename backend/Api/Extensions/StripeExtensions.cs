@@ -26,6 +26,9 @@ namespace Api.Extensions
             // Configure Stripe API key
             StripeConfiguration.ApiKey = stripeSettings.SecretKey;
 
+            // Register Stripe settings for dependency injection
+            services.Configure<StripeSettings>(configuration.GetSection(StripeSettings.SectionName));
+
             // Register payment service
             services.AddScoped<IPaymentService, PaymentService>();
 
