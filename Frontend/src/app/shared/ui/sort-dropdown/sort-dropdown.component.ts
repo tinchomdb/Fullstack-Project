@@ -1,9 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 
 import { FiltersService } from '../../../core/services/filters.service';
 import { SORT_OPTIONS } from '../../../core/models/sort-option.model';

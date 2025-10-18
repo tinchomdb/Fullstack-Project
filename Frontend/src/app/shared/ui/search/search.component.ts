@@ -41,9 +41,7 @@ export class SearchComponent {
   protected readonly filteredSuggestions = computed(() => {
     const term = this.searchTerm().toLowerCase();
     if (!term || !this.showSuggestions()) return [];
-    return this.suggestions().filter((opt) =>
-      opt.label.toLowerCase().includes(term)
-    );
+    return this.suggestions().filter((opt) => opt.label.toLowerCase().includes(term));
   });
 
   onSearch(): void {
