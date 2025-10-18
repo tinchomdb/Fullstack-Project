@@ -1,0 +1,91 @@
+<div class="image-gallery-manager">
+  <div class="add-image-section">
+    <h3>Product Images</h3>
+    <div class="add-image-form">
+      <input
+        type="url"
+        class="image-url-input"
+        placeholder="Enter image URL..."
+        [(ngModel)]="newImageUrl"
+        (keyup.enter)="canAddImage() && addImage()"
+      />
+      <button class="add-button" (click)="addImage()" [disabled]="!canAddImage()" type="button">
+        Add Image
+      </button>
+    </div>
+    @if (newImageUrl() && !canAddImage()) {
+      <p class="error-text">Please enter a valid image URL</p>
+    }
+  </div>
+
+  @if (hasImages()) {
+    <div class="gallery-section">
+      <div class="gallery-grid">
+        @for (image of imageList(); track $index; let i = $index) {
+          <div
+            class="gallery-item"
+            [class.selected]="selectedImageIndex() === i"
+            (click)="selectImage(i)"
+          >
+            <div class="image-container">
+              <img [src]="image" [alt]="'Product image ' + (i + 1)" loading="lazy" />
+              <span class="image-index">{{ i + 1 }}</span>
+            </div>
+
+            <div class="item-actions">
+              <button
+                class="icon-button"
+                (click)="moveUp(i)"
+                [disabled]="i === 0"
+                type="button"
+                title="Move up"
+              >
+                ↑
+              </button>
+              <button
+                class="icon-button"
+                (click)="moveDown(i)"
+                [disabled]="i === imageList().length - 1"
+                type="button"
+                title="Move down"
+              >
+                ↓
+              </button>
+              <button
+                class="remove-button"
+                (click)="removeImage(i)"
+                type="button"
+                title="Remove image"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      @if (selectedImage()) {
+        <div class="preview-section">
+          <h4>Preview</h4>
+          <div class="preview-container">
+            <img
+              [src]="selectedImage()"
+              [alt]="'Preview of image ' + ((selectedImageIndex() ?? 0) + 1)"
+            />
+            <p class="preview-url">{{ selectedImage() }}</p>
+          </div>
+        </div>
+      }
+
+      @if (imageList().length > 1) {
+        <button class="clear-all-button" (click)="clearAllImages()" type="button">
+          Clear All Images
+        </button>
+      }
+    </div>
+  } @else {
+    <div class="empty-state">
+      <p>No images added yet. Add an image URL to get started.</p>
+    </div>
+  }
+</div>

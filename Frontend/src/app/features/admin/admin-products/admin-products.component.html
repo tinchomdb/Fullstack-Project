@@ -122,12 +122,9 @@
           [errorMessage]="'Seller ID is required'"
         />
 
-        <app-form-field
-          [control]="$any(productForm.get('imageUrls'))"
-          [id]="'imageUrls'"
-          [label]="'Image URLs (comma-separated)'"
-          [fullWidth]="true"
-          [errorMessage]="''"
+        <app-image-gallery-manager
+          [images]="productImages()"
+          (imagesChange)="onProductImagesChange($event)"
         />
 
         <app-form-checkbox

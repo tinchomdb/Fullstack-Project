@@ -21,6 +21,7 @@ import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.com
 import { DropdownComponent } from '../../../shared/ui/dropdown/dropdown.component';
 import { SearchComponent } from '../../../shared/ui/search/search.component';
 import { LoadingIndicatorComponent } from '../../../shared/ui/loading-indicator/loading-indicator.component';
+import { ImageGalleryManagerComponent } from '../../../shared/ui/image-gallery-manager/image-gallery-manager.component';
 import { generateSlug } from '../../../shared/utils/form.utils';
 import { IntersectionObserverDirective } from '../../../shared/ui/intersection-observer.directive';
 
@@ -36,6 +37,7 @@ import { IntersectionObserverDirective } from '../../../shared/ui/intersection-o
     DropdownComponent,
     SearchComponent,
     LoadingIndicatorComponent,
+    ImageGalleryManagerComponent,
     IntersectionObserverDirective,
   ],
   templateUrl: './admin-products.component.html',
@@ -61,6 +63,7 @@ export class AdminProductsComponent implements OnInit {
   readonly showForm = signal(false);
   readonly editingProduct = signal<Product | null>(null);
   readonly formError = signal<string | null>(null);
+  readonly productImages = signal<string[]>([]);
 
   readonly categoryOptions = computed(() =>
     this.categories().map((cat) => ({ value: cat.id, label: cat.name })),
@@ -129,6 +132,7 @@ export class AdminProductsComponent implements OnInit {
 
   openCreateForm(): void {
     this.editingProduct.set(null);
+    this.productImages.set([]);
     this.productForm.reset({
       name: '',
       slug: '',
@@ -146,6 +150,7 @@ export class AdminProductsComponent implements OnInit {
 
   openEditForm(product: Product): void {
     this.editingProduct.set(product);
+    this.productImages.set([...product.imageUrls]);
     this.productForm.patchValue({
       name: product.name,
       slug: product.slug,
@@ -165,6 +170,7 @@ export class AdminProductsComponent implements OnInit {
     this.showForm.set(false);
     this.editingProduct.set(null);
     this.formError.set(null);
+    this.productImages.set([]);
     this.productForm.reset({
       currency: 'USD',
       stock: 0,
@@ -204,12 +210,7 @@ export class AdminProductsComponent implements OnInit {
     }
 
     const formValue = this.productForm.value;
-    const imageUrls = formValue.imageUrls
-      ? formValue.imageUrls
-          .split(',')
-          .map((url: string) => url.trim())
-          .filter(Boolean)
-      : [];
+    const imageUrls = this.productImages();
 
     const sellerId = formValue.sellerId ?? '';
     const slug = (formValue.slug ?? '').trim().toLowerCase();
@@ -288,6 +289,10 @@ export class AdminProductsComponent implements OnInit {
         console.error('Error deleting product:', err);
       },
     });
+  }
+
+  onProductImagesChange(images: string[]): void {
+    this.productImages.set(images);
   }
 
   manuallyGenerateSlug(): void {
