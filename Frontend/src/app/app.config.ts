@@ -22,13 +22,13 @@ import {
 } from '@azure/msal-angular';
 import { PublicClientApplication, InteractionType } from '@azure/msal-browser';
 import { msalConfig, loginRequest, protectedResourceMap } from './core/auth/auth-config';
+import { GuestAuthInterceptor } from './core/auth/guest-auth.interceptor';
 
 import { CategoriesService } from './core/services/categories.service';
 import { firstValueFrom, combineLatest } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { CarouselService } from './core/services/carousel.service';
-import { CredentialsInterceptor } from './core/interceptors/credentials.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -46,12 +46,12 @@ export const appConfig: ApplicationConfig = {
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: CredentialsInterceptor,
+      useClass: MsalInterceptor,
       multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: MsalInterceptor,
+      useClass: GuestAuthInterceptor,
       multi: true,
     },
     {

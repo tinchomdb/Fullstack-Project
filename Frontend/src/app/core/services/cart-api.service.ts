@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map, Observable } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { Cart } from '../models/cart.model';
@@ -10,6 +10,7 @@ import { OrderApiModel } from '../models/api/order-api.model';
 import { mapCartFromApi } from '../mappers/cart.mapper';
 import { mapOrderFromApi } from '../mappers/order.mapper';
 import { AuthService } from '../auth/auth.service';
+import { GuestAuthService } from '../auth/guest-auth.service';
 
 export interface AddToCartRequest {
   productId: string;
@@ -28,6 +29,10 @@ export interface CheckoutRequest {
   shippingCost: number;
 }
 
+export interface MigrateCartRequest {
+  guestSessionId: string;
+}
+
 export interface ValidateCheckoutResponse {
   isValid: boolean;
   cartId: string;
@@ -41,6 +46,7 @@ export interface ValidateCheckoutResponse {
 export class CartApiService {
   private readonly http = inject(HttpClient);
   private readonly authService = inject(AuthService);
+  private readonly guestAuthService = inject(GuestAuthService);
   private readonly baseUrl = `${environment.apiBase}/api/carts`;
 
   private get isGuest(): boolean {
@@ -88,7 +94,16 @@ export class CartApiService {
   }
 
   migrateGuestCart(): Observable<{ message: string }> {
-    return this.http.post<{ message: string }>(`${this.baseUrl}/migrate`, {});
+    return this.guestAuthService.requestGuestSessionId().pipe(
+      switchMap((guestSessionId: string | null) => {
+        if (!guestSessionId) {
+          throw new Error('No guest session ID available for migration');
+        }
+
+        const request: MigrateCartRequest = { guestSessionId };
+        return this.http.post<{ message: string }>(`${this.baseUrl}/migrate`, request);
+      }),
+    );
   }
 
   private getEndpoint(suffix: string): string {

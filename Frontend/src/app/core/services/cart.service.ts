@@ -6,6 +6,7 @@ import { Order } from '../models/order.model';
 import { Resource } from '../../shared/utils/resource';
 import { Product } from '../models/product.model';
 import { AuthService } from '../auth/auth.service';
+import { GuestAuthService } from '../auth/guest-auth.service';
 import { LoadingOverlayService } from './loading-overlay.service';
 import { CartApiService } from './cart-api.service';
 import { OrderStateService } from './order-state.service';
@@ -16,6 +17,7 @@ export type { ValidateCheckoutResponse } from './cart-api.service';
 @Injectable({ providedIn: 'root' })
 export class CartService {
   private readonly authService = inject(AuthService);
+  private readonly guestAuthService = inject(GuestAuthService);
   private readonly loadingOverlayService = inject(LoadingOverlayService);
   private readonly cartApi = inject(CartApiService);
   private readonly orderState = inject(OrderStateService);
@@ -119,8 +121,14 @@ export class CartService {
 
   private mergeGuestAndUserCarts(): void {
     this.cartApi.migrateGuestCart().subscribe({
-      next: () => this.loadCart(),
-      error: () => this.loadCart(),
+      next: () => {
+        this.guestAuthService.clearToken();
+        this.loadCart();
+      },
+      error: () => {
+        this.guestAuthService.clearToken();
+        this.loadCart();
+      },
     });
   }
 }

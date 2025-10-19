@@ -25,54 +25,37 @@ public static class ClaimsExtensions
 }
 
 /// <summary>
-/// Extensions for working with guest sessions via HttpContext.
+/// Extensions for working with guest sessions via JWT tokens.
 /// </summary>
 public static class GuestSessionExtensions
 {
-    private const string GUEST_SESSION_COOKIE_NAME = "guestSessionId";
-
     /// <summary>
-    /// Gets the guest session ID from the HTTP request cookies.
+    /// Gets the guest session ID from the JWT token claims.
     /// </summary>
     public static string? GetGuestSessionId(this HttpContext context, ILogger? logger = null)
     {
-        var hasCookie = context.Request.Cookies.TryGetValue(GUEST_SESSION_COOKIE_NAME, out var guestSessionId);
-        
-        if (logger != null && hasCookie)
+        var user = context.User;
+
+        // Check if this is a guest token by looking for the guest claim
+        var isGuest = user?.FindFirst("guest")?.Value == "true";
+
+        if (!isGuest)
         {
-            logger.LogInformation("[GUEST_SESSION] Found cookie {SessionId}", guestSessionId);
+            logger?.LogDebug("[GUEST_SESSION] No guest token found in request");
+            return null;
         }
-        
-        return hasCookie && !string.IsNullOrWhiteSpace(guestSessionId) ? guestSessionId : null;
-    }
 
-    /// <summary>
-    /// Sets a secure guest session cookie with HttpOnly, Secure, and SameSite flags (30-day expiry).
-    /// </summary>
-    public static void SetGuestSessionCookie(this HttpContext context, string guestSessionId, ILogger? logger = null)
-    {
-        logger?.LogInformation("[GUEST_SESSION] Setting cookie {SessionId}", guestSessionId);
-        
-        context.Response.Cookies.Append(
-            GUEST_SESSION_COOKIE_NAME,
-            guestSessionId,
-            new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = context.Request.IsHttps,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddDays(30),
-                IsEssential = true
-            });
-    }
+        // Extract guest session ID from claims
+        var guestSessionId = user?.FindFirst("guestSessionId")?.Value
+            ?? user?.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? user?.FindFirst("sub")?.Value;
 
-    /// <summary>
-    /// Deletes the guest session cookie.
-    /// </summary>
-    public static void DeleteGuestSessionCookie(this HttpContext context, ILogger? logger = null)
-    {
-        logger?.LogInformation("[GUEST_SESSION] Deleting cookie");
-        context.Response.Cookies.Delete(GUEST_SESSION_COOKIE_NAME);
+        if (logger != null && !string.IsNullOrEmpty(guestSessionId))
+        {
+            logger.LogDebug("[GUEST_SESSION] Found guest session ID from JWT: {SessionId}", guestSessionId);
+        }
+
+        return !string.IsNullOrWhiteSpace(guestSessionId) ? guestSessionId : null;
     }
 
     /// <summary>
@@ -80,11 +63,26 @@ public static class GuestSessionExtensions
     /// </summary>
     public static (string? userId, bool isAuthenticated) GetCurrentUserContext(this HttpContext context)
     {
-        if (context.User.Identity?.IsAuthenticated == true)
+        var user = context.User;
+
+        // Check if this is a guest token
+        var isGuest = user?.FindFirst("guest")?.Value == "true";
+        if (isGuest)
+        {
+            var guestSessionId = context.GetGuestSessionId();
+            return (!string.IsNullOrEmpty(guestSessionId), false) switch
+            {
+                (true, false) => (guestSessionId, false),
+                _ => (null, false)
+            };
+        }
+
+        // Check if this is an authenticated user (MSAL token)
+        if (user?.Identity?.IsAuthenticated == true)
         {
             try
             {
-                return (context.User.GetUserId(), true);
+                return (user.GetUserId(), true);
             }
             catch
             {
@@ -92,11 +90,14 @@ public static class GuestSessionExtensions
             }
         }
 
-        var guestSessionId = context.GetGuestSessionId();
-        return (!string.IsNullOrEmpty(guestSessionId), !string.IsNullOrEmpty(guestSessionId)) switch
-        {
-            (true, true) => (guestSessionId, false),
-            _ => (null, false)
-        };
+        return (null, false);
+    }
+
+    /// <summary>
+    /// Checks if the current request has a valid guest token.
+    /// </summary>
+    public static bool HasGuestToken(this HttpContext context)
+    {
+        return !string.IsNullOrEmpty(context.GetGuestSessionId());
     }
 }
