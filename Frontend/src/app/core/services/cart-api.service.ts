@@ -9,6 +9,7 @@ import { CartApiModel } from '../models/api/cart-api.model';
 import { OrderApiModel } from '../models/api/order-api.model';
 import { mapCartFromApi } from '../mappers/cart.mapper';
 import { mapOrderFromApi } from '../mappers/order.mapper';
+import { AuthService } from '../auth/auth.service';
 
 export interface AddToCartRequest {
   productId: string;
@@ -20,10 +21,6 @@ export interface UpdateQuantityRequest {
   productId: string;
   sellerId: string;
   quantity: number;
-}
-
-export interface RemoveFromCartRequest {
-  productId: string;
 }
 
 export interface CheckoutRequest {
@@ -40,62 +37,63 @@ export interface ValidateCheckoutResponse {
   warnings: string[];
 }
 
-export interface MigrateCartRequest {
-  guestId: string;
-  userId: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class CartApiService {
   private readonly http = inject(HttpClient);
+  private readonly authService = inject(AuthService);
   private readonly baseUrl = `${environment.apiBase}/api/carts`;
 
-  getActiveCartByUser(userId: string): Observable<Cart | null> {
+  private get isGuest(): boolean {
+    return !this.authService.isLoggedIn();
+  }
+
+  getActiveCart(): Observable<Cart | null> {
     return this.http
-      .get<CartApiModel | null>(`${this.baseUrl}/by-user/${userId}/active`)
+      .get<CartApiModel | null>(this.getEndpoint(''))
       .pipe(map((response) => (response ? mapCartFromApi(response) : null)));
   }
 
-  addToCart(userId: string, request: AddToCartRequest): Observable<Cart> {
+  addToCart(request: AddToCartRequest): Observable<Cart> {
     return this.http
-      .post<CartApiModel>(`${this.baseUrl}/by-user/${userId}/items`, request)
+      .post<CartApiModel>(this.getEndpoint('/items'), request)
       .pipe(map(mapCartFromApi));
   }
 
-  removeFromCart(userId: string, request: RemoveFromCartRequest): Observable<Cart> {
+  removeFromCart(productId: string): Observable<Cart> {
     return this.http
-      .delete<CartApiModel>(`${this.baseUrl}/by-user/${userId}/items/${request.productId}`, {
-        body: request,
-      })
+      .delete<CartApiModel>(`${this.getEndpoint('/items')}/${productId}`)
       .pipe(map(mapCartFromApi));
   }
 
-  updateQuantity(userId: string, request: UpdateQuantityRequest): Observable<Cart> {
-    return this.http
-      .patch<CartApiModel>(`${this.baseUrl}/by-user/${userId}/items/${request.productId}`, request)
-      .pipe(map(mapCartFromApi));
+  updateQuantity(request: UpdateQuantityRequest): Observable<Cart> {
+    const endpoint = `${this.getEndpoint('/items')}/${request.productId}`;
+    return this.http.patch<CartApiModel>(endpoint, request).pipe(map(mapCartFromApi));
   }
 
-  clearCart(userId: string): Observable<Cart> {
-    return this.http
-      .delete<CartApiModel>(`${this.baseUrl}/by-user/${userId}`)
-      .pipe(map(mapCartFromApi));
+  clearCart(): Observable<Cart> {
+    return this.http.delete<CartApiModel>(this.getEndpoint('')).pipe(map(mapCartFromApi));
   }
 
-  checkout(userId: string, request: CheckoutRequest): Observable<Order> {
+  checkout(request: CheckoutRequest): Observable<Order> {
     return this.http
-      .post<OrderApiModel>(`${this.baseUrl}/by-user/${userId}/checkout`, request)
+      .post<OrderApiModel>(`${this.baseUrl}/my-cart/checkout`, request)
       .pipe(map(mapOrderFromApi));
   }
 
-  validateCheckout(userId: string, cartId: string): Observable<ValidateCheckoutResponse> {
+  validateCheckout(): Observable<ValidateCheckoutResponse> {
     return this.http.post<ValidateCheckoutResponse>(
-      `${this.baseUrl}/by-user/${userId}/validate-checkout`,
-      { cartId },
+      `${this.baseUrl}/my-cart/validate-checkout`,
+      {},
     );
   }
 
-  migrateGuestCart(request: MigrateCartRequest): Observable<void> {
-    return this.http.post<void>(`${this.baseUrl}/migrate`, request);
+  migrateGuestCart(): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.baseUrl}/migrate`, {});
+  }
+
+  private getEndpoint(suffix: string): string {
+    return this.isGuest
+      ? `${this.baseUrl}/guest-cart${suffix}`
+      : `${this.baseUrl}/my-cart${suffix}`;
   }
 }

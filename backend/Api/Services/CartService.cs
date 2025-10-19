@@ -75,8 +75,7 @@ public sealed class CartService(
 
         if (request.Quantity == 0)
         {
-            var removeFromCartRequest = new RemoveFromCartRequest { ProductId = request.ProductId };
-            return await RemoveItemFromCartAsync(userId, removeFromCartRequest, cancellationToken);
+            return await RemoveItemFromCartAsync(userId, request.ProductId, cancellationToken);
         }
 
         var cart = await GetCartOrThrowAsync(userId, cancellationToken);
@@ -99,13 +98,13 @@ public sealed class CartService(
 
     public async Task<CartResponse> RemoveItemFromCartAsync(
         string userId,
-        RemoveFromCartRequest request,
+        string productId,
         CancellationToken cancellationToken = default)
     {
         var cart = await GetCartOrThrowAsync(userId, cancellationToken);
-        GetCartItemOrThrow(cart, request.ProductId);
+        GetCartItemOrThrow(cart, productId);
 
-        var items = cart.Items.Where(i => i.ProductId != request.ProductId).ToList();
+        var items = cart.Items.Where(i => i.ProductId != productId).ToList();
 
         if (items.Count == 0)
         {
@@ -118,7 +117,7 @@ public sealed class CartService(
         
         _logger.LogInformation(
             "Removed product {ProductId} from cart {CartId} for user {UserId}",
-            request.ProductId, updatedCart.Id, userId);
+            productId, updatedCart.Id, userId);
 
         return _cartMapper.MapToCartResponse(updatedCart);
     }

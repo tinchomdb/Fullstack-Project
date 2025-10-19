@@ -28,6 +28,7 @@ import { firstValueFrom, combineLatest } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { CarouselService } from './core/services/carousel.service';
+import { CredentialsInterceptor } from './core/interceptors/credentials.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -42,6 +43,11 @@ export const appConfig: ApplicationConfig = {
           16, 32, 48, 64, 96, 128, 256, 384, 640, 750, 828, 1080, 1200, 1920, 2048, 3840,
         ],
       },
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: CredentialsInterceptor,
+      multi: true,
     },
     {
       provide: HTTP_INTERCEPTORS,

@@ -53,6 +53,7 @@ public static class CosmosDbExtensions
         services.AddScoped<CartValidator>();
         services.AddScoped<CartMapper>();
         services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IOrderService, OrderService>();
 
         return services;
     }

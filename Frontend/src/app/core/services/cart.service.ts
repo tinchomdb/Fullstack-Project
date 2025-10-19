@@ -1,5 +1,5 @@
-import { inject, Injectable, computed, effect, untracked } from '@angular/core';
-import { map, Observable, tap } from 'rxjs';
+import { inject, Injectable, computed, effect, untracked, signal } from '@angular/core';
+import { map, Observable, of, tap } from 'rxjs';
 
 import { Cart } from '../models/cart.model';
 import { Order } from '../models/order.model';
@@ -19,16 +19,20 @@ export class CartService {
   private readonly loadingOverlayService = inject(LoadingOverlayService);
   private readonly cartApi = inject(CartApiService);
   private readonly orderState = inject(OrderStateService);
+
   private readonly cartResource = new Resource<Cart | null>(
     null,
     'Loading cart...',
     this.loadingOverlayService,
   );
 
+  // Public signals
   readonly cart = this.cartResource.data;
   readonly loading = this.cartResource.loading;
   readonly error = this.cartResource.error;
+  readonly cartUserId = computed(() => this.cart()?.userId ?? null);
 
+  // Computed properties
   readonly itemCount = computed(
     () => this.cart()?.items.reduce((sum, item) => sum + item.quantity, 0) ?? 0,
   );
@@ -38,22 +42,15 @@ export class CartService {
 
   constructor() {
     this.setupAuthEffect();
-    this.subscribeToLoginEvents();
   }
 
   loadCart(): void {
-    const userId = this.getUserId();
-    this.cartResource.load(this.cartApi.getActiveCartByUser(userId));
-  }
-
-  reloadCart(): void {
-    this.loadCart();
+    this.cartResource.load(this.cartApi.getActiveCart());
   }
 
   addToCart(product: Product, quantity: number = 1): void {
-    const userId = this.getUserId();
     this.cartResource.load(
-      this.cartApi.addToCart(userId, {
+      this.cartApi.addToCart({
         productId: product.id,
         sellerId: product.seller.id,
         quantity,
@@ -62,23 +59,15 @@ export class CartService {
   }
 
   removeFromCart(productId: string): void {
-    const userId = this.getUserId();
-    this.cartResource.load(
-      this.cartApi.removeFromCart(userId, {
-        productId,
-      }),
-    );
+    this.cartResource.load(this.cartApi.removeFromCart(productId));
   }
 
   updateQuantity(productId: string, quantity: number): void {
-    const userId = this.getUserId();
-    const currentCart = this.cart();
-    const item = currentCart?.items.find((i) => i.productId === productId);
-
+    const item = this.cart()?.items.find((i) => i.productId === productId);
     if (!item) return;
 
     this.cartResource.load(
-      this.cartApi.updateQuantity(userId, {
+      this.cartApi.updateQuantity({
         productId,
         sellerId: item.sellerId,
         quantity,
@@ -87,87 +76,51 @@ export class CartService {
   }
 
   clearCart(): void {
-    this.cartResource.load(this.cartApi.clearCart(this.getUserId()));
+    this.cartResource.load(this.cartApi.clearCart());
   }
 
   checkout(shippingCost: number = 0): Observable<Order> {
     const currentCart = this.cart();
+    if (!currentCart) throw new Error('No active cart to checkout');
 
-    if (!currentCart) {
-      throw new Error('No active cart to checkout');
-    }
-
-    return this.cartApi
-      .checkout(this.getUserId(), {
-        cartId: currentCart.id,
-        shippingCost,
-      })
-      .pipe(
-        tap((order) => this.orderState.setLastOrder(order)),
-        map((order) => {
-          this.cartResource.reset();
-          return order;
-        }),
-      );
+    return this.cartApi.checkout({ cartId: currentCart.id, shippingCost }).pipe(
+      tap((order) => this.orderState.setLastOrder(order)),
+      map((order) => {
+        this.cartResource.reset();
+        return order;
+      }),
+    );
   }
 
   validateCheckout(): Observable<any> {
     const currentCart = this.cart();
-
-    if (!currentCart) {
-      throw new Error('No active cart to validate');
-    }
-
-    return this.cartApi.validateCheckout(this.getUserId(), currentCart.id);
+    if (!currentCart) throw new Error('No active cart to validate');
+    return this.cartApi.validateCheckout();
   }
 
   private setupAuthEffect(): void {
-    // React to changes in authentication state
     effect(() => {
-      const hasGuestSession = !!this.authService.getGuestSessionId();
       const isLoggedIn = this.authService.isLoggedIn();
-      const currentUserId = this.authService.userId();
-
-      // Only load cart if user is logged in or has a guest session
-      // Use untracked to prevent the effect from re-running when cart updates
-      if (isLoggedIn || hasGuestSession) {
-        untracked(() => this.loadCart());
-      }
+      untracked(() => {
+        if (isLoggedIn) {
+          // User logged in - migrate guest cart if exists, then load user cart
+          this.mergeGuestAndUserCarts();
+        } else {
+          // User logged out - load guest cart
+          this.loadGuestCart();
+        }
+      });
     });
   }
 
-  private subscribeToLoginEvents(): void {
-    this.authService.onLoginCompleted$.subscribe(() => {
-      this.mergeGuestAndUserCarts();
-    });
+  private loadGuestCart(): void {
+    this.cartResource.load(this.cartApi.getActiveCart());
   }
 
   private mergeGuestAndUserCarts(): void {
-    const guestId = this.authService.getGuestSessionId();
-
-    if (!guestId) {
-      this.reloadCart();
-      return;
-    }
-
-    const account = this.authService.getActiveAccount();
-    if (!account?.localAccountId) {
-      return;
-    }
-
-    this.cartApi.migrateGuestCart({ guestId, userId: account.localAccountId }).subscribe({
-      next: () => {
-        this.authService.clearGuestSession();
-        this.reloadCart();
-      },
-      error: () => {
-        this.authService.clearGuestSession();
-        this.reloadCart();
-      },
+    this.cartApi.migrateGuestCart().subscribe({
+      next: () => this.loadCart(),
+      error: () => this.loadCart(),
     });
-  }
-
-  private getUserId(): string {
-    return this.authService.userId();
   }
 }

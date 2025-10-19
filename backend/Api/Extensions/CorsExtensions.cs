@@ -18,14 +18,18 @@ public static class CorsExtensions
                 {
                     policy.WithOrigins(allowedOrigins)
                           .AllowAnyHeader()
-                          .AllowAnyMethod();
+                          .AllowAnyMethod()
+                          .AllowCredentials();
                 }
                 else
                 {
-                    // Fallback (dev)
-                    policy.WithOrigins("http://localhost:4200")
+                    // Fallback (dev) - Allow both HTTP and HTTPS for localhost
+                    policy.WithOrigins(
+                        "http://localhost:4200",
+                        "https://localhost:4200")
                           .AllowAnyHeader()
-                          .AllowAnyMethod();
+                          .AllowAnyMethod()
+                          .AllowCredentials();
                 }
             });
         });

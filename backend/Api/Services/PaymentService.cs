@@ -18,25 +18,20 @@ public sealed class PaymentService(
 
     public async Task<CreatePaymentIntentResponse> CreatePaymentIntentAsync(
         CreatePaymentIntentRequest request,
-        string? cartId = null,
-        string? userId = null)
+        string userId)
     {
         var service = new PaymentIntentService();
         
         var metadata = new Dictionary<string, string>
         {
             { "email", request.Email },
-            { "created_at", DateTime.UtcNow.ToString("O") }
+            { "created_at", DateTime.UtcNow.ToString("O") },
+            { "user_id", userId }
         };
 
-        if (!string.IsNullOrWhiteSpace(cartId))
+        if (!string.IsNullOrWhiteSpace(request.CartId))
         {
-            metadata["cart_id"] = cartId;
-        }
-
-        if (!string.IsNullOrWhiteSpace(userId))
-        {
-            metadata["user_id"] = userId;
+            metadata["cart_id"] = request.CartId;
         }
 
         var options = new PaymentIntentCreateOptions

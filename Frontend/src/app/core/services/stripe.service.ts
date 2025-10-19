@@ -47,8 +47,8 @@ export class StripeService {
     }
   }
 
-  initializePayment(amount: number, email: string): Observable<void> {
-    return this.paymentApi.createPaymentIntent({ amount, email }).pipe(
+  initializePayment(amount: number, email: string, cartId: string): Observable<void> {
+    return this.paymentApi.createPaymentIntent({ amount, email, cartId }).pipe(
       switchMap((response) => {
         // Capture the payment intent ID for later use
         if (response.paymentIntentId) {
@@ -106,7 +106,7 @@ export class StripeService {
    * In development, calls the test endpoint to simulate the webhook.
    * In production, the real Stripe webhook will handle order creation.
    */
-  completePayment(cartId: string, userId: string, email: string, amount: number): Observable<void> {
+  completePayment(cartId: string, email: string, amount: number): Observable<void> {
     const paymentIntentId = this.paymentIntentId();
 
     if (!paymentIntentId) {
@@ -119,7 +119,6 @@ export class StripeService {
         .testCompletePayment({
           paymentIntentId,
           cartId,
-          userId,
           email,
           amount,
         })

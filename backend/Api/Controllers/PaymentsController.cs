@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Api.Extensions;
 using Api.Models.DTOs;
 using Api.Services;
 using Stripe;
@@ -9,6 +11,7 @@ namespace Api.Controllers
     [Route("api/[controller]")]
     public class PaymentsController(IPaymentService paymentService) : ControllerBase
     {
+        [Authorize]
         [HttpPost("create-intent")]
         public async Task<ActionResult<CreatePaymentIntentResponse>> CreatePaymentIntent(
             [FromBody] CreatePaymentIntentRequest request)
@@ -30,10 +33,10 @@ namespace Api.Controllers
 
             try
             {
+                var userId = User.GetUserId();
                 var response = await paymentService.CreatePaymentIntentAsync(
                     request, 
-                    request.CartId, 
-                    request.UserId);
+                    userId);
                 return Ok(response);
             }
             catch (StripeException ex)

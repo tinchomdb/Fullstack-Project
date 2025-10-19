@@ -1,6 +1,3 @@
-using Api.Models;
-using Api.Models.DTOs;
-using Api.Repositories;
 using Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;

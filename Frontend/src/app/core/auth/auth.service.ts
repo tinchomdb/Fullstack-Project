@@ -20,8 +20,6 @@ export class AuthService {
   private readonly destroy$ = new Subject<void>();
   private readonly loginCompleted$ = new Subject<AccountInfo>();
 
-  private readonly GUEST_SESSION_KEY = 'guestSessionId';
-
   readonly isLoggedIn = signal(false);
   readonly isAdmin = signal(false);
 
@@ -31,7 +29,7 @@ export class AuthService {
   readonly userId = computed(() => {
     this.isLoggedIn();
     const account = this.getActiveAccount();
-    return account?.localAccountId ?? this.getOrCreateGuestSession();
+    return account?.localAccountId;
   });
 
   constructor() {
@@ -173,26 +171,7 @@ export class AuthService {
     });
   }
 
-  getUserId(): string {
+  getUserId(): string | undefined {
     return this.userId();
-  }
-
-  getGuestSessionId(): string | null {
-    return localStorage.getItem(this.GUEST_SESSION_KEY);
-  }
-
-  clearGuestSession(): void {
-    localStorage.removeItem(this.GUEST_SESSION_KEY);
-  }
-
-  private getOrCreateGuestSession(): string {
-    let guestId = localStorage.getItem(this.GUEST_SESSION_KEY);
-
-    if (!guestId) {
-      guestId = `guest-${crypto.randomUUID()}`;
-      localStorage.setItem(this.GUEST_SESSION_KEY, guestId);
-    }
-
-    return guestId;
   }
 }

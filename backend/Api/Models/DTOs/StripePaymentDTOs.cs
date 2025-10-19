@@ -13,8 +13,6 @@ namespace Api.Models.DTOs
         public string Email { get; set; } = string.Empty;
 
         public string? CartId { get; set; }
-        
-        public string? UserId { get; set; }
     }
 
     public class CreatePaymentIntentResponse

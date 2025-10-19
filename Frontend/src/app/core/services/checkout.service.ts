@@ -67,6 +67,7 @@ export class CheckoutService {
 
   readonly cart = this.cartService.cart;
   readonly cartIsEmpty = this.cartService.isEmpty;
+  readonly cartUserId = this.cartService.cartUserId;
 
   readonly isProcessing = signal(false);
   readonly error = signal<string | null>(null);
@@ -135,10 +136,12 @@ export class CheckoutService {
   initializePayment(): Observable<void> {
     const email = this.shippingForm.value.email ?? '';
     const amount = Math.round(this.totalWithShipping() * 100); // Convert to cents
+    const cart = this.cart();
+    const cartId = cart?.id ?? '';
 
     this.error.set(null);
 
-    return this.stripeService.initializePayment(amount, email).pipe(
+    return this.stripeService.initializePayment(amount, email, cartId).pipe(
       catchError((error) => {
         console.error('Payment initialization error:', error);
         this.error.set('Failed to initialize payment. Please try again.');
@@ -169,24 +172,13 @@ export class CheckoutService {
       return throwError(() => new Error('Form validation failed'));
     }
 
-    return from(this.stripeService.confirmPayment(returnUrl)).pipe(
-      tap(() => console.log('Stripe payment confirmed successfully')),
-      switchMap(() => this.handlePaymentSuccess()),
-      catchError((error) => {
-        console.error('Stripe payment failed:', error);
-        this.error.set('Payment failed. Please try again.');
-        return throwError(() => error);
-      }),
-    );
-  }
-
-  private handlePaymentSuccess(): Observable<Order> {
     this.isProcessing.set(true);
     this.error.set(null);
 
     const cart = this.cart();
     const email = this.shippingForm.value.email ?? '';
-    const userId = this.authService.userId();
+    const cartUserId = this.cartUserId();
+    const userId = cartUserId ?? this.authService.userId();
     const shippingCost = this.selectedShippingCost() ?? 0;
 
     if (!cart || !userId) {
@@ -195,51 +187,42 @@ export class CheckoutService {
       return throwError(() => new Error('Payment details missing'));
     }
 
-    // Let StripeService handle the test endpoint call if in development
-    // In development: test endpoint creates order and closes cart
-    // In production: real Stripe webhook creates order and closes cart
-    // Either way, no need to call checkout endpoint - order is already created
-    return this.stripeService
-      .completePayment(cart.id, userId, email, Math.round(this.totalWithShipping() * 100))
-      .pipe(
-        tap(() => {
-          console.log('Payment completion handled successfully');
-          // NOTE: Do NOT reload cart here - it would make the cart empty
-          // and could interfere with navigation. The cart state will be
-          // automatically updated when the user navigates to cart page.
-        }),
-        map(() => {
-          // Return a dummy order object - the real order was created by the webhook
-          // TODO: The component will redirect to order success page and fetch the real order there
-          const dummyOrder: Order = {
-            id: '',
-            userId,
-            orderDate: new Date().toISOString(),
-            status: OrderStatus.Pending,
-            items: [],
-            subtotal: cart.subtotal,
-            shippingCost,
-            total: this.totalWithShipping(),
-            currency: 'USD',
-          };
-          // Store the order in OrderStateService so the success page can access it
-          this.orderState.setLastOrder(dummyOrder);
-          return dummyOrder;
-        }),
-        catchError((error) => {
-          this.error.set('Payment processing failed. Please try again.');
-          return throwError(() => error);
-        }),
-        finalize(() => this.isProcessing.set(false)),
-      );
-  }
-
-  private buildCheckoutRequest(): CheckoutRequest {
-    return {
-      shippingCost: this.selectedShippingCost() ?? 0,
-      shippingDetails: this.shippingForm.getRawValue(),
-      paymentMethod: 'stripe',
-    };
+    return from(this.stripeService.confirmPayment(returnUrl)).pipe(
+      switchMap(() =>
+        this.stripeService.completePayment(
+          cart.id,
+          email,
+          Math.round(this.totalWithShipping() * 100),
+        ),
+      ),
+      tap(() => {
+        this.cartService.loadCart();
+      }),
+      map(() => {
+        // Return a dummy order object - the real order was created by the webhook
+        // TODO: The component will redirect to order success page and fetch the real order there
+        const dummyOrder: Order = {
+          id: '',
+          userId,
+          orderDate: new Date().toISOString(),
+          status: OrderStatus.Pending,
+          items: [],
+          subtotal: cart.subtotal,
+          shippingCost,
+          total: this.totalWithShipping(),
+          currency: 'USD',
+        };
+        // Store the order in OrderStateService so the success page can access it
+        this.orderState.setLastOrder(dummyOrder);
+        return dummyOrder;
+      }),
+      catchError((error) => {
+        console.error('Payment failed:', error);
+        this.error.set('Payment processing failed. Please try again.');
+        return throwError(() => error);
+      }),
+      finalize(() => this.isProcessing.set(false)),
+    );
   }
 
   private getShippingCost(optionValue: string): number {

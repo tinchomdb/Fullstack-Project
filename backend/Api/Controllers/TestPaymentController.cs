@@ -1,10 +1,8 @@
-using Api.Models;
+using Api.Extensions;
 using Api.Models.DTOs;
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Stripe;
-using Api.Configuration;
 
 namespace Api.Controllers;
 
@@ -50,11 +48,8 @@ public sealed class TestPaymentController(
                 new CreatePaymentIntentRequest
                 {
                     Amount = request.Amount,
-                    Email = request.Email,
-                    CartId = cart.Id,
-                    UserId = request.UserId
+                    Email = request.Email
                 },
-                cart.Id,
                 request.UserId);
 
             return Ok(new
@@ -98,12 +93,12 @@ public sealed class TestPaymentController(
 
             _logger.LogInformation("=== TESTING PAYMENT FLOW ===");
             _logger.LogInformation(
-                "Cart: {CartId}, Items: {ItemCount}, Total: {Total}", 
+                "Cart: {CartId}, Items: {ItemCount}, Total: {Total}",
                 cart.Id, cart.Items.Count, cart.Total);
 
             // Step 2: Validate cart before payment
             var validationResult = await _cartService.ValidateCartForCheckoutAsync(
-                request.UserId, 
+                request.UserId,
                 cancellationToken);
 
             if (!validationResult.IsValid)
@@ -119,11 +114,8 @@ public sealed class TestPaymentController(
                 new CreatePaymentIntentRequest
                 {
                     Amount = request.Amount,
-                    Email = request.Email,
-                    CartId = cart.Id,
-                    UserId = request.UserId
+                    Email = request.Email
                 },
-                cart.Id,
                 request.UserId);
 
             _logger.LogInformation(
@@ -170,6 +162,7 @@ public sealed class TestPaymentController(
     /// Complete payment test - Directly invokes payment service (LOCAL TESTING ONLY)
     /// This simulates Stripe webhook delivery for local frontend testing
     /// </summary>
+    [Authorize]
     [HttpPost("test/complete-payment")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -179,16 +172,18 @@ public sealed class TestPaymentController(
     {
         try
         {
+            var userId = User.GetUserId();
+
             _logger.LogInformation(
                 "=== LOCAL PAYMENT COMPLETION TEST ===");
             _logger.LogInformation(
                 "Simulating webhook for user {UserId}, payment {PaymentIntentId}",
-                request.UserId, request.PaymentIntentId);
+                userId, request.PaymentIntentId);
 
             // Invoke the payment service (same as webhook would do)
             var order = await _paymentService.ProcessPaymentSuccessAsync(
                 request.PaymentIntentId,
-                request.UserId,
+                userId,
                 request.Email,
                 cancellationToken);
 
@@ -222,7 +217,6 @@ public sealed class TestPaymentController(
     public record TestCompletePaymentRequest
     {
         public string PaymentIntentId { get; init; } = string.Empty;
-        public string UserId { get; init; } = string.Empty;
         public string Email { get; init; } = string.Empty;
     }
 }

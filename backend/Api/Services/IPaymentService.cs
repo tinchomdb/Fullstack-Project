@@ -7,8 +7,7 @@ public interface IPaymentService
 {
     Task<CreatePaymentIntentResponse> CreatePaymentIntentAsync(
         CreatePaymentIntentRequest request,
-        string? cartId = null,
-        string? userId = null);
+        string userId);
 
     Task<Order> ProcessPaymentSuccessAsync(
         string paymentIntentId,
