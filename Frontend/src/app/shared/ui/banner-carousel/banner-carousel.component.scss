@@ -4,10 +4,12 @@ $carousel-height: 600px;
 
 .carousel-container {
   position: relative;
-  width: 100%;
+  width: calc(100% + (2 * var(--space-responsive-md)));
   height: $carousel-height;
   overflow: visible;
   margin-top: calc(var(--space-responsive-sm) * -1);
+  margin-right: calc(var(--space-responsive-md) * -1);
+  margin-left: calc(var(--space-responsive-md) * -1);
   margin-bottom: calc(
     $carousel-height / -2
   ); // Pull up content by 50% of height so bottom half goes behind
