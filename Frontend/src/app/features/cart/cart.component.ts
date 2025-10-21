@@ -40,11 +40,7 @@ export class CartComponent {
   }
 
   checkout(): void {
-    if (this.authService.isLoggedIn()) {
-      this.router.navigate(['/checkout']);
-    } else {
-      this.authService.login('/checkout');
-    }
+    this.router.navigate(['/checkout']);
   }
 
   updateQuantity(productId: string, quantity: number): void {

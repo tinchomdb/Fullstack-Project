@@ -43,7 +43,23 @@ export class CartService {
   readonly isEmpty = computed(() => this.itemCount() === 0);
 
   constructor() {
-    this.setupAuthEffect();
+    effect(() => {
+      const authInitialized = this.authService.authInitialized();
+      if (!authInitialized) {
+        return;
+      }
+
+      const isLoggedIn = this.authService.isLoggedIn();
+      untracked(() => {
+        if (isLoggedIn && this.guestAuthService.hasToken()) {
+          // User logged in - migrate guest cart if exists, then load user cart
+          this.mergeGuestAndUserCarts();
+        } else {
+          // User logged out or no guest token - load cart (would be guest cart)
+          this.loadCart();
+        }
+      });
+    });
   }
 
   loadCart(): void {
@@ -98,25 +114,6 @@ export class CartService {
     const currentCart = this.cart();
     if (!currentCart) throw new Error('No active cart to validate');
     return this.cartApi.validateCheckout();
-  }
-
-  private setupAuthEffect(): void {
-    effect(() => {
-      const isLoggedIn = this.authService.isLoggedIn();
-      untracked(() => {
-        if (isLoggedIn) {
-          // User logged in - migrate guest cart if exists, then load user cart
-          this.mergeGuestAndUserCarts();
-        } else {
-          // User logged out - load guest cart
-          this.loadGuestCart();
-        }
-      });
-    });
-  }
-
-  private loadGuestCart(): void {
-    this.cartResource.load(this.cartApi.getActiveCart());
   }
 
   private mergeGuestAndUserCarts(): void {

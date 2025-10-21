@@ -20,6 +20,7 @@ import { OrderStateService } from './order-state.service';
 import { AuthService } from '../auth/auth.service';
 import { Order } from '../models/order.model';
 import { OrderStatus } from '../models/order-status.model';
+import { COUNTRIES } from '../../shared/constants/countries';
 
 export interface CheckoutRequest {
   shippingCost: number;
@@ -55,7 +56,9 @@ const DEFAULT_SHIPPING = 'standard';
 const DEFAULT_COUNTRY = 'United States';
 
 const PHONE_PATTERN = /^\+?[\d\s\-\(\)]+$/;
-const ZIP_PATTERN = /^\d{5}(-\d{4})?$/;
+// Supports international postal codes: US (12345 or 12345-6789), Canada (A1A 1A1),
+// UK (SW1A 1AA), and most other country formats
+const ZIP_PATTERN = /^[A-Z0-9\s\-]{2,}$/i;
 
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
@@ -73,6 +76,7 @@ export class CheckoutService {
   readonly error = signal<string | null>(null);
 
   readonly shippingOptions = SHIPPING_OPTIONS;
+  readonly countries = COUNTRIES;
 
   readonly shippingForm = this.createShippingForm();
   readonly shippingOptionForm = this.createShippingOptionForm();
@@ -241,7 +245,7 @@ export class CheckoutService {
       phone: ['', [Validators.required, Validators.pattern(PHONE_PATTERN)]],
       address: ['', [Validators.required, Validators.minLength(5)]],
       city: ['', [Validators.required, Validators.minLength(2)]],
-      state: ['', [Validators.required, Validators.minLength(2)]],
+      state: ['', [Validators.minLength(2)]],
       zipCode: ['', [Validators.required, Validators.pattern(ZIP_PATTERN)]],
       country: [DEFAULT_COUNTRY, [Validators.required]],
     });

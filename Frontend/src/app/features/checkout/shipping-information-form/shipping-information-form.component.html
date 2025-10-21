@@ -67,8 +67,9 @@
       [label]="'Country'"
       [type]="'select'"
     >
-      <option value="United States">United States</option>
-      <option value="Canada">Canada</option>
+      @for (country of countries(); track country.code) {
+        <option [value]="country.name">{{ country.name }}</option>
+      }
     </app-form-field>
   </div>
 </app-form-section>

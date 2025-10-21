@@ -94,16 +94,14 @@ export class CartApiService {
   }
 
   migrateGuestCart(): Observable<{ message: string }> {
-    return this.guestAuthService.requestGuestSessionId().pipe(
-      switchMap((guestSessionId: string | null) => {
-        if (!guestSessionId) {
-          throw new Error('No guest session ID available for migration');
-        }
+    let sessionId = this.guestAuthService.requestGuestSessionId();
 
-        const request: MigrateCartRequest = { guestSessionId };
-        return this.http.post<{ message: string }>(`${this.baseUrl}/migrate`, request);
-      }),
-    );
+    if (!sessionId) {
+      throw new Error('No guest session ID available for migration');
+    }
+
+    const request: MigrateCartRequest = { guestSessionId: sessionId };
+    return this.http.post<{ message: string }>(`${this.baseUrl}/migrate`, request);
   }
 
   private getEndpoint(suffix: string): string {

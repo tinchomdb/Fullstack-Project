@@ -12,4 +12,5 @@ import { FormSectionComponent } from '../../../shared/ui/form-section/form-secti
 })
 export class ShippingInformationFormComponent {
   form = input.required<FormGroup>();
+  countries = input.required<readonly { code: string; name: string }[]>();
 }

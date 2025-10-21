@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { tap, map, catchError } from 'rxjs/operators';
@@ -27,6 +27,7 @@ export class GuestAuthService {
   private readonly baseUrl = `${environment.apiBase}/api/GuestAuth`;
   private cachedToken: string | null = this.getStoredToken();
   private pendingTokenRequest$: Observable<string> | null = null;
+  hasToken = signal(!!this.cachedToken && !this.isTokenExpired(this.cachedToken));
 
   ensureGuestToken(): Observable<string> {
     const storedToken = this.cachedToken;
@@ -55,13 +56,13 @@ export class GuestAuthService {
     return this.pendingTokenRequest$;
   }
 
-  requestGuestSessionId(): Observable<string | null> {
-    return this.ensureGuestToken().pipe(
-      map((token: string) => {
-        const claims = this.decodeToken(token);
-        return claims?.guestSessionId || claims?.sub || null;
-      }),
-    );
+  requestGuestSessionId(): string | null {
+    const storedToken = this.cachedToken;
+    if (storedToken && !this.isTokenExpired(storedToken)) {
+      const claims = this.decodeToken(storedToken);
+      return claims?.guestSessionId || null;
+    }
+    return null;
   }
 
   clearToken(): void {

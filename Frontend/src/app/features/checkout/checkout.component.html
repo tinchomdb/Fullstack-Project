@@ -4,7 +4,10 @@
   <app-sidebar-layout>
     <div main>
       <form (ngSubmit)="processCheckout()">
-        <app-shipping-information-form [form]="checkout.shippingForm" />
+        <app-shipping-information-form
+          [form]="checkout.shippingForm"
+          [countries]="checkout.countries"
+        />
         <app-shipping-options
           [form]="checkout.shippingOptionForm"
           [options]="checkout.shippingOptions"

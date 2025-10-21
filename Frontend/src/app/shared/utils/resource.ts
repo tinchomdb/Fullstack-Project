@@ -59,4 +59,8 @@ export class Resource<T> {
     this.loadingSignal.set(false);
     this.errorSignal.set(null);
   }
+
+  setLoading(isLoading: boolean): void {
+    this.loadingSignal.set(isLoading);
+  }
 }

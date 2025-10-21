@@ -18,13 +18,10 @@ export class AuthService {
   private readonly msalService = inject(MsalService);
   private readonly msalBroadcastService = inject(MsalBroadcastService);
   private readonly destroy$ = new Subject<void>();
-  private readonly loginCompleted$ = new Subject<AccountInfo>();
 
   readonly isLoggedIn = signal(false);
   readonly isAdmin = signal(false);
-
-  // Expose as observable for services to subscribe to login events
-  readonly onLoginCompleted$: Observable<AccountInfo> = this.loginCompleted$.asObservable();
+  readonly authInitialized = signal(false);
 
   readonly userId = computed(() => {
     this.isLoggedIn();
@@ -82,11 +79,6 @@ export class AuthService {
         if (event.eventType === EventType.LOGIN_SUCCESS) {
           const payload = event.payload as AuthenticationResult;
           this.msalService.instance.setActiveAccount(payload.account);
-
-          // Emit login completed event for other services
-          if (payload.account) {
-            this.loginCompleted$.next(payload.account);
-          }
         }
         this.syncAuthState();
       });
@@ -103,6 +95,9 @@ export class AuthService {
       this.isLoggedIn.set(false);
       this.isAdmin.set(false);
     }
+
+    // Mark auth as initialized after state sync
+    this.authInitialized.set(true);
   }
 
   private ensureActiveAccount(): void {
