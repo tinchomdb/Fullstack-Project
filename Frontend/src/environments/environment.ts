@@ -3,6 +3,7 @@
 export const environment = {
   production: false,
   isDevelopment: true,
+  appUrl: 'http://localhost:4200',
   apiBase: 'https://localhost:7163',
   msalClientId: 'fed94c0a-fbac-465e-ae7f-b7ac6a08dd1b',
   msalAuthority:

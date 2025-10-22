@@ -1,4 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
+import { environment as devEnvironment } from './src/environments/environment';
+import { environment as prodEnvironment } from './src/environments/environment.prod';
+
+const environment = process.env.CI ? prodEnvironment : devEnvironment;
 
 /**
  * Read environment variables from file.
@@ -25,7 +29,7 @@ export default defineConfig({
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://localhost:4200',
+    baseURL: process.env.PLAYWRIGHT_TEST_URL || environment.appUrl,
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     // Disable artifact generation to avoid producing screenshots/traces/videos/MD files
     trace: 'off',

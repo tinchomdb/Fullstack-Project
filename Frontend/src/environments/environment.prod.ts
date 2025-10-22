@@ -2,6 +2,7 @@
 export const environment = {
   production: true,
   isDevelopment: false,
+  appUrl: 'https://agreeable-pond-0d8f08903.1.azurestaticapps.net',
   apiBase: 'https://fullstack-app-prod.azurewebsites.net',
   msalClientId: 'b71ddc9e-2cc7-412e-ba06-a758a0d3a7b7',
   msalAuthority:
