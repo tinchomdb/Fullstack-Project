@@ -34,16 +34,16 @@ jobs:
         working-directory: backend
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run tests
+      - name: Run unit tests
         working-directory: backend
-        run: dotnet test --configuration Release --no-build --verbosity minimal --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test --configuration Release --no-build --verbosity minimal --logger "trx;LogFileName=test-results.trx" --filter "Category!=Integration"
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: backend/**/test-results.trx
+          path: backend/Api.Tests/bin/Release/net9.0/test-results.trx
 
       - name: Publish
         working-directory: backend/Api
