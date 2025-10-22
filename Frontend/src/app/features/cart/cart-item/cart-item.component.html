@@ -12,8 +12,11 @@
       <app-quantity-selector
         [quantity]="item().quantity"
         (quantityChange)="onQuantityChange($event)"
+        data-testid="quantity-selector"
       />
-      <app-button (click)="onRemove()" size="sm" variant="danger">Remove</app-button>
+      <app-button (click)="onRemove()" size="sm" variant="danger" data-testid="remove-btn"
+        >Remove</app-button
+      >
     </div>
   </div>
 </div>

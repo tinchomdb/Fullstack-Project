@@ -7,6 +7,7 @@
       (click)="decrease()"
       [disabled]="disabled() || currentQuantity() <= 1"
       aria-label="Decrease quantity"
+      data-testid="qty-decrease"
     >
       -
     </button>
@@ -17,6 +18,7 @@
       readonly
       class="qty-input"
       aria-label="Quantity"
+      data-testid="qty-input"
     />
     <button
       type="button"
@@ -24,6 +26,7 @@
       (click)="increase()"
       [disabled]="disabled() || (maxStock() !== undefined && currentQuantity() >= maxStock()!)"
       aria-label="Increase quantity"
+      data-testid="qty-increase"
     >
       +
     </button>

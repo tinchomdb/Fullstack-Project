@@ -6,11 +6,12 @@
   #rla="routerLinkActive"
   [attr.aria-current]="rla.isActive ? 'page' : null"
   [attr.aria-label]="'Cart with ' + itemCount() + ' items'"
+  data-testid="cart-button"
 >
   <app-cart-icon class="cart-icon" />
   <span class="cart-label">Cart</span>
   @if (itemCount() > 0) {
-    <span class="cart-count" [attr.aria-label]="itemCount() + ' items'">
+    <span class="cart-count" [attr.aria-label]="itemCount() + ' items'" data-testid="cart-badge">
       {{ itemCount() }}
     </span>
   }

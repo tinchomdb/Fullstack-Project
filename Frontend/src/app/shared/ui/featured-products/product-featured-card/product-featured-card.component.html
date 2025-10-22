@@ -1,4 +1,4 @@
-<article class="featured-card">
+<article class="featured-card" data-testid="featured-card">
   <a
     class="card-link"
     [routerLink]="buildProductLink()"
@@ -37,6 +37,7 @@
           type="button"
           shape="rounded"
           size="full"
+          data-testid="add-to-cart"
         >
           <span>Add to Cart</span>
         </app-button>

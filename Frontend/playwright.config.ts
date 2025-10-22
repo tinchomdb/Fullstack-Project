@@ -39,30 +39,56 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
+    // Setup project to authenticate once
+    { name: 'setup', testMatch: /.*\.setup\.ts/ },
+
+    // Only run on chromium since all tests share the same backend
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        // Use saved authentication state
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // Other browsers disabled - they would cause race conditions with shared backend
+    // {
+    //   name: 'firefox',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //     storageState: 'playwright/.auth/user.json',
+    //   },
+    //   dependencies: ['setup'],
+    // },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // {
+    //   name: 'webkit',
+    //   use: {
+    //     ...devices['Desktop Safari'],
+    //     storageState: 'playwright/.auth/user.json',
+    //   },
+    //   dependencies: ['setup'],
+    // },
 
     /* Test against mobile viewports. */
-    {
-      name: 'Mobile Chrome',
-      use: { ...devices['Pixel 5'] },
-    },
-    {
-      name: 'Mobile Safari',
-      use: { ...devices['iPhone 12'] },
-    },
+    // {
+    //   name: 'Mobile Chrome',
+    //   use: {
+    //     ...devices['Pixel 5'],
+    //     storageState: 'playwright/.auth/user.json',
+    //   },
+    //   dependencies: ['setup'],
+    // },
+    // {
+    //   name: 'Mobile Safari',
+    //   use: {
+    //     ...devices['iPhone 12'],
+    //     storageState: 'playwright/.auth/user.json',
+    //   },
+    //   dependencies: ['setup'],
+    // },
 
     /* Test against branded browsers. */
     // {

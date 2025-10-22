@@ -5,6 +5,7 @@
       [id]="'firstName'"
       [label]="'First Name'"
       [errorMessage]="'First name is required'"
+      data-testid="field-firstName"
     />
 
     <app-form-field
@@ -12,6 +13,7 @@
       [id]="'lastName'"
       [label]="'Last Name'"
       [errorMessage]="'Last name is required'"
+      data-testid="field-lastName"
     />
 
     <app-form-field
@@ -21,6 +23,7 @@
       [type]="'email'"
       [fullWidth]="true"
       [errorMessage]="'Valid email is required'"
+      data-testid="field-email"
     />
 
     <app-form-field
@@ -30,6 +33,7 @@
       [type]="'tel'"
       [fullWidth]="true"
       [errorMessage]="'Valid phone number is required'"
+      data-testid="field-phone"
     />
 
     <app-form-field
@@ -38,6 +42,7 @@
       [label]="'Address'"
       [fullWidth]="true"
       [errorMessage]="'Address is required'"
+      data-testid="field-address"
     />
 
     <app-form-field
@@ -45,6 +50,7 @@
       [id]="'city'"
       [label]="'City'"
       [errorMessage]="'City is required'"
+      data-testid="field-city"
     />
 
     <app-form-field
@@ -52,6 +58,7 @@
       [id]="'state'"
       [label]="'State'"
       [errorMessage]="'State is required'"
+      data-testid="field-state"
     />
 
     <app-form-field
@@ -59,6 +66,7 @@
       [id]="'zipCode'"
       [label]="'ZIP Code'"
       [errorMessage]="'Valid ZIP code is required'"
+      data-testid="field-zipCode"
     />
 
     <app-form-field
@@ -66,6 +74,7 @@
       [id]="'country'"
       [label]="'Country'"
       [type]="'select'"
+      data-testid="field-country"
     >
       @for (country of countries(); track country.code) {
         <option [value]="country.name">{{ country.name }}</option>

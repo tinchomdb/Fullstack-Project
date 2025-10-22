@@ -12,12 +12,13 @@
                 [currency]="cartData.currency"
                 (quantityChange)="updateQuantity(item.productId, $event)"
                 (remove)="removeItem(item.productId)"
+                data-testid="cart-item"
               />
             }
           </div>
 
           <div class="cart-actions-mobile">
-            <app-button (click)="clearCart()">Clear Cart</app-button>
+            <app-button data-testid="clear-cart-btn">Clear Cart</app-button>
           </div>
         </div>
         <div sidebar>
@@ -29,6 +30,7 @@
             secondaryCtaLabel="Clear Cart"
             (ctaClick)="checkout()"
             (secondaryCtaClick)="clearCart()"
+            data-testid="order-summary-panel"
           />
         </div>
       </app-sidebar-layout>

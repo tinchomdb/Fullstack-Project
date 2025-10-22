@@ -3,7 +3,7 @@
 
   <app-sidebar-layout>
     <div main>
-      <form (ngSubmit)="processCheckout()">
+      <form (ngSubmit)="processCheckout()" data-testid="checkout-form">
         <app-shipping-information-form
           [form]="checkout.shippingForm"
           [countries]="checkout.countries"
@@ -34,6 +34,7 @@
         [ctaLabel]="checkout.isProcessing() ? 'Processing...' : 'Place Order'"
         [ctaDisabled]="!checkout.canSubmit()"
         (ctaClick)="processCheckout()"
+        data-testid="checkout-summary"
       />
     </div>
   </app-sidebar-layout>

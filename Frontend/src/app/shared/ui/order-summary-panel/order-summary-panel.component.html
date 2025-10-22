@@ -56,7 +56,11 @@
       </app-button>
 
       @if (showSecondaryCta()) {
-        <app-button (click)="onSecondaryCtaClick()" class="cta-secondary">
+        <app-button
+          (click)="onSecondaryCtaClick()"
+          class="cta-secondary"
+          data-testid="secondary-cta-btn"
+        >
           {{ secondaryCtaLabel() }}
         </app-button>
       }

@@ -2,13 +2,29 @@
   <label [attr.for]="id()">{{ label() }}</label>
 
   @if (type() === 'select') {
-    <select [id]="id()" [formControl]="control()" [class.error]="hasError">
+    <select
+      [id]="id()"
+      [formControl]="control()"
+      [class.error]="hasError"
+      [attr.data-testid]="'input-' + id()"
+    >
       <ng-content />
     </select>
   } @else if (type() === 'textarea') {
-    <textarea [id]="id()" [formControl]="control()" [class.error]="hasError"></textarea>
+    <textarea
+      [id]="id()"
+      [formControl]="control()"
+      [class.error]="hasError"
+      [attr.data-testid]="'input-' + id()"
+    ></textarea>
   } @else {
-    <input [id]="id()" [type]="type()" [formControl]="control()" [class.error]="hasError" />
+    <input
+      [id]="id()"
+      [type]="type()"
+      [formControl]="control()"
+      [class.error]="hasError"
+      [attr.data-testid]="'input-' + id()"
+    />
   }
 
   @if (showError) {
