@@ -1,0 +1,42 @@
+name: Keep API Alive
+
+on:
+  schedule:
+    # Run every 19 minutes to prevent Azure App Service from going cold
+    - cron: '*/19 * * * *'
+  # Allow manual trigger for testing
+  workflow_dispatch:
+
+jobs:
+  ping-health-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping Health Endpoint
+        run: |
+          echo "🏥 Pinging API health endpoint..."
+          echo "Time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          
+          response=$(curl -s -w "\n%{http_code}" \
+            -H "User-Agent: GitHub-Actions-KeepAlive/1.0" \
+            https://fullstack-app-prod.azurewebsites.net/api/health)
+          
+          http_code=$(echo "$response" | tail -n1)
+          body=$(echo "$response" | head -n-1)
+          
+          echo "HTTP Status: $http_code"
+          echo "Response: $body"
+          
+          if [ "$http_code" -eq 200 ]; then
+            echo "✅ API is alive and healthy!"
+            exit 0
+          else
+            echo "⚠️ API returned status $http_code"
+            exit 1
+          fi
+        continue-on-error: true
+      
+      - name: Log Result
+        if: always()
+        run: |
+          echo "Keep-alive ping completed at $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
