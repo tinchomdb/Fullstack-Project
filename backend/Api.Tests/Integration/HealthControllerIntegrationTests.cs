@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Api.Tests.Integration;
 
+[Trait("Category", "Integration")]
 public class HealthControllerIntegrationTests : IAsyncLifetime
 {
     private WebApplicationFactory<Program> _factory = null!;
