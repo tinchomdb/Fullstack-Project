@@ -4,7 +4,7 @@ import { ProductGridComponent } from '../product-grid/product-grid.component';
 import { SortDropdownComponent } from '../sort-dropdown/sort-dropdown.component';
 import { LoadingIndicatorComponent } from '../loading-indicator/loading-indicator.component';
 import { IntersectionObserverDirective } from '../intersection-observer.directive';
-import { HeadingComponent } from '../heading/heading.component';
+import { HeadingComponent, HeadingLevel } from '../heading/heading.component';
 
 @Component({
   selector: 'app-product-list-section',
@@ -22,6 +22,7 @@ import { HeadingComponent } from '../heading/heading.component';
 export class ProductListSectionComponent {
   products = input.required<Product[]>();
   heading = input<string>('All Products');
+  headingLevel = input<HeadingLevel>('h2');
   showHeading = input<boolean>(true);
   hasMore = input<boolean>(false);
   loadingMore = input<boolean>(false);

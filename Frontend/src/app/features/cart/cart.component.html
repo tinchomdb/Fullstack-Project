@@ -32,6 +32,15 @@
           />
         </div>
       </app-sidebar-layout>
+    } @else {
+      <div class="empty-cart-state">
+        <div class="empty-cart-icon">
+          <app-cart-icon [size]="48" [strokeWidth]="2" />
+        </div>
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added anything yet. Start shopping to find something you love!</p>
+        <app-button class="cta-button" (click)="goToProducts()">Continue Shopping</app-button>
+      </div>
     }
   }
 </div>

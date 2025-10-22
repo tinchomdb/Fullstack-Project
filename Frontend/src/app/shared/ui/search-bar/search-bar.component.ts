@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, output } from '@angular/core';
 import { Router } from '@angular/router';
 import { SearchComponent } from '../search/search.component';
 
@@ -12,9 +12,12 @@ import { SearchComponent } from '../search/search.component';
 export class SearchBarComponent {
   private readonly router = inject(Router);
 
+  searched = output<void>();
+
   onSearch(term: string): void {
     this.router.navigate(['/search'], {
       queryParams: { q: term },
     });
+    this.searched.emit();
   }
 }

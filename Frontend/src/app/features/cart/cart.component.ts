@@ -8,6 +8,7 @@ import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { CartItemComponent } from './cart-item/cart-item.component';
 import { OrderSummaryPanelComponent } from '../../shared/ui/order-summary-panel/order-summary-panel.component';
 import { SidebarLayoutComponent } from '../../shared/layouts/sidebar-layout/sidebar-layout.component';
+import { CartIconComponent } from '../../shared/ui/icons/cart-icon.component';
 
 @Component({
   selector: 'app-cart',
@@ -17,6 +18,7 @@ import { SidebarLayoutComponent } from '../../shared/layouts/sidebar-layout/side
     CartItemComponent,
     OrderSummaryPanelComponent,
     SidebarLayoutComponent,
+    CartIconComponent,
   ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',
@@ -41,6 +43,10 @@ export class CartComponent {
 
   checkout(): void {
     this.router.navigate(['/checkout']);
+  }
+
+  goToProducts(): void {
+    this.router.navigate(['/products']);
   }
 
   updateQuantity(productId: string, quantity: number): void {

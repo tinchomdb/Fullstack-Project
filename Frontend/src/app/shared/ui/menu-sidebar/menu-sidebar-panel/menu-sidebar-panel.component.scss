@@ -51,6 +51,15 @@ $transition-duration: 0.3s;
   color: var(--color-surface-primary);
 }
 
+.sidebar-search {
+  padding: var(--space-4);
+  border-bottom: var(--border-subtle);
+
+  @include media-md {
+    display: none;
+  }
+}
+
 .sidebar-content {
   flex: 1;
   overflow-y: auto;

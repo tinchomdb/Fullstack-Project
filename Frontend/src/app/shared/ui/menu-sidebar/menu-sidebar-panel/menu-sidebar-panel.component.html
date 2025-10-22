@@ -9,6 +9,11 @@
     />
   </div>
 
+  <!-- Search Bar - Mobile Only -->
+  <div class="sidebar-search">
+    <app-search-bar (searched)="itemClick.emit()" />
+  </div>
+
   <!-- Categories Section -->
   <div class="sidebar-content">
     <div class="sidebar-section">

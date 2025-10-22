@@ -45,7 +45,7 @@
   .cart-label {
     display: none;
 
-    @include media-sm {
+    @include media-md {
       display: inline;
     }
   }
