@@ -25,6 +25,37 @@ jobs:
         with:
           submodules: true
           lfs: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        working-directory: ./Frontend
+        run: npm ci
+
+      - name: Build
+        working-directory: ./Frontend
+        run: npm run build
+
+      - name: Install Playwright browsers
+        working-directory: ./Frontend
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        working-directory: ./Frontend
+        run: npm run e2e
+        continue-on-error: true
+
+      - name: Upload E2E test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: Frontend/playwright-report/
+          retention-days: 30
+
       - name: Build And Deploy
         id: builddeploy
         uses: Azure/static-web-apps-deploy@v1
@@ -50,5 +81,3 @@ jobs:
         with:
           azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_AGREEABLE_POND_0D8F08903 }}
           action: "close"
-
-
