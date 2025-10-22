@@ -24,3 +24,9 @@ await app.InitializeDatabaseAsync();
 app.ConfigureMiddleware();
 
 app.Run();
+
+/// <summary>
+/// Public Program class for WebApplicationFactory in tests
+/// </summary>
+public partial class Program { }
+
