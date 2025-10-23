@@ -14,7 +14,7 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "preserve",
-    "types": ["node", "@playwright/test"]
+    "types": ["node"]
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

@@ -8,13 +8,6 @@ on:
         required: false
         default: false
         type: boolean
-    secrets:
-      TEST_USER_EMAIL:
-        description: Email for E2E test user
-        required: true
-      TEST_USER_PASSWORD:
-        description: Password for E2E test user
-        required: true
 
 jobs:
   e2e-tests:
@@ -33,34 +26,35 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Cache Playwright browsers
+      - name: Cache Cypress
         uses: actions/cache@v4
         with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.cache/Cypress
+          key: cypress-${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
-            playwright-${{ runner.os }}-
+            cypress-${{ runner.os }}-
 
       - name: Install dependencies
         working-directory: ./Frontend
         run: npm ci
 
-      - name: Install Playwright browsers
-        working-directory: ./Frontend
-        run: npx playwright install --with-deps
-
       - name: Run E2E tests
         working-directory: ./Frontend
-        env:
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-        run: npm run e2e
+        run: npm run e2e:headless
         continue-on-error: ${{ inputs.continue_on_error }}
 
-      - name: Upload E2E test results
+      - name: Upload Cypress test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: e2e-test-results
-          path: Frontend/playwright-report/
+          path: Frontend/cypress/videos
+          retention-days: 30
+
+      - name: Upload Cypress test screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-screenshots
+          path: Frontend/cypress/screenshots
           retention-days: 30

@@ -89,6 +89,3 @@ jobs:
     uses: ./.github/workflows/run-e2e-tests.yml
     with:
       continue_on_error: false
-    secrets:
-      TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-      TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
