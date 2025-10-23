@@ -8,6 +8,13 @@ on:
         required: false
         default: false
         type: boolean
+    secrets:
+      TEST_USER_EMAIL:
+        description: Email for E2E test user
+        required: true
+      TEST_USER_PASSWORD:
+        description: Password for E2E test user
+        required: true
 
 jobs:
   e2e-tests:
