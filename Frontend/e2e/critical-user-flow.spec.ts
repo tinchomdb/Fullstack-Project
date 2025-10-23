@@ -53,9 +53,9 @@ async function addProductToCart(page: Page, productCard: Locator): Promise<void>
  */
 async function fillShippingForm(page: Page): Promise<void> {
   const fields = [
-    { testId: 'input-firstName', value: 'Tincho' },
-    { testId: 'input-lastName', value: 'Barroso' },
-    { testId: 'input-email', value: '***REMOVED***' },
+    { testId: 'input-firstName', value: 'Test' },
+    { testId: 'input-lastName', value: 'User' },
+    { testId: 'input-email', value: 'test@email.com' },
     { testId: 'input-phone', value: '+12025551234' },
     { testId: 'input-address', value: '123 Test Street' },
     { testId: 'input-city', value: 'Test City' },
