@@ -29,14 +29,37 @@ async function clearCart(page: Page): Promise<void> {
   await expect(page).toHaveURL(/\/cart/, { timeout: 10000 });
   await page.waitForLoadState('networkidle');
 
+  // Wait for cart items to load
+  await page.waitForTimeout(1000);
+
+  const cartItems = page.locator('[data-testid="cart-item"]');
+  const itemCount = await cartItems.count();
+  
+  if (itemCount === 0) {
+    console.log('✓ Cart is already empty');
+    return;
+  }
+
+  console.log(`🛒 Cart has ${itemCount} items, clearing...`);
+
+  // Try to find and click the clear cart button
   const clearBtn = page.locator('[data-testid="secondary-cta-btn"]').first();
   const isClearVisible = await clearBtn.isVisible({ timeout: 2000 }).catch(() => false);
 
   if (isClearVisible) {
     await clearBtn.click({ force: true });
-    await expect(page).toHaveURL('/cart');
-    // Wait for cart badge to disappear (cart is empty)
-    await expect(page.locator('[data-testid="cart-badge"]')).toBeHidden({ timeout: 5000 });
+    await page.waitForTimeout(500);
+    
+    // Wait for all items to be removed
+    try {
+      await expect(page.locator('[data-testid="cart-item"]')).toHaveCount(0, { timeout: 5000 });
+      console.log('✓ Cart cleared successfully');
+    } catch (error) {
+      console.error('❌ Cart still has items after clicking clear button');
+      throw error;
+    }
+  } else {
+    console.error('❌ Clear cart button not found');
   }
 }
 
@@ -151,6 +174,10 @@ async function fillStripePaymentForm(
   if (await cvcInput.isVisible({ timeout: 1000 }).catch(() => false)) {
     await cvcInput.fill(cardDetails.cvc);
   }
+
+  // Wait for Stripe to validate the card details
+  console.log('⏳ Waiting for Stripe validation...');
+  await page.waitForTimeout(2000); // Give Stripe time to validate after filling
 }
 
 test.describe('Critical User Flow - Full Purchase Journey', () => {
@@ -270,14 +297,35 @@ test.describe('Critical User Flow - Full Purchase Journey', () => {
     await fillStripePaymentForm(page, STRIPE_CARD);
     await pause(page, 'Payment details filled');
 
-    // Step 19: Wait for optional fields to settle, then scroll button into view
-    await page.waitForTimeout(1000); // Allow optional fields to expand
+    // Step 19: Wait for Stripe validation to complete and button to be enabled
     const placeOrderBtn = page.locator('[data-testid="checkout-submit-button"]');
+    
+    // Scroll button into view
     await placeOrderBtn.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(300); // Small delay after scrolling
+    
+    // Wait for button to be enabled (aria-disabled="false" or no aria-disabled)
+    console.log('⏳ Waiting for Place Order button to be enabled...');
+    try {
+      await page.waitForFunction(
+        () => {
+          const btn = document.querySelector('[data-testid="checkout-submit-button"]');
+          return btn && btn.getAttribute('aria-disabled') !== 'true';
+        },
+        { timeout: 15000 },
+      );
+      console.log('✓ Place Order button is now enabled');
+    } catch (error) {
+      console.error('❌ Place Order button did not become enabled within 15s');
+      console.error('Current button state:', await placeOrderBtn.getAttribute('aria-disabled'));
+      
+      // Diagnostic: check if form has validation errors
+      const errorMessages = await page.locator('[role="alert"], .error, .ng-invalid').all();
+      console.error(`Found ${errorMessages.length} error messages on form`);
+      throw error;
+    }
 
     // Step 20: Place order
-    await placeOrderBtn.click();
+    await placeOrderBtn.click({ force: true });
 
     // Step 21: Verify order success
     await expect(page).toHaveURL('/order-success', { timeout: 15000 });
