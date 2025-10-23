@@ -44,6 +44,9 @@ jobs:
 
       - name: Run E2E tests
         working-directory: ./Frontend
+        env:
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
         run: npm run e2e
         continue-on-error: ${{ inputs.continue_on_error }}
 
