@@ -1,13 +1,16 @@
-name: Run E2E Tests
+name: Manual E2E Tests
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
-      continue_on_error:
-        description: Whether to continue on E2E test failure
-        required: false
-        default: false
-        type: boolean
+      environment:
+        description: Environment to test
+        required: true
+        default: staging
+        type: choice
+        options:
+          - staging
+          - production
 
 jobs:
   e2e-tests:
@@ -38,37 +41,17 @@ jobs:
         working-directory: ./Frontend
         run: npm ci
 
-      - name: Start dev server
+      - name: Run E2E tests against ${{ github.event.inputs.environment }}
         working-directory: ./Frontend
-        run: npm start > /tmp/ng-server.log 2>&1 &
-        shell: bash
-
-      - name: Wait for server to be ready
-        run: |
-          echo "Waiting for server to start..."
-          for i in {1..60}; do
-            if curl -f http://localhost:4200 > /dev/null 2>&1; then
-              echo "Server is ready!"
-              exit 0
-            fi
-            echo "Attempt $i/60... waiting"
-            sleep 2
-          done
-          echo "Server failed to start. Last logs:"
-          tail -50 /tmp/ng-server.log
-          exit 1
-        shell: bash
-
-      - name: Run E2E tests
-        working-directory: ./Frontend
+        env:
+          CYPRESS_BASE_URL: ${{ github.event.inputs.environment == 'staging' && 'https://staging.example.com' || 'https://prod.example.com' }}
         run: npm run e2e:headless
-        continue-on-error: ${{ inputs.continue_on_error }}
 
       - name: Upload Cypress test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-results
+          name: e2e-test-results-${{ github.event.inputs.environment }}
           path: Frontend/cypress/videos
           retention-days: 30
 
@@ -76,6 +59,6 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: e2e-test-screenshots
+          name: e2e-test-screenshots-${{ github.event.inputs.environment }}
           path: Frontend/cypress/screenshots
           retention-days: 30

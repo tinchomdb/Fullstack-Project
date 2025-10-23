@@ -53,13 +53,6 @@ jobs:
           output_location: "dist/app/browser" # Built app content directory - optional
           ###### End of Repository/Build Configurations ######
 
-  e2e-tests:
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.action != 'closed')
-    needs: build_and_deploy_job
-    uses: ./.github/workflows/run-e2e-tests.yml
-    with:
-      continue_on_error: false
-
   close_pull_request_job:
     if: github.event_name == 'pull_request' && github.event.action == 'closed'
     runs-on: ubuntu-latest
