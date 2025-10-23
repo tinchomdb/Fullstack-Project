@@ -9,6 +9,11 @@ const TEST_CREDENTIALS = {
   password: process.env['TEST_USER_PASSWORD'] || '',
 } as const;
 
+// Log credentials for debugging (mask password)
+console.log('🔍 Test Credentials:');
+console.log(`   Email: ${TEST_CREDENTIALS.email || '❌ NOT SET'}`);
+console.log(`   Password: ${TEST_CREDENTIALS.password ? '✓ SET' : '❌ NOT SET'}`);
+
 const LOGIN_URL_PATTERN = /login|microsoft|accounts|ciamlogin/;
 
 // Build APP_PATTERN from environment URLs to match localhost in dev or Azure domain in CI
@@ -40,6 +45,8 @@ async function fillInput(
   value: string,
   label: string,
 ): Promise<void> {
+  console.log(`🔍 Looking for ${label} input with names: ${names.join(', ')}`);
+  
   for (const name of names) {
     const input = context.locator(`input[name="${name}"]`);
     const isVisible = await input.isVisible({ timeout: 3000 }).catch(() => false);
@@ -50,6 +57,23 @@ async function fillInput(
       await context.page().waitForTimeout(300);
       return;
     }
+  }
+
+  // Diagnostic: log all available inputs on the page
+  const allInputs = await context.locator('input').count().catch(() => 0);
+  console.error(`❌ Could not find ${label} input. Found ${allInputs} total inputs on page`);
+  
+  // Try to get info about visible inputs
+  try {
+    const visibleInputs = await context.locator('input:visible').all();
+    for (let i = 0; i < visibleInputs.length; i++) {
+      const inputName = await visibleInputs[i].getAttribute('name').catch(() => 'no-name');
+      const inputType = await visibleInputs[i].getAttribute('type').catch(() => 'no-type');
+      const inputPlaceholder = await visibleInputs[i].getAttribute('placeholder').catch(() => '');
+      console.error(`   Input ${i}: name="${inputName}" type="${inputType}" placeholder="${inputPlaceholder}"`);
+    }
+  } catch (e) {
+    console.error(`   Could not enumerate inputs: ${e}`);
   }
 
   throw new Error(`Could not find ${label} input. Tried: ${names.join(', ')}`);
@@ -107,10 +131,19 @@ setup('authenticate', async ({ page }) => {
     'Next button',
   );
 
+  // Wait for navigation after clicking Next
+  console.log('⏳ Waiting for page to respond to Next button...');
+  await page.waitForLoadState('domcontentloaded');
+  await page.waitForTimeout(2000);
+  
+  console.log(`📍 Current URL after Next: ${page.url()}`);
+
   // Step 3: Fill password (might be in different iframe after navigation)
   await page.waitForLoadState('domcontentloaded');
   const passwordContext = getLoginContext(page);
-
+  
+  console.log(`🔍 Looking for password field in context...`);
+  
   await fillInput(passwordContext, ['passwd', 'password'], TEST_CREDENTIALS.password, 'password');
 
   // Step 4: Click Sign in
