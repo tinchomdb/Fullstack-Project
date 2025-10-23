@@ -10,6 +10,7 @@
           [product]="product"
           [variant]="cardVariants()[i]"
           [priority]="i < 2"
+          [index]="i"
           (addToCart)="onAddToCart($event)"
         />
       </div>

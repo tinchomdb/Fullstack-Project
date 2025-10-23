@@ -173,3 +173,22 @@
     @content;
   }
 }
+
+// Animation mixins
+@mixin stagger-animation {
+  --stagger-index: 0;
+  --stagger-delay: calc(var(--stagger-index) * 50ms);
+  animation: stagger-fade-in 0.6s ease-out var(--stagger-delay) both;
+}
+
+@keyframes stagger-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

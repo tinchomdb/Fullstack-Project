@@ -13,6 +13,8 @@
     transform 0.3s,
     box-shadow 0.3s;
 
+  @include stagger-animation;
+
   &:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);

@@ -1,4 +1,4 @@
-<article class="featured-card" data-testid="featured-card">
+<article class="featured-card" [style.--stagger-index]="index()" data-testid="featured-card">
   <a
     class="card-link"
     [routerLink]="buildProductLink()"

@@ -1,6 +1,7 @@
 <a
   class="category-card"
   [class]="'variant-' + variant()"
+  [style.--stagger-index]="index()"
   [routerLink]="categoryUrl()"
   routerLinkActive="active"
   [routerLinkActiveOptions]="{ exact: true }"

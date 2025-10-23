@@ -23,6 +23,7 @@ export const CARD_VARIANT = {
 export class CategoryCardComponent {
   category = input.required<Category>();
   variant = input<CardVariant>(CARD_VARIANT.VERTICAL);
+  index = input<number>(0);
 
   private readonly categoriesService = inject(CategoriesService);
 

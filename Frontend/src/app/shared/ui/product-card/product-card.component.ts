@@ -16,6 +16,7 @@ import { ButtonComponent } from '../button/button.component';
 })
 export class ProductCardComponent {
   readonly product = input.required<Product>();
+  readonly index = input<number>(0);
 
   private readonly cartService = inject(CartService);
   private readonly productsService = inject(ProductsService);

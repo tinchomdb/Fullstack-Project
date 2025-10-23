@@ -1,5 +1,5 @@
 <section class="product-grid" aria-label="More products">
-  @for (product of products(); track product.id) {
-    <app-product-card [product]="product" />
+  @for (product of products(); track product.id; let index = $index) {
+    <app-product-card [product]="product" [index]="index" />
   }
 </section>

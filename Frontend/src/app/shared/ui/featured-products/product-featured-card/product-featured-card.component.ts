@@ -38,6 +38,7 @@ export class ProductFeaturedCardComponent {
   readonly product = input.required<Product>();
   readonly variant = input<CardVariant>(CARD_VARIANT.VERTICAL);
   readonly priority = input<boolean>(false);
+  readonly index = input<number>(0);
 
   readonly addToCart = output<Product>();
 

@@ -17,6 +17,8 @@
   color: inherit;
   transition: all 0.2s ease;
 
+  @include stagger-animation;
+
   &:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-2px);
