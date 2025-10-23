@@ -8,6 +8,18 @@ const STRIPE_CARD = {
 
 const DEBUG_BREAKPOINTS = process.env.DEBUG_BREAKPOINTS === 'true';
 
+// Log Stripe card configuration at startup
+console.log('🔧 Stripe Test Card Configuration:');
+console.log(
+  `   Number: ${STRIPE_CARD.number.slice(0, 4)}****${STRIPE_CARD.number.slice(-4)} (env: ${process.env['STRIPE_TEST_CARD_NUMBER'] ? 'SET' : 'DEFAULT'})`,
+);
+console.log(
+  `   Expiry: ${STRIPE_CARD.expiry} (env: ${process.env['STRIPE_TEST_CARD_EXPIRY'] ? 'SET' : 'DEFAULT'})`,
+);
+console.log(
+  `   CVC: ${STRIPE_CARD.cvc} (env: ${process.env['STRIPE_TEST_CARD_CVC'] ? 'SET' : 'DEFAULT'})`,
+);
+
 /**
  * Pause execution for debugging (only when DEBUG_BREAKPOINTS=true)
  */
@@ -34,7 +46,7 @@ async function clearCart(page: Page): Promise<void> {
 
   const cartItems = page.locator('[data-testid="cart-item"]');
   const itemCount = await cartItems.count();
-  
+
   if (itemCount === 0) {
     console.log('✓ Cart is already empty');
     return;
@@ -49,7 +61,7 @@ async function clearCart(page: Page): Promise<void> {
   if (isClearVisible) {
     await clearBtn.click({ force: true });
     await page.waitForTimeout(500);
-    
+
     // Wait for all items to be removed
     try {
       await expect(page.locator('[data-testid="cart-item"]')).toHaveCount(0, { timeout: 5000 });
@@ -110,11 +122,18 @@ async function fillStripePaymentForm(
   page: Page,
   cardDetails: { number: string; expiry: string; cvc: string },
 ): Promise<void> {
+  console.log('📝 Starting Stripe payment form fill...');
+  console.log(
+    `   Using card: ${cardDetails.number.slice(0, 4)}****${cardDetails.number.slice(-4)}`,
+  );
+
   // First, wait for the payment-element container in your Angular app
+  console.log('⏳ Waiting for Payment Element container...');
   await page.locator('#payment-element').waitFor({ state: 'visible', timeout: 10000 });
   console.log('✓ Payment Element container found');
 
   // Wait for Stripe to inject its iframe into the payment-element
+  console.log('⏳ Waiting for Stripe iframe injection...');
   await page.waitForFunction(
     () => {
       const paymentElement = document.querySelector('#payment-element');
@@ -133,11 +152,15 @@ async function fillStripePaymentForm(
   console.log('✓ Stripe Payment Element iframe detected');
 
   // Small delay to let Stripe fully render inside the iframe
+  console.log('⏳ Waiting for Stripe to render (1s)...');
   await page.waitForTimeout(1000);
+  console.log('✓ Stripe render complete');
 
   // Find the frame with the card accordion
+  console.log('🔍 Looking for card accordion in iframe...');
   let stripeFrame: any = null;
   const frames = page.frames();
+  console.log(`   Total frames on page: ${frames.length}`);
 
   for (const frame of frames) {
     try {
@@ -145,7 +168,9 @@ async function fillStripePaymentForm(
       await cardAccordion.waitFor({ state: 'visible', timeout: 5000 });
       stripeFrame = frame;
       console.log('✓ Found card accordion in Stripe iframe');
+      console.log('⏳ Clicking card accordion...');
       await cardAccordion.click();
+      console.log('✓ Card accordion clicked');
       break;
     } catch (error) {
       continue;
@@ -154,30 +179,45 @@ async function fillStripePaymentForm(
 
   if (!stripeFrame) {
     const frameUrls = page.frames().map((f) => f.url());
-    console.error('Available frames:', frameUrls);
+    console.error('❌ Could not find card accordion. Available frames:', frameUrls);
     throw new Error('Could not find card accordion in Stripe Payment Element');
-  } // Wait for card input fields
+  }
+
+  // Wait for card input fields
+  console.log('⏳ Waiting for card number input field...');
   await stripeFrame
     .locator('input[name="number"]')
     .first()
     .waitFor({ state: 'visible', timeout: 3000 });
+  console.log('✓ Card number input found');
 
   // Fill card details
+  console.log('⏳ Filling card number...');
   await stripeFrame.locator('input[name="number"]').first().fill(cardDetails.number);
+  console.log('✓ Card number filled');
 
+  console.log('⏳ Filling expiry date...');
   const expiryInput = stripeFrame.locator('input[name="expiry"]').first();
   if (await expiryInput.isVisible({ timeout: 1000 }).catch(() => false)) {
     await expiryInput.fill(cardDetails.expiry);
+    console.log('✓ Expiry date filled');
+  } else {
+    console.log('⚠ Expiry input not visible, skipping');
   }
 
+  console.log('⏳ Filling CVC...');
   const cvcInput = stripeFrame.locator('input[name="cvc"]').first();
   if (await cvcInput.isVisible({ timeout: 1000 }).catch(() => false)) {
     await cvcInput.fill(cardDetails.cvc);
+    console.log('✓ CVC filled');
+  } else {
+    console.log('⚠ CVC input not visible, skipping');
   }
 
   // Wait for Stripe to validate the card details
-  console.log('⏳ Waiting for Stripe validation...');
-  await page.waitForTimeout(2000); // Give Stripe time to validate after filling
+  console.log('⏳ Waiting for Stripe validation (2s)...');
+  await page.waitForTimeout(2000);
+  console.log('✓ Stripe validation wait complete');
 }
 
 test.describe('Critical User Flow - Full Purchase Journey', () => {
@@ -284,27 +324,42 @@ test.describe('Critical User Flow - Full Purchase Journey', () => {
     await pause(page, 'Arrived at checkout page');
 
     // Step 16: Fill shipping information
+    console.log('📝 Step 16: Filling shipping form...');
     await fillShippingForm(page);
+    console.log('✓ Shipping form filled');
     await pause(page, 'Shipping form filled');
 
     // Step 17: Select first shipping option if available
+    console.log('📝 Step 17: Selecting shipping option...');
     const firstShippingOption = page.locator('input[type="radio"]').first();
     if (await firstShippingOption.isVisible({ timeout: 2000 }).catch(() => false)) {
       await firstShippingOption.click();
+      console.log('✓ Shipping option selected');
+    } else {
+      console.log('⚠ No shipping options available');
     }
 
     // Step 18: Fill payment details
+    console.log('📝 Step 18: Starting Stripe payment form fill...');
     await fillStripePaymentForm(page, STRIPE_CARD);
+    console.log('✓ Payment form filled');
     await pause(page, 'Payment details filled');
 
     // Step 19: Wait for Stripe validation to complete and button to be enabled
+    console.log('📝 Step 19: Waiting for Place Order button to be enabled...');
     const placeOrderBtn = page.locator('[data-testid="checkout-submit-button"]');
-    
+
     // Scroll button into view
+    console.log('⏳ Scrolling Place Order button into view...');
     await placeOrderBtn.scrollIntoViewIfNeeded();
-    
+    console.log('✓ Button scrolled into view');
+
     // Wait for button to be enabled (aria-disabled="false" or no aria-disabled)
-    console.log('⏳ Waiting for Place Order button to be enabled...');
+    console.log('⏳ Checking button state before waiting...');
+    const initialState = await placeOrderBtn.getAttribute('aria-disabled');
+    console.log(`   Initial aria-disabled: ${initialState}`);
+
+    console.log('⏳ Waiting for Place Order button to be enabled (15s max)...');
     try {
       await page.waitForFunction(
         () => {
@@ -315,26 +370,45 @@ test.describe('Critical User Flow - Full Purchase Journey', () => {
       );
       console.log('✓ Place Order button is now enabled');
     } catch (error) {
-      console.error('❌ Place Order button did not become enabled within 15s');
-      console.error('Current button state:', await placeOrderBtn.getAttribute('aria-disabled'));
-      
+      console.error('❌ TIMEOUT: Place Order button did not become enabled within 15s');
+      const currentState = await placeOrderBtn.getAttribute('aria-disabled');
+      console.error(`   Current aria-disabled: ${currentState}`);
+
       // Diagnostic: check if form has validation errors
       const errorMessages = await page.locator('[role="alert"], .error, .ng-invalid').all();
-      console.error(`Found ${errorMessages.length} error messages on form`);
+      console.error(`   Found ${errorMessages.length} error/invalid elements on form`);
+
+      // Try to log some form content for debugging
+      const formContent = await page.locator('[data-testid="checkout-form"]').innerHTML();
+      console.error(`   Form HTML length: ${formContent?.length || 0} characters`);
+
       throw error;
     }
 
     // Step 20: Place order
+    console.log('📝 Step 20: Clicking Place Order button...');
     await placeOrderBtn.click({ force: true });
+    console.log('✓ Place Order button clicked');
 
     // Step 21: Verify order success
-    await expect(page).toHaveURL('/order-success', { timeout: 15000 });
+    console.log('📝 Step 21: Waiting for order success page...');
+    try {
+      await expect(page).toHaveURL('/order-success', { timeout: 15000 });
+      console.log('✓ Redirected to order-success page');
+    } catch (error) {
+      console.error(`❌ Did not redirect to order-success. Current URL: ${page.url()}`);
+      throw error;
+    }
+
+    console.log('✓ Looking for success message...');
     await expect(
       page
         .locator('h1, h2')
         .filter({ hasText: /success|thank/i })
         .first(),
     ).toBeVisible();
+    console.log('✓ Success message visible');
+
     await pause(page, '✅ ORDER SUCCESS - Test completed!');
   });
 });
