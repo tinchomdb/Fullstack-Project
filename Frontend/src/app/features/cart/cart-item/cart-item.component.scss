@@ -38,6 +38,8 @@
 .item-details {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .item-name-link {
@@ -52,9 +54,10 @@
 
 .item-actions {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: var(--space-2);
-  margin-top: var(--space-3);
+  margin-top: auto;
+  justify-content: space-between;
   flex-wrap: wrap;
 
   @include media-sm {

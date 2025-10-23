@@ -14,9 +14,9 @@
         (quantityChange)="onQuantityChange($event)"
         data-testid="quantity-selector"
       />
-      <app-button (click)="onRemove()" size="sm" variant="danger" data-testid="remove-btn"
-        >Remove</app-button
-      >
+      <app-button (click)="onRemove()" size="sm" variant="secondary" shape="rounded" data-testid="remove-btn">
+        <app-trash-icon [size]="16" [strokeWidth]="2.5" />
+      </app-button>
     </div>
   </div>
 </div>

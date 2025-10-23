@@ -4,10 +4,11 @@ import { Router } from '@angular/router';
 import { CartItem } from '../../../core/models/cart-item.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { QuantitySelectorComponent } from '../../../shared/ui/quantity-selector/quantity-selector.component';
+import { TrashIconComponent } from '../../../shared/ui/icons/trash-icon.component';
 
 @Component({
   selector: 'app-cart-item',
-  imports: [ButtonComponent, QuantitySelectorComponent],
+  imports: [ButtonComponent, QuantitySelectorComponent, TrashIconComponent],
   templateUrl: './cart-item.component.html',
   styleUrl: './cart-item.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
