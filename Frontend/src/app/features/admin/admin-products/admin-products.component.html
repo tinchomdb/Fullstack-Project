@@ -7,7 +7,7 @@
   <div class="filters-section">
     <app-search
       placeholder="Search products..."
-      (search)="onSearchChange($event)"
+      (searchSubmitted)="onSearchChange($event)"
       class="search-input"
     />
     <app-dropdown

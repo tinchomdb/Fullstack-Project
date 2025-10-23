@@ -4,28 +4,11 @@
     class="search-input"
     [placeholder]="placeholder()"
     aria-label="Search"
-    [(ngModel)]="searchTerm"
+    [value]="searchTerm()"
+    (input)="onInput($event)"
     name="searchTerm"
-    (input)="onSearchTermChange()"
   />
   <button type="submit" class="search-button" aria-label="Search">
     <app-search-icon />
   </button>
-
-  @if (isOpen() && filteredSuggestions().length > 0) {
-    <ul class="search-suggestions" role="listbox">
-      @for (suggestion of filteredSuggestions(); track suggestion.value) {
-        <li role="presentation">
-          <button
-            type="button"
-            class="suggestion-item"
-            role="option"
-            (click)="selectSuggestion(suggestion)"
-          >
-            {{ suggestion.label }}
-          </button>
-        </li>
-      }
-    </ul>
-  }
 </form>
