@@ -1,9 +1,9 @@
 import { test, expect, Page, Locator } from '@playwright/test';
 
 const STRIPE_CARD = {
-  number: '4242424242424242',
-  expiry: '12/26',
-  cvc: '111',
+  number: process.env['STRIPE_TEST_CARD_NUMBER'] || '4242424242424242',
+  expiry: process.env['STRIPE_TEST_CARD_EXPIRY'] || '12/26',
+  cvc: process.env['STRIPE_TEST_CARD_CVC'] || '111',
 } as const;
 
 const DEBUG_BREAKPOINTS = process.env.DEBUG_BREAKPOINTS === 'true';
@@ -270,10 +270,16 @@ test.describe('Critical User Flow - Full Purchase Journey', () => {
     await fillStripePaymentForm(page, STRIPE_CARD);
     await pause(page, 'Payment details filled');
 
-    // Step 19: Place order
-    await page.locator('[data-testid="checkout-summary"]').locator('app-button').first().click();
+    // Step 19: Wait for optional fields to settle, then scroll button into view
+    await page.waitForTimeout(1000); // Allow optional fields to expand
+    const placeOrderBtn = page.locator('[data-testid="checkout-submit-button"]');
+    await placeOrderBtn.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(300); // Small delay after scrolling
 
-    // Step 20: Verify order success
+    // Step 20: Place order
+    await placeOrderBtn.click();
+
+    // Step 21: Verify order success
     await expect(page).toHaveURL('/order-success', { timeout: 15000 });
     await expect(
       page

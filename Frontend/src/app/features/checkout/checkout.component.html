@@ -21,7 +21,12 @@
         }
 
         <div class="checkout-actions">
-          <app-button type="button" (click)="processCheckout()" [disabled]="!checkout.canSubmit()">
+          <app-button
+            type="button"
+            (click)="processCheckout()"
+            [disabled]="!checkout.canSubmit()"
+            data-testid="checkout-submit-button"
+          >
             {{ checkout.isProcessing() ? 'Processing...' : 'Place Order' }}
           </app-button>
         </div>

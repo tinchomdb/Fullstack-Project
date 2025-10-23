@@ -1,14 +1,20 @@
 import { test as setup, expect } from '@playwright/test';
+import { environment as devEnvironment } from '../src/environments/environment';
+import { environment as prodEnvironment } from '../src/environments/environment.prod';
 
 const AUTH_FILE = 'playwright/.auth/user.json';
 
 const TEST_CREDENTIALS = {
-  email: '***REMOVED***',
-  password: '***REMOVED***',
+  email: process.env['TEST_USER_EMAIL'] || '',
+  password: process.env['TEST_USER_PASSWORD'] || '',
 } as const;
 
 const LOGIN_URL_PATTERN = /login|microsoft|accounts|ciamlogin/;
-const LOCALHOST_PATTERN = /localhost/;
+
+// Build APP_PATTERN from environment URLs to match localhost in dev or Azure domain in CI
+const environment = process.env.CI ? prodEnvironment : devEnvironment;
+const APP_DOMAIN = new URL(environment.appUrl).hostname;
+const LOCALHOST_PATTERN = new RegExp(APP_DOMAIN.replace(/\./g, '\\.'));
 
 /**
  * Find the Microsoft login context (might be in iframe or main page)
