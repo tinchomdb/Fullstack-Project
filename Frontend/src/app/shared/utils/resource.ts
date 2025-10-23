@@ -36,6 +36,7 @@ export class Resource<T> {
       return;
     }
 
+    this.dataSignal.set(this.initialValue);
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
     this.loadingOverlayService?.show(this.loadingMessage);

@@ -31,12 +31,14 @@ export class InfiniteScrollResource<T> {
 
   /**
    * Load initial data or reset and reload (e.g., when filters change)
+   * Immediately clears accumulated items to prevent flashing old data
    */
   load(source$: Observable<PaginatedResponse<T>>): void {
     if (this.loadingSignal()) {
       return;
     }
 
+    this.accumulatedItemsSignal.set([]);
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
     this.loadingOverlayService?.show(this.loadingMessage);
