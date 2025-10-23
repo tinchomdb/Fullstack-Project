@@ -31,6 +31,7 @@ export class CheckoutComponent {
   protected readonly checkout = inject(CheckoutService);
 
   processCheckout(): void {
+    console.log(this.checkout.canSubmit());
     // Return URL is used by Stripe only when redirect is required (e.g., 3D Secure)
     const returnUrl = `${window.location.origin}/order-success`;
 

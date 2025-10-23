@@ -206,7 +206,7 @@ export class CheckoutService {
         // Return a dummy order object - the real order was created by the webhook
         // TODO: The component will redirect to order success page and fetch the real order there
         const dummyOrder: Order = {
-          id: '',
+          id: '123456789',
           userId,
           orderDate: new Date().toISOString(),
           status: OrderStatus.Pending,

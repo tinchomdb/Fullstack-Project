@@ -21,7 +21,9 @@
         }
 
         <div class="checkout-actions">
-          <app-button type="button" (click)="goBackToCart()"> Back to Cart </app-button>
+          <app-button type="button" (click)="processCheckout()" [disabled]="!checkout.canSubmit()">
+            {{ checkout.isProcessing() ? 'Processing...' : 'Place Order' }}
+          </app-button>
         </div>
       </form>
     </div>
@@ -31,9 +33,8 @@
         [additionalCost]="checkout.selectedShippingCost() ?? 0"
         [additionalCostLabel]="'Shipping'"
         [showItemDetails]="true"
-        [ctaLabel]="checkout.isProcessing() ? 'Processing...' : 'Place Order'"
-        [ctaDisabled]="!checkout.canSubmit()"
-        (ctaClick)="processCheckout()"
+        [ctaLabel]="'Back to Cart'"
+        (ctaClick)="goBackToCart()"
         data-testid="checkout-summary"
       />
     </div>
