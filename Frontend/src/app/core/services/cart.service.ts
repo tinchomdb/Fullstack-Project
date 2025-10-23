@@ -73,11 +73,12 @@ export class CartService {
         sellerId: product.seller.id,
         quantity,
       }),
+      false,
     );
   }
 
   removeFromCart(productId: string): void {
-    this.cartResource.load(this.cartApi.removeFromCart(productId));
+    this.cartResource.load(this.cartApi.removeFromCart(productId), false);
   }
 
   updateQuantity(productId: string, quantity: number): void {
@@ -90,11 +91,12 @@ export class CartService {
         sellerId: item.sellerId,
         quantity,
       }),
+      false,
     );
   }
 
   clearCart(): void {
-    this.cartResource.load(this.cartApi.clearCart());
+    this.cartResource.load(this.cartApi.clearCart(), false);
   }
 
   checkout(shippingCost: number = 0): Observable<Order> {

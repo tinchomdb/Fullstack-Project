@@ -30,13 +30,15 @@ export class Resource<T> {
     });
   }
 
-  load(source$: Observable<T>): void {
+  load(source$: Observable<T>, clearData: boolean = true): void {
     // Prevent duplicate loads while already loading
     if (this.loadingSignal()) {
       return;
     }
 
-    this.dataSignal.set(this.initialValue);
+    if (clearData) {
+      this.dataSignal.set(this.initialValue);
+    }
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
     this.loadingOverlayService?.show(this.loadingMessage);
