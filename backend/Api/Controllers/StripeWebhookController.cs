@@ -1,4 +1,6 @@
 using Api.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
@@ -8,6 +10,8 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AllowAnonymous]
+[DisableCors]
 public sealed class StripeWebhookController(
     IPaymentService paymentService,
     IOptions<StripeSettings> stripeSettings,
@@ -24,9 +28,16 @@ public sealed class StripeWebhookController(
 
         try
         {
+            var stripeSignature = Request.Headers["Stripe-Signature"].ToString();
+            if (string.IsNullOrWhiteSpace(stripeSignature))
+            {
+                _logger.LogWarning("Webhook request missing Stripe-Signature header");
+                return BadRequest("Missing Stripe-Signature header");
+            }
+
             var stripeEvent = EventUtility.ConstructEvent(
                 json,
-                Request.Headers["Stripe-Signature"],
+                stripeSignature,
                 _webhookSecret,
                 throwOnApiVersionMismatch: false
             );
@@ -48,12 +59,14 @@ public sealed class StripeWebhookController(
         catch (StripeException ex)
         {
             _logger.LogError(ex, "Stripe webhook signature verification failed");
-            return BadRequest();
+            return BadRequest("Invalid signature");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing Stripe webhook");
-            return StatusCode(500);
+            // Return 200 OK to prevent Stripe from retrying this webhook
+            // The error is already logged above
+            return Ok();
         }
     }
 
