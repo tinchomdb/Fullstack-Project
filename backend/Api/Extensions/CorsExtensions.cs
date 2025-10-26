@@ -39,6 +39,9 @@ public static class CorsExtensions
 
     public static IApplicationBuilder UseCorsPolicy(this IApplicationBuilder app)
     {
-        return app.UseCors(PolicyName);
+        // Don't apply CORS middleware globally here.
+        // Instead, let endpoint routing handle it per-route.
+        // Routes with [DisableCors] (like webhooks) won't be affected.
+        return app;
     }
 }
