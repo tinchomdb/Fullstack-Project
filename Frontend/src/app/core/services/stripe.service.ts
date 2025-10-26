@@ -33,7 +33,13 @@ export class StripeService {
       this.clientSecret.set(clientSecret);
 
       if (!this.stripe) {
-        this.stripe = await loadStripe(environment.stripePublishableKey);
+        this.stripe = await loadStripe(environment.stripePublishableKey, {
+          developerTools: {
+            assistant: {
+              enabled: false,
+            },
+          },
+        });
       }
 
       if (!this.stripe) {
