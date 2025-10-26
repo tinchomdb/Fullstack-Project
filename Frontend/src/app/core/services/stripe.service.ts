@@ -104,7 +104,7 @@ export class StripeService {
   /**
    * Completes payment after Stripe confirmation.
    * In development, calls the test endpoint to simulate the webhook.
-   * In production, the real Stripe webhook will handle order creation.
+   * TODO: In production, the real Stripe webhook will handle order creation.
    */
   completePayment(cartId: string, email: string, amount: number): Observable<void> {
     const paymentIntentId = this.paymentIntentId();
@@ -113,27 +113,23 @@ export class StripeService {
       return throwError(() => new Error('Payment intent ID not available'));
     }
 
-    // In development, call the test endpoint to simulate the webhook
-    if (environment.isDevelopment) {
-      return this.paymentApi
-        .testCompletePayment({
-          paymentIntentId,
-          cartId,
-          email,
-          amount,
-        })
-        .pipe(
-          tap(() => console.log('Test payment endpoint called successfully')),
-          switchMap(() => from(Promise.resolve())),
-          catchError((error) => {
-            console.error('Test payment endpoint failed:', error);
-            return throwError(() => error);
-          }),
-        );
-    }
+    // Call the test endpoint to simulate the webhook
 
-    // In production, return success (real Stripe webhook will handle order creation)
-    return from(Promise.resolve());
+    return this.paymentApi
+      .testCompletePayment({
+        paymentIntentId,
+        cartId,
+        email,
+        amount,
+      })
+      .pipe(
+        tap(() => console.log('Test payment endpoint called successfully')),
+        switchMap(() => from(Promise.resolve())),
+        catchError((error) => {
+          console.error('Test payment endpoint failed:', error);
+          return throwError(() => error);
+        }),
+      );
   }
 
   reset(): void {
