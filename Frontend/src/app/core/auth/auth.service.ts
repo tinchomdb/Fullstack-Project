@@ -7,8 +7,8 @@ import {
   EventType,
   AccountInfo,
 } from '@azure/msal-browser';
-import { Subject, Observable } from 'rxjs';
-import { filter, takeUntil, map } from 'rxjs/operators';
+import { Subject } from 'rxjs';
+import { filter, takeUntil } from 'rxjs/operators';
 import { apiScope } from './auth-config';
 
 @Injectable({
