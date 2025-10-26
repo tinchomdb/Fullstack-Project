@@ -5,6 +5,7 @@
   display: flex;
   position: relative;
   width: 100%;
+  min-width: 0;
   border: var(--border-subtle);
   border-radius: var(--radius-md);
   background: var(--color-surface-secondary);
@@ -17,6 +18,7 @@
 
 .search-input {
   flex: 1;
+  min-width: 0;
   padding: var(--space-2) var(--space-4);
   border: none;
   background: transparent;
@@ -41,6 +43,7 @@
   cursor: pointer;
   transition: opacity 200ms ease;
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  flex-shrink: 0;
 
   &:hover {
     opacity: 0.9;

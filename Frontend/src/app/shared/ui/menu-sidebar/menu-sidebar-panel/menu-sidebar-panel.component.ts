@@ -7,6 +7,7 @@ import { ThemeToggleComponent } from '../../theme-toggle/theme-toggle.component'
 import { CategoryTreeItemComponent } from '../category-tree-item/category-tree-item.component';
 import { AuthButtonComponent } from '../../auth-button/auth-button.component';
 import { SearchBarComponent } from '../../search-bar/search-bar.component';
+import { SearchComponent } from '../../search/search.component';
 
 @Component({
   selector: 'app-menu-sidebar-panel',
@@ -17,6 +18,7 @@ import { SearchBarComponent } from '../../search-bar/search-bar.component';
     CategoryTreeItemComponent,
     AuthButtonComponent,
     SearchBarComponent,
+    SearchComponent,
   ],
   templateUrl: './menu-sidebar-panel.component.html',
   styleUrl: './menu-sidebar-panel.component.scss',

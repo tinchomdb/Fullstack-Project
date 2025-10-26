@@ -17,6 +17,7 @@
   margin-left: auto;
   margin-right: auto;
   padding: var(--space-responsive-sm) var(--space-responsive-md);
+  padding-bottom: max(var(--space-responsive-md), env(safe-area-inset-bottom));
   box-sizing: border-box;
 
   app-breadcrumb {

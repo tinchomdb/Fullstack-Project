@@ -17,6 +17,7 @@
   input,
   select,
   textarea {
+    width: 100%;
     padding: var(--space-3);
     border: var(--border-subtle);
     border-radius: var(--radius-md);
@@ -27,6 +28,7 @@
     transition:
       border-color 0.2s ease,
       box-shadow 0.2s ease;
+    box-sizing: border-box;
 
     &:focus {
       outline: none;
@@ -45,6 +47,13 @@
 
   select {
     cursor: pointer;
+    padding-right: var(--space-2);
+
+    option {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
 
   textarea {
