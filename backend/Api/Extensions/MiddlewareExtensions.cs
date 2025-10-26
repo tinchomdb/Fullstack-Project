@@ -35,21 +35,8 @@ public static class MiddlewareExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
-        // Configure preflight requests for webhook endpoints
-        app.Use(async (context, next) =>
-        {
-            if (context.Request.Method == "OPTIONS")
-            {
-                context.Response.StatusCode = 200;
-                await context.Response.CompleteAsync();
-                return;
-            }
-            await next();
-        });
-
-        // Map controllers with endpoint routing for CORS
-        // Only apply CORS policy to regular endpoints; [DisableCors] bypasses this
-        app.MapControllers().RequireCors("AllowConfiguredOrigins");
+        // Map controllers
+        app.MapControllers();
 
         return app;
     }
