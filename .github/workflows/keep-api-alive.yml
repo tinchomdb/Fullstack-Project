@@ -2,8 +2,8 @@ name: Keep API Alive
 
 on:
   schedule:
-    # Run every 19 minutes to prevent Azure App Service from going cold
-    - cron: '*/19 * * * *'
+    # Run every 10 minutes to prevent Azure App Service from going cold
+    - cron: '*/10 * * * *'
   # Allow manual trigger for testing
   workflow_dispatch:
 
