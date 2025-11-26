@@ -41,6 +41,15 @@ export class AdminProductsFiltersService {
       this.sortDirection() !== 'asc',
   );
 
+  readonly apiParams = computed<ProductFiltersApiParams>(() => ({
+    page: this.page(),
+    pageSize: this.pageSize(),
+    categoryId: this.categoryId() ?? undefined,
+    searchTerm: this.searchTerm() ?? undefined,
+    sortBy: this.sortBy(),
+    sortDirection: this.sortDirection(),
+  }));
+
   constructor() {
     this.setupSearchDebounce();
   }
@@ -68,17 +77,6 @@ export class AdminProductsFiltersService {
 
   resetToFirstPage(): void {
     this.pageSignal.set(1);
-  }
-
-  buildApiParams(): ProductFiltersApiParams {
-    return {
-      page: this.page(),
-      pageSize: this.pageSize(),
-      categoryId: this.categoryId() ?? undefined,
-      searchTerm: this.searchTerm() ?? undefined,
-      sortBy: this.sortBy(),
-      sortDirection: this.sortDirection(),
-    };
   }
 
   clearFilters(): void {

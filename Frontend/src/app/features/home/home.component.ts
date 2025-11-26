@@ -27,14 +27,6 @@ export class HomeComponent {
   private readonly listManager = inject(ProductListManager);
   private readonly categoriesService = inject(CategoriesService);
 
-  protected readonly loading = computed(
-    () => this.listManager.isLoadingInitial() || this.categoriesService.loading(),
-  );
-
-  protected readonly error = computed(
-    () => this.listManager.error() || this.categoriesService.error(),
-  );
-
   protected readonly products = this.listManager.products;
   protected readonly featuredProducts = this.listManager.featuredProducts;
   protected readonly loadingMore = this.listManager.isLoadingMore;

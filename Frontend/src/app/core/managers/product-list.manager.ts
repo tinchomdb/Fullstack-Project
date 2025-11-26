@@ -35,9 +35,6 @@ export class ProductListManager {
   readonly isLoading = computed(() => this.isLoadingInitial() || this.isLoadingMore());
 
   constructor() {
-    this.loadProducts();
-
-    let isFirstRun = true;
     effect(() => {
       this.filtersService.categoryId();
       this.filtersService.minPrice();
@@ -46,27 +43,20 @@ export class ProductListManager {
       this.filtersService.sortDirection();
       this.filtersService.searchTerm();
 
-      if (isFirstRun) {
-        isFirstRun = false;
-        return;
-      }
-
-      untracked(() => this.reload());
+      untracked(() => {
+        this.filtersService.resetToFirstPage();
+        this.loadProducts();
+      });
     });
   }
 
   loadMore(): void {
     this.filtersService.loadNextPage();
-    this.productsService.loadMoreProducts(this.filtersService.buildApiParams());
-  }
-
-  private reload(): void {
-    this.filtersService.resetToFirstPage();
-    this.loadProducts();
+    this.productsService.loadMoreProducts(this.filtersService.apiParams());
   }
 
   private loadProducts(): void {
-    this.productsService.loadProducts(this.filtersService.buildApiParams());
+    this.productsService.loadProducts(this.filtersService.apiParams());
 
     if (this.config.loadFeatured) {
       const categoryId = this.filtersService.categoryId() ?? undefined;

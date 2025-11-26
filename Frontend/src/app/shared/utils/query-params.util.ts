@@ -57,17 +57,6 @@ export function parseSort(params: Params): {
 export function parseCommonFilters(params: Params): Partial<ProductFiltersApiParams> {
   const filters: Partial<ProductFiltersApiParams> = {};
 
-  // Parse prices
-  const minPrice = parsePrice(params['minPrice']);
-  if (minPrice !== undefined) {
-    filters.minPrice = minPrice;
-  }
-
-  const maxPrice = parsePrice(params['maxPrice']);
-  if (maxPrice !== undefined) {
-    filters.maxPrice = maxPrice;
-  }
-
   // Parse sort
   const { sortBy, sortDirection } = parseSort(params);
   filters.sortBy = sortBy;

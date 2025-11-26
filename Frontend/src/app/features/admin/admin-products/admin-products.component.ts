@@ -117,7 +117,7 @@ export class AdminProductsComponent implements OnInit {
   }
 
   private loadInitialProducts(): void {
-    this.productsService.loadProducts(this.filtersService.buildApiParams());
+    this.productsService.loadProducts(this.filtersService.apiParams());
   }
 
   private initFormSubscriptions(): void {
@@ -191,7 +191,7 @@ export class AdminProductsComponent implements OnInit {
       return;
     }
     this.filtersService.loadNextPage();
-    this.productsService.loadMoreProducts(this.filtersService.buildApiParams());
+    this.productsService.loadMoreProducts(this.filtersService.apiParams());
   }
 
   clearFilters(): void {

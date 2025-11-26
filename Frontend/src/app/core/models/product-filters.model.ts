@@ -3,8 +3,6 @@ export type ProductSortField = 'name' | 'price';
 export type SortDirection = 'asc' | 'desc';
 
 export interface ProductFilters {
-  minPrice: number | null;
-  maxPrice: number | null;
   sortBy: ProductSortField;
   sortDirection: SortDirection;
   page: number;
@@ -14,8 +12,6 @@ export interface ProductFilters {
 }
 
 export interface ProductFiltersApiParams {
-  minPrice?: number;
-  maxPrice?: number;
   sortBy?: ProductSortField;
   sortDirection?: SortDirection;
   page?: number;

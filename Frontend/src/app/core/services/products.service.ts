@@ -124,14 +124,6 @@ export class ProductsService {
   ): Observable<PaginatedResponse<Product>> {
     let params = new HttpParams();
 
-    if (filters.minPrice !== undefined) {
-      params = params.set('minPrice', filters.minPrice.toString());
-    }
-
-    if (filters.maxPrice !== undefined) {
-      params = params.set('maxPrice', filters.maxPrice.toString());
-    }
-
     if (filters.sortBy !== undefined) {
       params = params.set('sortBy', filters.sortBy);
     }

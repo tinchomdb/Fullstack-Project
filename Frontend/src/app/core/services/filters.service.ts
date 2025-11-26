@@ -1,21 +1,23 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subject, filter } from 'rxjs';
 
-import {
-  ProductFilters,
-  ProductFiltersApiParams,
-  ProductSortField,
-  SortDirection,
-} from '../models/product-filters.model';
+import { ProductFilters, ProductFiltersApiParams } from '../models/product-filters.model';
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, SortOption } from '../models/sort-option.model';
+import { CategoriesService } from './categories.service';
+import { createBaseFilters, parseCommonFilters } from '../../shared/utils/query-params.util';
 
 const DEFAULT_PAGE_SIZE = 20;
-const PRICE_DEBOUNCE_MS = 500;
+
+/** Routes that should trigger filter synchronization from URL */
+const FILTER_ROUTES = ['/products', '/search', '/category'];
 
 @Injectable({ providedIn: 'root' })
 export class FiltersService {
   private readonly destroyRef = inject(DestroyRef);
+  private readonly router = inject(Router);
+  private readonly categoriesService = inject(CategoriesService);
 
   // Signal-based state
   private readonly minPriceSignal = signal<number | null>(null);
@@ -25,10 +27,6 @@ export class FiltersService {
   private readonly pageSizeSignal = signal(DEFAULT_PAGE_SIZE);
   private readonly categoryIdSignal = signal<string | null>(null);
   private readonly searchTermSignal = signal<string | null>(null);
-
-  // Debounced price inputs
-  private readonly minPriceSubject = new Subject<number | null>();
-  private readonly maxPriceSubject = new Subject<number | null>();
 
   // Public readonly signals
   readonly minPrice = this.minPriceSignal.asReadonly();
@@ -45,16 +43,12 @@ export class FiltersService {
 
   readonly hasActiveFilters = computed(
     () =>
-      this.minPrice() !== null ||
-      this.maxPrice() !== null ||
       this.currentSortOption().value !== DEFAULT_SORT_OPTION.value ||
       this.categoryId() !== null ||
       this.searchTerm() !== null,
   );
 
   readonly filters = computed<ProductFilters>(() => ({
-    minPrice: this.minPrice(),
-    maxPrice: this.maxPrice(),
     sortBy: this.sortBy(),
     sortDirection: this.sortDirection(),
     page: this.page(),
@@ -63,96 +57,7 @@ export class FiltersService {
     searchTerm: this.searchTerm(),
   }));
 
-  constructor() {
-    // Setup debounced price inputs
-    this.setupPriceDebounce();
-  }
-
-  // === Public API ===
-
-  setMinPrice(value: number | null): void {
-    this.minPriceSubject.next(value);
-  }
-
-  setMaxPrice(value: number | null): void {
-    this.maxPriceSubject.next(value);
-  }
-
-  setSortOption(option: SortOption): void {
-    this.currentSortOptionSignal.set(option);
-    this.resetToFirstPage();
-  }
-
-  setPage(page: number): void {
-    if (page < 1) return;
-    this.pageSignal.set(page);
-  }
-
-  // Increment to next page for infinite scroll
-
-  loadNextPage(): void {
-    this.pageSignal.update((current) => current + 1);
-  }
-
-  setCategoryId(categoryId: string | null): void {
-    this.categoryIdSignal.set(categoryId);
-    this.resetToFirstPage();
-  }
-
-  setSearchTerm(searchTerm: string | null): void {
-    const trimmed = searchTerm?.trim() || null;
-    console.log('Setting search term:', trimmed);
-    this.resetFilters();
-    this.searchTermSignal.set(trimmed);
-  }
-
-  setAllFilters(filters: Partial<ProductFilters>): void {
-    if (filters.minPrice !== undefined) {
-      this.setMinPrice(filters.minPrice);
-    }
-    if (filters.maxPrice !== undefined) {
-      this.setMaxPrice(filters.maxPrice);
-    }
-    if (filters.sortBy && filters.sortDirection) {
-      const sortOption = SORT_OPTIONS.find(
-        (opt) => opt.sortBy === filters.sortBy && opt.sortDirection === filters.sortDirection,
-      );
-      if (sortOption) {
-        this.currentSortOptionSignal.set(sortOption);
-      }
-    }
-    if (filters.page !== undefined) {
-      this.setPage(filters.page);
-    }
-    if (filters.pageSize !== undefined) {
-      this.pageSizeSignal.set(filters.pageSize);
-    }
-    if (filters.categoryId !== undefined) {
-      this.categoryIdSignal.set(filters.categoryId);
-    } else {
-      this.categoryIdSignal.set(null);
-    }
-    if (filters.searchTerm !== undefined) {
-      this.searchTermSignal.set(filters.searchTerm?.trim() || null);
-    } else {
-      this.searchTermSignal.set(null);
-    }
-  }
-
-  resetFilters(): void {
-    this.minPriceSignal.set(null);
-    this.maxPriceSignal.set(null);
-    this.currentSortOptionSignal.set(DEFAULT_SORT_OPTION);
-    this.categoryIdSignal.set(null);
-    this.searchTermSignal.set(null);
-    this.resetToFirstPage();
-  }
-
-  resetToFirstPage(): void {
-    this.pageSignal.set(1);
-  }
-
-  buildApiParams(): ProductFiltersApiParams {
+  readonly apiParams = computed<ProductFiltersApiParams>(() => {
     const filters = this.filters();
     const params: ProductFiltersApiParams = {
       page: filters.page,
@@ -160,14 +65,6 @@ export class FiltersService {
       sortBy: filters.sortBy,
       sortDirection: filters.sortDirection,
     };
-
-    if (filters.minPrice !== null) {
-      params.minPrice = filters.minPrice;
-    }
-
-    if (filters.maxPrice !== null) {
-      params.maxPrice = filters.maxPrice;
-    }
 
     if (filters.categoryId !== null) {
       params.categoryId = filters.categoryId;
@@ -178,26 +75,92 @@ export class FiltersService {
     }
 
     return params;
+  });
+
+  constructor() {
+    this.setupRouterSync();
   }
 
-  // === Private methods ===
+  setSortOption(option: SortOption): void {
+    this.currentSortOptionSignal.set(option);
+    this.resetToFirstPage();
+  }
 
-  private setupPriceDebounce(): void {
-    const createDebouncedStream = (subject: Subject<number | null>) =>
-      subject.pipe(
-        debounceTime(PRICE_DEBOUNCE_MS),
-        distinctUntilChanged(),
-        takeUntilDestroyed(this.destroyRef),
+  // Increment to next page for infinite scroll
+
+  loadNextPage(): void {
+    this.pageSignal.update((current) => current + 1);
+  }
+
+  setAllFilters(filters: Partial<ProductFilters>): void {
+    if (filters.sortBy && filters.sortDirection) {
+      const sortOption = SORT_OPTIONS.find(
+        (opt) => opt.sortBy === filters.sortBy && opt.sortDirection === filters.sortDirection,
       );
+      if (sortOption) {
+        this.currentSortOptionSignal.set(sortOption);
+      }
+    }
 
-    createDebouncedStream(this.minPriceSubject).subscribe((value) => {
-      this.minPriceSignal.set(value);
-      this.resetToFirstPage();
-    });
+    if (filters.page !== undefined && filters.page >= 1) {
+      this.pageSignal.set(filters.page);
+    }
+    if (filters.pageSize !== undefined) {
+      this.pageSizeSignal.set(filters.pageSize);
+    }
 
-    createDebouncedStream(this.maxPriceSubject).subscribe((value) => {
-      this.maxPriceSignal.set(value);
-      this.resetToFirstPage();
-    });
+    this.categoryIdSignal.set(filters.categoryId ?? null);
+
+    this.searchTermSignal.set(filters.searchTerm?.trim() || null);
+  }
+
+  resetToFirstPage(): void {
+    this.pageSignal.set(1);
+  }
+
+  private setupRouterSync(): void {
+    this.router.events
+      .pipe(
+        filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+        filter((event) => this.isFilterRoute(event.urlAfterRedirects)),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        this.syncFiltersFromUrl();
+      });
+  }
+
+  private isFilterRoute(url: string): boolean {
+    const urlPath = url.split('?')[0];
+    return FILTER_ROUTES.some((route) => urlPath.startsWith(route));
+  }
+
+  private syncFiltersFromUrl(): void {
+    const urlTree = this.router.parseUrl(this.router.url);
+    const queryParams = urlTree.queryParams;
+    const urlPath = urlTree.root.children['primary']?.segments.map((s) => s.path).join('/') || '';
+
+    const filters = createBaseFilters();
+
+    // Parse common filters from query params (minPrice, maxPrice, sortBy, sortDirection)
+    Object.assign(filters, parseCommonFilters(queryParams));
+
+    // Parse search term from query params
+    if (typeof queryParams['q'] === 'string' && queryParams['q'].trim()) {
+      filters.searchTerm = queryParams['q'].trim();
+    }
+
+    // Parse category from URL path (e.g., category/electronics/phones)
+    if (urlPath.startsWith('category/')) {
+      const categoryPath = urlPath.substring('category/'.length);
+      if (categoryPath) {
+        const category = this.categoriesService.getCategoryByPath(categoryPath);
+        if (category) {
+          filters.categoryId = category.id;
+        }
+      }
+    }
+
+    this.setAllFilters(filters);
   }
 }
