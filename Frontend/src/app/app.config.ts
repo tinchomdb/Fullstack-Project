@@ -67,9 +67,9 @@ export const appConfig: ApplicationConfig = {
         protectedResourceMap,
       }),
     },
-    provideAppInitializer(() => {
+    provideAppInitializer(async () => {
       const msalService = inject(MsalService);
-      msalService.instance.initialize();
+      await msalService.instance.initialize();
     }),
     MsalService,
     MsalBroadcastService,

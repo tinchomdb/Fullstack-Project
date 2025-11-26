@@ -40,18 +40,18 @@ export class AuthService {
   }
 
   private initializeAuth(): void {
-    this.msalService.instance
-      .handleRedirectPromise()
-      .then((response: AuthenticationResult | null) => {
+    this.msalService.handleRedirectObservable().subscribe({
+      next: (response: AuthenticationResult | null) => {
         if (response?.account) {
           this.msalService.instance.setActiveAccount(response.account);
         }
         this.syncAuthState();
-      })
-      .catch((error: Error) => {
+      },
+      error: (error: Error) => {
         console.error('Error handling redirect:', error);
         this.syncAuthState();
-      });
+      },
+    });
   }
 
   private subscribeToAuthEvents(): void {
