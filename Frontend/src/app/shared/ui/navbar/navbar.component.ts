@@ -40,6 +40,10 @@ export class NavbarComponent {
   protected readonly isMobileMenuOpen = signal(false);
   protected readonly categories = computed(() => this.categoriesService.categories() ?? []);
 
+  constructor() {
+    this.categoriesService.loadCategories();
+  }
+
   toggleMobileMenu(): void {
     this.isMobileMenuOpen.update((open) => !open);
   }

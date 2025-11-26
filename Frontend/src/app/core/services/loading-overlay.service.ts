@@ -12,10 +12,13 @@ export class LoadingOverlayService {
   private refCount = 0;
   private showTimeoutId: number | null = null;
   private hideTimeoutId: number | null = null;
+  private extendedMessageTimeoutId: number | null = null;
   private shownAt: number | null = null;
+  private originalMessage = '';
 
   private readonly SHOW_DELAY_MS = 300;
   private readonly MIN_DISPLAY_MS = 500;
+  private readonly EXTENDED_MESSAGE_DELAY_MS = 3000;
 
   private state = signal<LoadingState>({
     visible: false,
@@ -26,6 +29,7 @@ export class LoadingOverlayService {
 
   show(message = 'Loading...'): void {
     this.refCount++;
+    this.originalMessage = message;
 
     // Update message (last one wins)
     this.state.update((state) => ({ ...state, message }));
@@ -48,6 +52,17 @@ export class LoadingOverlayService {
         if (this.refCount > 0) {
           this.state.update((state) => ({ ...state, visible: true }));
           this.shownAt = Date.now();
+
+          // Schedule extended message after 3 seconds
+          this.extendedMessageTimeoutId = window.setTimeout(() => {
+            this.extendedMessageTimeoutId = null;
+            if (this.state().visible) {
+              this.state.update((state) => ({
+                ...state,
+                message: `${this.originalMessage}\nThe server may be waking up. Please wait...`,
+              }));
+            }
+          }, this.EXTENDED_MESSAGE_DELAY_MS);
         }
       }, this.SHOW_DELAY_MS);
     }
@@ -61,6 +76,12 @@ export class LoadingOverlayService {
     // Still have active requests
     if (this.refCount > 0) {
       return;
+    }
+
+    // Cancel pending extended message
+    if (this.extendedMessageTimeoutId !== null) {
+      clearTimeout(this.extendedMessageTimeoutId);
+      this.extendedMessageTimeoutId = null;
     }
 
     // Cancel pending show if we haven't shown yet
@@ -96,8 +117,13 @@ export class LoadingOverlayService {
       clearTimeout(this.hideTimeoutId);
       this.hideTimeoutId = null;
     }
+    if (this.extendedMessageTimeoutId !== null) {
+      clearTimeout(this.extendedMessageTimeoutId);
+      this.extendedMessageTimeoutId = null;
+    }
     this.refCount = 0;
     this.shownAt = null;
+    this.originalMessage = '';
     this.state.set({ visible: false, message: '' });
   }
 }
