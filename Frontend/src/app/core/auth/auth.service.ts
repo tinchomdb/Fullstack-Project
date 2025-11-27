@@ -89,15 +89,12 @@ export class AuthService {
     const account = this.msalService.instance.getActiveAccount();
 
     if (account) {
-      this.isLoggedIn.set(true);
       this.refreshTokenClaims(account);
     } else {
       this.isLoggedIn.set(false);
       this.isAdmin.set(false);
+      this.authInitialized.set(true);
     }
-
-    // Mark auth as initialized after state sync
-    this.authInitialized.set(true);
   }
 
   private ensureActiveAccount(): void {
@@ -123,21 +120,24 @@ export class AuthService {
           if (result.account) {
             this.msalService.instance.setActiveAccount(result.account);
             this.updateAdminStatus(result.account);
+            this.isLoggedIn.set(true);
           }
+          this.authInitialized.set(true);
         },
         error: (error: any) => {
           if (error.name === 'InteractionRequiredAuthError') {
             // Token expired and needs user interaction to refresh
-            // Trigger a redirect to refresh the token and return to the current page
-            console.info('Token expired, redirecting to refresh...');
-            this.msalService.acquireTokenRedirect({
-              scopes: [apiScope],
-              account,
-              redirectStartPage: window.location.href,
-            });
+            // Downgrade to guest state to avoid immediate redirect loop
+            console.info('Session expired. Downgrading to guest state.');
+            this.msalService.instance.setActiveAccount(null);
+            this.isLoggedIn.set(false);
+            this.isAdmin.set(false);
           } else {
             console.error('Error refreshing token claims:', error);
+            // For other errors, assume logged in but warn
+            this.isLoggedIn.set(true);
           }
+          this.authInitialized.set(true);
         },
       });
   }
