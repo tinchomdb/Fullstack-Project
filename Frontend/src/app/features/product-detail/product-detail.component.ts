@@ -1,6 +1,6 @@
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy, input, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
 import { ProductsService } from '../../core/services/products.service';
@@ -23,12 +23,13 @@ import { BreadcrumbService } from '../../core/services/breadcrumb.service';
   styleUrl: './product-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductDetailComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
+export class ProductDetailComponent {
   private readonly router = inject(Router);
   private readonly productsService = inject(ProductsService);
   private readonly cartService = inject(CartService);
   private readonly breadcrumbService = inject(BreadcrumbService);
+
+  readonly slug = input.required<string>();
 
   protected readonly product = signal<Product | null>(null);
   protected readonly loading = signal(true);
@@ -36,29 +37,14 @@ export class ProductDetailComponent implements OnInit {
   protected readonly quantity = signal(1);
   protected readonly addingToCart = signal(false);
 
-  private productSlug = '';
+  constructor() {
+    effect(() => {
+      this.loadProduct(this.slug());
+    });
+  }
 
   protected onQuantityChange(newQuantity: number): void {
     this.quantity.set(newQuantity);
-  }
-
-  ngOnInit(): void {
-    const slug = this.route.snapshot.paramMap.get('slug');
-
-    if (!slug) {
-      this.error.set('Invalid product URL');
-      this.loading.set(false);
-      return;
-    }
-
-    this.productSlug = slug;
-    this.loadProduct(slug);
-  }
-
-  protected retry(): void {
-    if (this.productSlug) {
-      this.loadProduct(this.productSlug);
-    }
   }
 
   protected addToCart(): void {

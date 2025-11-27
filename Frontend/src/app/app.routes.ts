@@ -37,16 +37,8 @@ export const routes: Routes = [
     },
   },
   {
-    path: 'category',
+    path: 'category/:name',
     children: [
-      {
-        path: '',
-        loadComponent: () =>
-          import('./features/category/category.component').then((m) => m.CategoryComponent),
-        data: {
-          title: 'Products',
-        },
-      },
       {
         path: '**',
         loadComponent: () =>
