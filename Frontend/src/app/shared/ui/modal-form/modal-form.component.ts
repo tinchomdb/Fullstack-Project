@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { CloseButtonComponent } from '../close-button/close-button.component';
@@ -8,6 +8,7 @@ import { CloseButtonComponent } from '../close-button/close-button.component';
   imports: [CommonModule, CloseButtonComponent],
   templateUrl: './modal-form.component.html',
   styleUrls: ['./modal-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ModalFormComponent {
   title = input.required<string>();

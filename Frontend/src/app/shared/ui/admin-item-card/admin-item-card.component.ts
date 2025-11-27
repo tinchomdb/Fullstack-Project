@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { ButtonComponent } from '../button/button.component';
 import { BadgeComponent } from '../badge/badge.component';
 import { Badge } from '../badge/badge.types';
@@ -8,6 +8,7 @@ import { Badge } from '../badge/badge.types';
   templateUrl: './admin-item-card.component.html',
   styleUrl: './admin-item-card.component.scss',
   imports: [ButtonComponent, BadgeComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminItemCardComponent {
   imageUrl = input<string>();
