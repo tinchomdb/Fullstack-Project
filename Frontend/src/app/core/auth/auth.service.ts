@@ -39,7 +39,15 @@ export class AuthService {
     this.destroy$.complete();
   }
 
+  private get isIframe(): boolean {
+    return window !== window.parent && !window.opener;
+  }
+
   private initializeAuth(): void {
+    if (this.isIframe) {
+      return;
+    }
+
     this.msalService.handleRedirectObservable().subscribe({
       next: (response: AuthenticationResult | null) => {
         if (response?.account) {
@@ -134,8 +142,7 @@ export class AuthService {
             this.isAdmin.set(false);
           } else {
             console.error('Error refreshing token claims:', error);
-            // For other errors, assume logged in but warn
-            this.isLoggedIn.set(true);
+            this.isLoggedIn.set(false);
           }
           this.authInitialized.set(true);
         },

@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn } from '@angular/router';
 import { CartService } from '../services/cart.service';
-import { filter, map, take, switchMap, delay, skip } from 'rxjs';
+import { filter, map, take } from 'rxjs';
 import { toObservable } from '@angular/core/rxjs-interop';
 
 export const cartNotEmptyGuard: CanActivateFn = () => {
