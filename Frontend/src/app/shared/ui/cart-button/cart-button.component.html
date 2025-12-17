@@ -10,9 +10,7 @@
 >
   <app-cart-icon class="cart-icon" />
   <span class="cart-label">Cart</span>
-  @if (itemCount() > 0) {
-    <span class="cart-count" [attr.aria-label]="itemCount() + ' items'" data-testid="cart-badge">
-      {{ itemCount() }}
-    </span>
-  }
+  <span class="cart-count" [class.is-hidden]="itemCount() === 0" data-testid="cart-badge">
+    {{ itemCount() }}
+  </span>
 </a>

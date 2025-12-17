@@ -59,4 +59,8 @@
     font-weight: var(--font-weight-bold);
     line-height: 1;
   }
+
+  .cart-count.is-hidden {
+    visibility: hidden;
+  }
 }
