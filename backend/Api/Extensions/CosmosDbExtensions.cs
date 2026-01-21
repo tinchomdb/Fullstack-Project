@@ -1,6 +1,8 @@
-using Api.Configuration;
-using Api.Repositories;
-using Api.Services;
+using Application.Repositories;
+using Application.Services;
+using Infrastructure.Configuration;
+using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.Azure.Cosmos;
 
 namespace Api.Extensions;

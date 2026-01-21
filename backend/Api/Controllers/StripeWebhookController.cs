@@ -1,10 +1,10 @@
-using Api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
-using Api.Configuration;
+using Application.Services;
+using Infrastructure.Configuration;
 
 namespace Api.Controllers;
 

@@ -1,6 +1,7 @@
 using Stripe;
-using Api.Configuration;
-using Api.Services;
+using Application.Services;
+using Infrastructure.Services;
+using Infrastructure.Configuration;
 
 namespace Api.Extensions
 {

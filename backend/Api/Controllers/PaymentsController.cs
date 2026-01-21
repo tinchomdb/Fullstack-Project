@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Api.Extensions;
-using Api.Models.DTOs;
-using Api.Services;
 using Stripe;
+using Application.Services;
+using Application.DTOs;
 
 namespace Api.Controllers
 {

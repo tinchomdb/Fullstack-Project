@@ -1,7 +1,6 @@
 using Api.Extensions;
-using Api.Models;
-using Api.Models.DTOs;
-using Api.Services;
+using Application.DTOs;
+using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

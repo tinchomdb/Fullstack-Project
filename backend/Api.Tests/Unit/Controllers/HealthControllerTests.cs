@@ -1,10 +1,8 @@
-using Api.Configuration;
 using Api.Controllers;
-using Microsoft.AspNetCore.Hosting;
+using Infrastructure.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Moq;
-using Xunit;
 
 namespace Api.Tests.Unit.Controllers;
 

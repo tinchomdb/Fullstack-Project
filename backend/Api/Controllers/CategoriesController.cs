@@ -1,7 +1,6 @@
-using Api.Models;
-using Api.Repositories;
+using Application.Repositories;
+using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;

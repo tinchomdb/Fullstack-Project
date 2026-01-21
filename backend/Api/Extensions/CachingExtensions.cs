@@ -1,5 +1,6 @@
-using Api.Configuration;
-using Api.Repositories;
+using Application.Repositories;
+using Infrastructure.Configuration;
+using Infrastructure.Repositories;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 

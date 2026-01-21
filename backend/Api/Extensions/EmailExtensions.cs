@@ -1,5 +1,6 @@
-using Api.Configuration;
-using Api.Services;
+using Application.Services;
+using Infrastructure.Configuration;
+using Infrastructure.Services;
 
 namespace Api.Extensions;
 

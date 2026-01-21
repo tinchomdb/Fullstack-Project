@@ -1,0 +1,24 @@
+using System.Text.Json.Serialization;
+
+namespace Domain.Entities;
+
+public sealed record class Category
+{
+    [JsonPropertyName("id")]
+    public string Id { get; init; } = Guid.NewGuid().ToString();
+
+    public string Name { get; init; } = string.Empty;
+
+    public string Slug { get; init; } = string.Empty;
+
+    public string? Description { get; init; }
+
+    public string? Image { get; init; }
+
+    public bool Featured { get; init; }
+    
+    public string? ParentCategoryId { get; init; }
+
+    [JsonPropertyName("type")]
+    public string Type { get; init; } = "Category";
+}
