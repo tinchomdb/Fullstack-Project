@@ -1,6 +1,6 @@
 using Api.Controllers;
-using Api.Models;
-using Api.Repositories;
+using Application.Repositories;
+using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
