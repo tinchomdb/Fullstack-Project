@@ -52,11 +52,13 @@ public sealed class CartsController(
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            _logger.LogWarning(ex, "Invalid argument adding item to cart");
+            return BadRequest(new { error = "Invalid cart item request" });
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            _logger.LogWarning(ex, "Invalid operation adding item to cart");
+            return BadRequest(new { error = "Unable to add item to cart" });
         }
     }
 
@@ -86,11 +88,13 @@ public sealed class CartsController(
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            _logger.LogWarning(ex, "Invalid argument updating cart item {ProductId}", productId);
+            return BadRequest(new { error = "Invalid cart update request" });
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { error = ex.Message });
+            _logger.LogWarning(ex, "Cart item {ProductId} not found", productId);
+            return NotFound(new { error = "Cart item not found" });
         }
     }
 
@@ -113,7 +117,8 @@ public sealed class CartsController(
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { error = ex.Message });
+            _logger.LogWarning(ex, "Cart item {ProductId} not found for removal", productId);
+            return NotFound(new { error = "Cart item not found" });
         }
     }
 
@@ -150,11 +155,13 @@ public sealed class CartsController(
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            _logger.LogWarning(ex, "Invalid argument adding item to guest cart");
+            return BadRequest(new { error = "Invalid cart item request" });
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            _logger.LogWarning(ex, "Invalid operation adding item to guest cart");
+            return BadRequest(new { error = "Unable to add item to cart" });
         }
     }
 
@@ -183,11 +190,13 @@ public sealed class CartsController(
         }
         catch (ArgumentException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            _logger.LogWarning(ex, "Invalid argument updating guest cart item {ProductId}", productId);
+            return BadRequest(new { error = "Invalid cart update request" });
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { error = ex.Message });
+            _logger.LogWarning(ex, "Guest cart item {ProductId} not found", productId);
+            return NotFound(new { error = "Cart item not found" });
         }
     }
 
@@ -209,7 +218,8 @@ public sealed class CartsController(
         }
         catch (InvalidOperationException ex)
         {
-            return NotFound(new { error = ex.Message });
+            _logger.LogWarning(ex, "Guest cart item {ProductId} not found for removal", productId);
+            return NotFound(new { error = "Cart item not found" });
         }
     }
 
@@ -250,7 +260,8 @@ public sealed class CartsController(
         }
         catch (InvalidOperationException ex)
         {
-            return BadRequest(new { error = ex.Message });
+            _logger.LogWarning(ex, "Cart validation failed for user {UserId}", userId);
+            return BadRequest(new { error = "Cart validation failed" });
         }
     }
 

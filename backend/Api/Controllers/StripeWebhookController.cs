@@ -48,7 +48,7 @@ public sealed class StripeWebhookController(
             if (stripeEvent.Type == "payment_intent.succeeded")
             {
                 var paymentIntent = stripeEvent.Data.Object as PaymentIntent;
-                if (paymentIntent != null)
+                if (paymentIntent is not null)
                 {
                     await HandlePaymentSuccessAsync(paymentIntent, cancellationToken);
                 }

@@ -5,8 +5,8 @@ namespace Application.Services;
 
 public sealed class CartValidator
 {
-    public const int MAX_CART_ITEMS = 50;
-    public const int MAX_QUANTITY_PER_ITEM = 99;
+    public const int MaxCartItems = 50;
+    public const int MaxQuantityPerItem = 99;
 
     public void ValidateAddToCartRequest(AddToCartRequest request)
     {
@@ -30,17 +30,17 @@ public sealed class CartValidator
             throw new ArgumentException("Quantity must be greater than 0", nameof(quantity));
         }
 
-        if (quantity > MAX_QUANTITY_PER_ITEM)
+        if (quantity > MaxQuantityPerItem)
         {
-            throw new ArgumentException($"Quantity cannot exceed {MAX_QUANTITY_PER_ITEM}", nameof(quantity));
+            throw new ArgumentException($"Quantity cannot exceed {MaxQuantityPerItem}", nameof(quantity));
         }
     }
 
     public void ValidateCartLimits(Cart cart, CartItem? existingItem, string productId)
     {
-        if (existingItem is null && cart.Items.Count >= MAX_CART_ITEMS)
+        if (existingItem is null && cart.Items.Count >= MaxCartItems)
         {
-            throw new InvalidOperationException($"Cart cannot contain more than {MAX_CART_ITEMS} different items");
+            throw new InvalidOperationException($"Cart cannot contain more than {MaxCartItems} different items");
         }
     }
 

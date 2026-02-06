@@ -2,15 +2,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Application.DTOs;
 
-public sealed class CreatePaymentIntentRequest
+public sealed record CreatePaymentIntentRequest
 {
     [Required]
     [Range(1, long.MaxValue)]
-    public long Amount { get; set; }
+    public long Amount { get; init; }
 
     [Required]
     [EmailAddress]
-    public string Email { get; set; } = string.Empty;
+    public string Email { get; init; } = string.Empty;
 
-    public string? CartId { get; set; }
+    public string? CartId { get; init; }
 }

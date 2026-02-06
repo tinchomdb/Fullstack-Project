@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Repositories;
 
-public class CachedCarouselSlidesRepository : ICarouselSlidesRepository
+public sealed class CachedCarouselSlidesRepository : ICarouselSlidesRepository
 {
     private readonly ICarouselSlidesRepository _inner;
     private readonly IMemoryCache _cache;
@@ -72,7 +72,7 @@ public class CachedCarouselSlidesRepository : ICarouselSlidesRepository
         }
 
         var cacheKey = $"{SlideKeyPrefix}{slideId}";
-        
+
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
@@ -86,30 +86,30 @@ public class CachedCarouselSlidesRepository : ICarouselSlidesRepository
     public async Task<CarouselSlide> CreateSlideAsync(CarouselSlide slide, CancellationToken cancellationToken = default)
     {
         var result = await _inner.CreateSlideAsync(slide, cancellationToken);
-        
+
         // Invalidate cache
         InvalidateAllSlidesCaches();
         _logger.LogInformation("Cache invalidated after creating carousel slide {SlideId}.", slide.Id);
-        
+
         return result;
     }
 
     public async Task<CarouselSlide> UpdateSlideAsync(CarouselSlide slide, CancellationToken cancellationToken = default)
     {
         var result = await _inner.UpdateSlideAsync(slide, cancellationToken);
-        
+
         // Invalidate cache
         InvalidateAllSlidesCaches();
         _cache.Remove($"{SlideKeyPrefix}{slide.Id}");
         _logger.LogInformation("Cache invalidated after updating carousel slide {SlideId}.", slide.Id);
-        
+
         return result;
     }
 
     public async Task DeleteSlideAsync(string slideId, CancellationToken cancellationToken = default)
     {
         await _inner.DeleteSlideAsync(slideId, cancellationToken);
-        
+
         // Invalidate cache
         InvalidateAllSlidesCaches();
         _cache.Remove($"{SlideKeyPrefix}{slideId}");
@@ -119,11 +119,11 @@ public class CachedCarouselSlidesRepository : ICarouselSlidesRepository
     public async Task<IReadOnlyList<CarouselSlide>> ReorderSlidesAsync(string[] slideIds, CancellationToken cancellationToken = default)
     {
         var result = await _inner.ReorderSlidesAsync(slideIds, cancellationToken);
-        
+
         // Invalidate cache
         InvalidateAllSlidesCaches();
         _logger.LogInformation("Cache invalidated after reordering carousel slides.");
-        
+
         return result;
     }
 

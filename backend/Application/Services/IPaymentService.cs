@@ -7,7 +7,8 @@ public interface IPaymentService
 {
     Task<CreatePaymentIntentResponse> CreatePaymentIntentAsync(
         CreatePaymentIntentRequest request,
-        string userId);
+        string userId,
+        CancellationToken cancellationToken = default);
 
     Task<Order> ProcessPaymentSuccessAsync(
         string paymentIntentId,

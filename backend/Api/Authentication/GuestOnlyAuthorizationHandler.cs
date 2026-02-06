@@ -37,10 +37,3 @@ public sealed class GuestOnlyAuthorizationHandler : AuthorizationHandler<GuestOn
         return Task.CompletedTask;
     }
 }
-
-/// <summary>
-/// Requirement for guest-only authorization policy.
-/// </summary>
-public sealed class GuestOnlyRequirement : IAuthorizationRequirement
-{
-}

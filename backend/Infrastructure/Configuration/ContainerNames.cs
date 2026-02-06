@@ -1,6 +1,6 @@
 namespace Infrastructure.Configuration;
 
-public class ContainerNames
+public sealed class ContainerNames
 {
     public string Products { get; set; } = string.Empty;
     public string Carts { get; set; } = string.Empty;

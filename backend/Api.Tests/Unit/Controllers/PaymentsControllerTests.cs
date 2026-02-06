@@ -38,11 +38,11 @@ public class PaymentsControllerTests
             PaymentIntentId = "pi_123"
         };
         _mockPaymentService
-            .Setup(s => s.CreatePaymentIntentAsync(request, "user-1"))
+            .Setup(s => s.CreatePaymentIntentAsync(request, "user-1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
 
         // Act
-        var result = await _controller.CreatePaymentIntent(request);
+        var result = await _controller.CreatePaymentIntent(request, CancellationToken.None);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -54,7 +54,7 @@ public class PaymentsControllerTests
     public async Task CreatePaymentIntent_WithNullRequest_ReturnsBadRequest()
     {
         // Act
-        var result = await _controller.CreatePaymentIntent(null!);
+        var result = await _controller.CreatePaymentIntent(null!, CancellationToken.None);
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -67,7 +67,7 @@ public class PaymentsControllerTests
         var request = new CreatePaymentIntentRequest { Amount = 0, Email = "test@example.com" };
 
         // Act
-        var result = await _controller.CreatePaymentIntent(request);
+        var result = await _controller.CreatePaymentIntent(request, CancellationToken.None);
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -80,7 +80,7 @@ public class PaymentsControllerTests
         var request = new CreatePaymentIntentRequest { Amount = -100, Email = "test@example.com" };
 
         // Act
-        var result = await _controller.CreatePaymentIntent(request);
+        var result = await _controller.CreatePaymentIntent(request, CancellationToken.None);
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -93,7 +93,7 @@ public class PaymentsControllerTests
         var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "" };
 
         // Act
-        var result = await _controller.CreatePaymentIntent(request);
+        var result = await _controller.CreatePaymentIntent(request, CancellationToken.None);
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -105,11 +105,11 @@ public class PaymentsControllerTests
         // Arrange
         var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "test@example.com" };
         _mockPaymentService
-            .Setup(s => s.CreatePaymentIntentAsync(request, "user-1"))
+            .Setup(s => s.CreatePaymentIntentAsync(request, "user-1", It.IsAny<CancellationToken>()))
             .ThrowsAsync(new StripeException("Card declined"));
 
         // Act
-        var result = await _controller.CreatePaymentIntent(request);
+        var result = await _controller.CreatePaymentIntent(request, CancellationToken.None);
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result.Result);
@@ -121,11 +121,11 @@ public class PaymentsControllerTests
         // Arrange
         var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "test@example.com" };
         _mockPaymentService
-            .Setup(s => s.CreatePaymentIntentAsync(request, "user-1"))
+            .Setup(s => s.CreatePaymentIntentAsync(request, "user-1", It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Unexpected error"));
 
         // Act
-        var result = await _controller.CreatePaymentIntent(request);
+        var result = await _controller.CreatePaymentIntent(request, CancellationToken.None);
 
         // Assert
         var objectResult = Assert.IsType<ObjectResult>(result.Result);

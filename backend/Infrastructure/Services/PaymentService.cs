@@ -13,17 +13,18 @@ public sealed class PaymentService(
     IEmailService emailService,
     ILogger<PaymentService> logger) : IPaymentService
 {
-    private readonly ICartService _cartService = cartService;
-    private readonly IUsersRepository _usersRepository = usersRepository;
-    private readonly IEmailService _emailService = emailService;
-    private readonly ILogger<PaymentService> _logger = logger;
+    private readonly ICartService _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
+    private readonly IUsersRepository _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
+    private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+    private readonly ILogger<PaymentService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task<CreatePaymentIntentResponse> CreatePaymentIntentAsync(
         CreatePaymentIntentRequest request,
-        string userId)
+        string userId,
+        CancellationToken cancellationToken = default)
     {
         var service = new PaymentIntentService();
-        
+
         var metadata = new Dictionary<string, string>
         {
             { "email", request.Email },
@@ -78,11 +79,11 @@ public sealed class PaymentService(
             // Note: Cart was already validated by the frontend before creating the payment intent
             // We only perform lightweight validation here (stock check, price recalculation)
             // in CheckoutCartAsync to ensure nothing critical has changed
-            
+
             // Checkout the cart and create the order
             // This will validate stock and recalculate prices one final time
             var order = await _cartService.CheckoutCartAsync(userId, cancellationToken);
-            
+
             // Update order with payment information
             var updatedOrder = order with
             {
@@ -96,9 +97,9 @@ public sealed class PaymentService(
 
             // Send confirmation email
             await SendOrderConfirmationEmailAsync(
-                updatedOrder, 
-                email, 
-                userId, 
+                updatedOrder,
+                email,
+                userId,
                 cancellationToken);
 
             return updatedOrder;
@@ -145,7 +146,7 @@ public sealed class PaymentService(
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send order confirmation email for order {OrderId}", 
+            _logger.LogError(ex, "Failed to send order confirmation email for order {OrderId}",
                 order.Id);
             // Don't throw - email failure shouldn't break the order process
         }

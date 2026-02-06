@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Repositories;
 
-public class CachedCategoriesRepository : ICategoriesRepository
+public sealed class CachedCategoriesRepository : ICategoriesRepository
 {
     private readonly ICategoriesRepository _inner;
     private readonly IMemoryCache _cache;
@@ -54,7 +54,7 @@ public class CachedCategoriesRepository : ICategoriesRepository
         }
 
         var cacheKey = $"{CategoryKeyPrefix}{categoryId}";
-        
+
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
@@ -68,30 +68,30 @@ public class CachedCategoriesRepository : ICategoriesRepository
     public async Task<Category> CreateCategoryAsync(Category category, CancellationToken cancellationToken = default)
     {
         var result = await _inner.CreateCategoryAsync(category, cancellationToken);
-        
+
         // Invalidate cache
         _cache.Remove(AllCategoriesKey);
         _logger.LogInformation("Cache invalidated after creating category {CategoryId}.", category.Id);
-        
+
         return result;
     }
 
     public async Task<Category?> UpdateCategoryAsync(Category category, CancellationToken cancellationToken = default)
     {
         var result = await _inner.UpdateCategoryAsync(category, cancellationToken);
-        
+
         // Invalidate cache
         _cache.Remove(AllCategoriesKey);
         _cache.Remove($"{CategoryKeyPrefix}{category.Id}");
         _logger.LogInformation("Cache invalidated after updating category {CategoryId}.", category.Id);
-        
+
         return result;
     }
 
     public async Task DeleteCategoryAsync(string categoryId, CancellationToken cancellationToken = default)
     {
         await _inner.DeleteCategoryAsync(categoryId, cancellationToken);
-        
+
         // Invalidate cache
         _cache.Remove(AllCategoriesKey);
         _cache.Remove($"{CategoryKeyPrefix}{categoryId}");

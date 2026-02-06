@@ -1,3 +1,4 @@
+using Api.DTOs;
 using Api.Extensions;
 using Application.DTOs;
 using Application.Services;
@@ -17,9 +18,9 @@ public sealed class TestPaymentController(
     ICartService cartService,
     ILogger<TestPaymentController> logger) : ControllerBase
 {
-    private readonly IPaymentService _paymentService = paymentService;
-    private readonly ICartService _cartService = cartService;
-    private readonly ILogger<TestPaymentController> _logger = logger;
+    private readonly IPaymentService _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
+    private readonly ICartService _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
+    private readonly ILogger<TestPaymentController> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     /// <summary>
     /// Create a payment intent with cart and user metadata for testing webhooks
@@ -50,7 +51,8 @@ public sealed class TestPaymentController(
                     Amount = request.Amount,
                     Email = request.Email
                 },
-                request.UserId);
+                request.UserId,
+                cancellationToken);
 
             return Ok(new
             {
@@ -69,7 +71,7 @@ public sealed class TestPaymentController(
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error creating test payment");
-            return StatusCode(500, new { error = ex.Message });
+            return StatusCode(500, new { error = "An unexpected error occurred" });
         }
     }
 
@@ -116,7 +118,8 @@ public sealed class TestPaymentController(
                     Amount = request.Amount,
                     Email = request.Email
                 },
-                request.UserId);
+                request.UserId,
+                cancellationToken);
 
             _logger.LogInformation(
                 "Step 2: Payment intent created - {PaymentIntentId}",
@@ -154,7 +157,7 @@ public sealed class TestPaymentController(
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error in payment flow simulation");
-            return StatusCode(500, new { error = ex.Message });
+            return StatusCode(500, new { error = "An unexpected error occurred" });
         }
     }
 
@@ -198,25 +201,12 @@ public sealed class TestPaymentController(
         catch (InvalidOperationException ex)
         {
             _logger.LogError(ex, "Invalid operation during test payment");
-            return BadRequest(new { success = false, error = ex.Message });
+            return BadRequest(new { success = false, error = "Invalid operation" });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error completing test payment");
-            return StatusCode(500, new { success = false, error = ex.Message });
+            return StatusCode(500, new { success = false, error = "An unexpected error occurred" });
         }
-    }
-
-    public record TestPaymentRequest
-    {
-        public long Amount { get; init; }
-        public string Email { get; init; } = string.Empty;
-        public string UserId { get; init; } = string.Empty;
-    }
-
-    public record TestCompletePaymentRequest
-    {
-        public string PaymentIntentId { get; init; } = string.Empty;
-        public string Email { get; init; } = string.Empty;
     }
 }

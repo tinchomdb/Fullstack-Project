@@ -61,7 +61,7 @@ public class CartValidatorTests
         var request = new AddToCartRequest
         {
             ProductId = "product-1",
-            Quantity = CartValidator.MAX_QUANTITY_PER_ITEM + 1
+            Quantity = CartValidator.MaxQuantityPerItem + 1
         };
 
         // Act & Assert
@@ -103,14 +103,14 @@ public class CartValidatorTests
     [Fact]
     public void ValidateQuantity_AtMaxLimit_DoesNotThrow()
     {
-        _validator.ValidateQuantity(CartValidator.MAX_QUANTITY_PER_ITEM, allowZero: false);
+        _validator.ValidateQuantity(CartValidator.MaxQuantityPerItem, allowZero: false);
     }
 
     [Fact]
     public void ValidateQuantity_ExceedsMaxLimit_ThrowsArgumentException()
     {
         Assert.Throws<ArgumentException>(
-            () => _validator.ValidateQuantity(CartValidator.MAX_QUANTITY_PER_ITEM + 1, allowZero: false));
+            () => _validator.ValidateQuantity(CartValidator.MaxQuantityPerItem + 1, allowZero: false));
     }
 
     // --- ValidateCartLimits ---
@@ -119,7 +119,7 @@ public class CartValidatorTests
     public void ValidateCartLimits_WithExistingItem_DoesNotThrow()
     {
         // Arrange — cart at max items, but item already exists
-        var items = Enumerable.Range(0, CartValidator.MAX_CART_ITEMS)
+        var items = Enumerable.Range(0, CartValidator.MaxCartItems)
             .Select(i => TestDataBuilder.CreateCartItem(productId: $"product-{i}"))
             .ToList();
         var cart = TestDataBuilder.CreateCart(items: items);
@@ -143,7 +143,7 @@ public class CartValidatorTests
     public void ValidateCartLimits_NewItemAtMaxLimit_ThrowsInvalidOperationException()
     {
         // Arrange — cart already at max
-        var items = Enumerable.Range(0, CartValidator.MAX_CART_ITEMS)
+        var items = Enumerable.Range(0, CartValidator.MaxCartItems)
             .Select(i => TestDataBuilder.CreateCartItem(productId: $"product-{i}"))
             .ToList();
         var cart = TestDataBuilder.CreateCart(items: items);

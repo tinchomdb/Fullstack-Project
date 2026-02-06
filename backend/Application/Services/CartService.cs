@@ -17,12 +17,12 @@ public sealed class CartService(
     private const decimal FreeShippingThreshold = 50m;
     private const decimal StandardShippingCost = 5.99m;
 
-    private readonly ICartsRepository _cartsRepository = cartsRepository;
-    private readonly IProductsRepository _productsRepository = productsRepository;
-    private readonly IOrdersRepository _ordersRepository = ordersRepository;
-    private readonly CartValidator _cartValidator = cartValidator;
-    private readonly CartMapper _cartMapper = cartMapper;
-    private readonly ILogger<CartService> _logger = logger;
+    private readonly ICartsRepository _cartsRepository = cartsRepository ?? throw new ArgumentNullException(nameof(cartsRepository));
+    private readonly IProductsRepository _productsRepository = productsRepository ?? throw new ArgumentNullException(nameof(productsRepository));
+    private readonly IOrdersRepository _ordersRepository = ordersRepository ?? throw new ArgumentNullException(nameof(ordersRepository));
+    private readonly CartValidator _cartValidator = cartValidator ?? throw new ArgumentNullException(nameof(cartValidator));
+    private readonly CartMapper _cartMapper = cartMapper ?? throw new ArgumentNullException(nameof(cartMapper));
+    private readonly ILogger<CartService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task<CartResponse> GetActiveCartAsync(string userId, CancellationToken cancellationToken = default)
     {
@@ -350,7 +350,7 @@ public sealed class CartService(
             var index = targetItems.IndexOf(existingItem);
             var newQuantity = Math.Min(
                 existingItem.Quantity + itemToMerge.Quantity,
-                CartValidator.MAX_QUANTITY_PER_ITEM);
+                CartValidator.MaxQuantityPerItem);
 
             targetItems[index] = existingItem with
             {
@@ -358,7 +358,7 @@ public sealed class CartService(
                 LineTotal = existingItem.UnitPrice * newQuantity
             };
         }
-        else if (targetItems.Count < CartValidator.MAX_CART_ITEMS)
+        else if (targetItems.Count < CartValidator.MaxCartItems)
         {
             targetItems.Add(itemToMerge);
         }

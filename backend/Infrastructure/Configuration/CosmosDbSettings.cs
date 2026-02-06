@@ -1,6 +1,6 @@
 namespace Infrastructure.Configuration;
 
-public class CosmosDbSettings
+public sealed class CosmosDbSettings
 {
     public string Account { get; set; } = string.Empty;
     public string Key { get; set; } = string.Empty;

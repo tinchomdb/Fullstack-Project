@@ -1,16 +1,19 @@
 using Application.Repositories;
 using Domain.Entities;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Services;
 
-public class DataSeedingService(
+public sealed class DataSeedingService(
     ICategoriesRepository categoriesRepository,
     IUsersRepository usersRepository,
-    IProductsRepository productsRepository)
+    IProductsRepository productsRepository,
+    ILogger<DataSeedingService> logger)
 {
-    private readonly ICategoriesRepository _categoriesRepository = categoriesRepository;
-    private readonly IUsersRepository _usersRepository = usersRepository;
-    private readonly IProductsRepository _productsRepository = productsRepository;
+    private readonly ICategoriesRepository _categoriesRepository = categoriesRepository ?? throw new ArgumentNullException(nameof(categoriesRepository));
+    private readonly IUsersRepository _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
+    private readonly IProductsRepository _productsRepository = productsRepository ?? throw new ArgumentNullException(nameof(productsRepository));
+    private readonly ILogger<DataSeedingService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     public async Task SeedDataAsync(CancellationToken cancellationToken = default)
     {
@@ -19,47 +22,43 @@ public class DataSeedingService(
         {
             return;
         }
-        Console.WriteLine("Starting data seeding...");
+        _logger.LogInformation("Starting data seeding...");
 
-        // Clear existing data for fresh seeding (portfolio project)
-        Console.WriteLine("Clearing existing data...");
+        _logger.LogInformation("Clearing existing data...");
         await ClearExistingDataAsync(cancellationToken);
-        Console.WriteLine("✓ Existing data cleared");
+        _logger.LogInformation("Existing data cleared");
 
-        // Seed Categories
         var categories = await SeedCategoriesAsync(cancellationToken);
-        Console.WriteLine($"✓ Seeded {categories.Count} categories");
+        _logger.LogInformation("Seeded {Count} categories", categories.Count);
 
-        // Seed Users (with some sellers)
         var sellers = await SeedUsersAsync(cancellationToken);
-        Console.WriteLine($"✓ Seeded {sellers.Count} sellers");
+        _logger.LogInformation("Seeded {Count} sellers", sellers.Count);
 
-        // Seed Products
         var productsCount = await SeedProductsAsync(categories, sellers, cancellationToken);
-        Console.WriteLine($"✓ Seeded {productsCount} products");
+        _logger.LogInformation("Seeded {Count} products", productsCount);
 
-        Console.WriteLine("Data seeding completed successfully!");
+        _logger.LogInformation("Data seeding completed successfully");
     }
 
     private async Task ClearExistingDataAsync(CancellationToken cancellationToken)
     {
-        Console.WriteLine("Deleting existing products...");
+        _logger.LogInformation("Deleting existing products...");
         var existingProducts = await _productsRepository.GetAllProductsAsync(cancellationToken);
         foreach (var product in existingProducts)
         {
             await _productsRepository.DeleteProductAsync(product.Id, product.SellerId, cancellationToken);
         }
-        Console.WriteLine($"Deleted {existingProducts.Count} products");
+        _logger.LogInformation("Deleted {Count} products", existingProducts.Count);
 
-        Console.WriteLine("Deleting existing categories...");
+        _logger.LogInformation("Deleting existing categories...");
         var existingCategories = await _categoriesRepository.GetCategoriesAsync(cancellationToken);
         foreach (var category in existingCategories)
         {
             await _categoriesRepository.DeleteCategoryAsync(category.Id, cancellationToken);
         }
-        Console.WriteLine($"Deleted {existingCategories.Count} categories");
-        
-        Console.WriteLine("Note: Users are not deleted. Please manually delete from Azure Cosmos DB if needed.");
+        _logger.LogInformation("Deleted {Count} categories", existingCategories.Count);
+
+        _logger.LogWarning("Users are not deleted. Please manually delete from Azure Cosmos DB if needed.");
     }
 
     private async Task<List<Category>> SeedCategoriesAsync(CancellationToken cancellationToken)

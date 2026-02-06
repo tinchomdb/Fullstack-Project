@@ -7,5 +7,5 @@ public sealed record CartValidationResponse
     public decimal Subtotal { get; init; }
     public decimal ShippingCost { get; init; }
     public decimal Total { get; init; }
-    public List<string> Warnings { get; init; } = [];
+    public IReadOnlyList<string> Warnings { get; init; } = [];
 }

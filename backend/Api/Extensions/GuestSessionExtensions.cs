@@ -63,7 +63,7 @@ public static class GuestSessionExtensions
             {
                 return (user.GetUserId(), true);
             }
-            catch
+            catch (InvalidOperationException)
             {
                 return (null, false);
             }

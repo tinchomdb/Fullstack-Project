@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Repositories;
 
-public class CachedProductsRepository : IProductsRepository
+public sealed class CachedProductsRepository : IProductsRepository
 {
     private readonly IProductsRepository _inner;
     private readonly IMemoryCache _cache;
@@ -52,7 +52,7 @@ public class CachedProductsRepository : IProductsRepository
             {
                 entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(_cacheSettings.ProductsExpirationMinutes);
                 _logger.LogInformation("Cache miss for search term: {SearchTerm}. Fetching ALL results from database.", parameters.SearchTerm);
-                
+
                 // Fetch ALL results for this search (ignore page/pageSize for the database query)
                 var allResultsParameters = new ProductQueryParameters
                 {
@@ -62,7 +62,7 @@ public class CachedProductsRepository : IProductsRepository
                     Page = 1,
                     PageSize = _cacheSettings.SearchResultsMaxCacheSize
                 };
-                
+
                 return await _inner.GetProductsAsync(allResultsParameters, cancellationToken);
             }) ?? new PaginatedResponse<Product>([], 0, 1, _cacheSettings.SearchResultsMaxCacheSize);
 
@@ -76,7 +76,7 @@ public class CachedProductsRepository : IProductsRepository
         var searchTerm = parameters.SearchTerm?.Trim().ToLowerInvariant() ?? string.Empty;
         var sortBy = parameters.SortBy?.ToLowerInvariant() ?? "name";
         var sortDirection = parameters.SortDirection?.ToLowerInvariant() ?? "asc";
-        
+
         return $"{ProductsSearchPrefix}{searchTerm}_{sortBy}_{sortDirection}";
     }
 
@@ -88,7 +88,7 @@ public class CachedProductsRepository : IProductsRepository
     {
         var offset = (page - 1) * pageSize;
         var pageItems = allItems.Skip(offset).Take(pageSize).ToList().AsReadOnly();
-        
+
         return new PaginatedResponse<Product>(
             pageItems,
             totalCount,
@@ -121,7 +121,7 @@ public class CachedProductsRepository : IProductsRepository
         }
 
         var cacheKey = $"{ProductsBySellerPrefix}{sellerId}";
-        
+
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
@@ -140,7 +140,7 @@ public class CachedProductsRepository : IProductsRepository
         }
 
         var cacheKey = $"{ProductKeyPrefix}{productId}_{sellerId}";
-        
+
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
@@ -159,7 +159,7 @@ public class CachedProductsRepository : IProductsRepository
         }
 
         var cacheKey = $"product_slug_{slug}";
-        
+
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
@@ -177,15 +177,15 @@ public class CachedProductsRepository : IProductsRepository
             return await _inner.GetFeaturedProductsAsync(categoryId, limit, cancellationToken);
         }
 
-        var cacheKey = string.IsNullOrEmpty(categoryId) 
-            ? $"{ProductsFeaturedPrefix}all_{limit}" 
+        var cacheKey = string.IsNullOrEmpty(categoryId)
+            ? $"{ProductsFeaturedPrefix}all_{limit}"
             : $"{ProductsFeaturedPrefix}{categoryId}_{limit}";
-        
+
         lock (_featuredCacheKeys)
         {
             _featuredCacheKeys.Add(cacheKey);
         }
-        
+
         return await _cache.GetOrCreateAsync(
             cacheKey,
             async entry =>
@@ -198,7 +198,7 @@ public class CachedProductsRepository : IProductsRepository
                         _featuredCacheKeys.Remove(key.ToString()!);
                     }
                 });
-                _logger.LogInformation("Cache miss for featured products{Category} (limit: {Limit}). Fetching from database.", 
+                _logger.LogInformation("Cache miss for featured products{Category} (limit: {Limit}). Fetching from database.",
                     string.IsNullOrEmpty(categoryId) ? "" : $" in category {categoryId}", limit);
                 return await _inner.GetFeaturedProductsAsync(categoryId, limit, cancellationToken);
             }) ?? [];
@@ -207,37 +207,37 @@ public class CachedProductsRepository : IProductsRepository
     public async Task<Product> CreateProductAsync(Product product, CancellationToken cancellationToken = default)
     {
         var result = await _inner.CreateProductAsync(product, cancellationToken);
-        
+
         // Invalidate related caches
         InvalidateProductCaches(product);
         _logger.LogInformation("Cache invalidated after creating product {ProductId}.", product.Id);
-        
+
         return result;
     }
 
     public async Task<Product> UpdateProductAsync(Product product, CancellationToken cancellationToken = default)
     {
         var result = await _inner.UpdateProductAsync(product, cancellationToken);
-        
+
         // Invalidate related caches
         InvalidateProductCaches(product);
         _logger.LogInformation("Cache invalidated after updating product {ProductId}.", product.Id);
-        
+
         return result;
     }
 
     public async Task DeleteProductAsync(string productId, string sellerId, CancellationToken cancellationToken = default)
     {
         await _inner.DeleteProductAsync(productId, sellerId, cancellationToken);
-        
+
         // Invalidate caches - we don't have the full product so invalidate broadly
         _cache.Remove(AllProductsKey);
         _cache.Remove($"{ProductKeyPrefix}{productId}_{sellerId}");
         _cache.Remove($"{ProductsBySellerPrefix}{sellerId}");
-        
+
         // Also invalidate all featured products caches since we don't know if the deleted product was featured
         InvalidateAllFeaturedProductsCaches();
-        
+
         _logger.LogInformation("Cache invalidated after deleting product {ProductId}.", productId);
     }
 
@@ -246,7 +246,7 @@ public class CachedProductsRepository : IProductsRepository
         _cache.Remove(AllProductsKey);
         _cache.Remove($"{ProductKeyPrefix}{product.Id}_{product.Seller.Id}");
         _cache.Remove($"{ProductsBySellerPrefix}{product.Seller.Id}");
-        
+
         // Invalidate slug-based cache
         if (!string.IsNullOrEmpty(product.Slug))
         {
@@ -268,7 +268,7 @@ public class CachedProductsRepository : IProductsRepository
             }
             _featuredCacheKeys.Clear();
         }
-        
+
         _logger.LogInformation("All featured products caches invalidated.");
     }
 }

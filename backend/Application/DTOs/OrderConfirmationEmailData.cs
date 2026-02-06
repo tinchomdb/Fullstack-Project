@@ -9,5 +9,5 @@ public sealed record OrderConfirmationEmailData
     public decimal Subtotal { get; init; }
     public decimal ShippingCost { get; init; }
     public decimal Total { get; init; }
-    public List<OrderEmailItem> Items { get; init; } = [];
+    public IReadOnlyList<OrderEmailItem> Items { get; init; } = [];
 }

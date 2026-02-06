@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Domain.Entities;
 
-public class ProductQueryParameters : IValidatableObject
+public sealed class ProductQueryParameters : IValidatableObject
 {
     [Range(0, double.MaxValue, ErrorMessage = "MinPrice must be greater than or equal to 0")]
     public decimal? MinPrice { get; set; }
@@ -24,8 +24,8 @@ public class ProductQueryParameters : IValidatableObject
 
     public string? SearchTerm { get; set; }
 
-    public bool HasFilters => MinPrice.HasValue 
-        || MaxPrice.HasValue 
+    public bool HasFilters => MinPrice.HasValue
+        || MaxPrice.HasValue
         || !string.IsNullOrEmpty(CategoryId);
 
     public bool IsSearching => !string.IsNullOrWhiteSpace(SearchTerm);

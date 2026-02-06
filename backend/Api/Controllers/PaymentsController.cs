@@ -18,8 +18,13 @@ public sealed class PaymentsController(
 
     [Authorize]
     [HttpPost("create-intent")]
+    [ProducesResponseType(typeof(CreatePaymentIntentResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreatePaymentIntentResponse>> CreatePaymentIntent(
-        [FromBody] CreatePaymentIntentRequest request)
+        [FromBody] CreatePaymentIntentRequest request,
+        CancellationToken cancellationToken)
     {
         if (request == null)
         {
@@ -41,16 +46,18 @@ public sealed class PaymentsController(
             var userId = User.GetUserId();
             var response = await _paymentService.CreatePaymentIntentAsync(
                 request,
-                userId);
+                userId,
+                cancellationToken);
             return Ok(response);
         }
         catch (StripeException ex)
         {
-            return BadRequest(new { error = $"Stripe error: {ex.Message}" });
+            _logger.LogWarning(ex, "Stripe error creating payment intent");
+            return BadRequest(new { error = "Payment processing error. Please try again." });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create payment intent for user {UserId}", User.GetUserId());
+            _logger.LogError(ex, "Failed to create payment intent");
             return StatusCode(500, new { error = "An unexpected error occurred while processing the payment" });
         }
     }
