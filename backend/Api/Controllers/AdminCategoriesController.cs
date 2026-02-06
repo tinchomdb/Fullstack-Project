@@ -1,3 +1,4 @@
+using Api.DTOs;
 using Application.Repositories;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -14,27 +15,24 @@ public sealed class AdminCategoriesController(ICategoriesRepository repository) 
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<Category>> CreateCategory([FromBody] Category category, CancellationToken cancellationToken)
+    public async Task<ActionResult<Category>> CreateCategory([FromBody] CreateCategoryRequest request, CancellationToken cancellationToken)
     {
-        var createdCategory = await _repository.CreateCategoryAsync(category, cancellationToken);
+        var createdCategory = await _repository.CreateCategoryAsync(request.ToEntity(), cancellationToken);
         return CreatedAtAction("GetCategory", "Categories", new { categoryId = createdCategory.Id }, createdCategory);
     }
 
     [HttpPut("{categoryId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<Category>> UpdateCategory(string categoryId, [FromBody] Category category, CancellationToken cancellationToken)
+    public async Task<ActionResult<Category>> UpdateCategory(string categoryId, [FromBody] UpdateCategoryRequest request, CancellationToken cancellationToken)
     {
-        if (category.Id != categoryId)
-        {
-            return BadRequest("Category ID must match route parameter");
-        }
-
-        var updatedCategory = await _repository.UpdateCategoryAsync(category, cancellationToken);
+        var updatedCategory = await _repository.UpdateCategoryAsync(request.ToEntity(categoryId), cancellationToken);
 
         if (updatedCategory is null)
         {

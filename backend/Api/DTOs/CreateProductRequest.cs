@@ -1,0 +1,55 @@
+using System.ComponentModel.DataAnnotations;
+using Domain.Entities;
+
+namespace Api.DTOs;
+
+public sealed record CreateProductRequest
+{
+    [Required]
+    [MaxLength(255)]
+    public required string Name { get; init; }
+
+    [Required]
+    public required string Description { get; init; }
+
+    [Required]
+    [MaxLength(255)]
+    public required string Slug { get; init; }
+
+    [Required]
+    [Range(0.01, (double)decimal.MaxValue, ErrorMessage = "Price must be greater than zero")]
+    public decimal Price { get; init; }
+
+    [MaxLength(10)]
+    public string Currency { get; init; } = "USD";
+
+    [Required]
+    [Range(0, int.MaxValue)]
+    public int Stock { get; init; }
+
+    [Required]
+    public required string SellerId { get; init; }
+
+    public IReadOnlyList<string> CategoryIds { get; init; } = [];
+
+    public Seller Seller { get; init; } = new();
+
+    public IReadOnlyList<string> ImageUrls { get; init; } = [];
+
+    public bool Featured { get; init; }
+
+    public Product ToEntity() => new()
+    {
+        Name = Name,
+        Description = Description,
+        Slug = Slug,
+        Price = Price,
+        Currency = Currency,
+        Stock = Stock,
+        SellerId = SellerId,
+        CategoryIds = CategoryIds,
+        Seller = Seller,
+        ImageUrls = ImageUrls,
+        Featured = Featured
+    };
+}

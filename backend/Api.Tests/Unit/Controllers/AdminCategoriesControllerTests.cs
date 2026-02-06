@@ -1,4 +1,5 @@
 using Api.Controllers;
+using Api.DTOs;
 using Application.Repositories;
 using Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
@@ -29,13 +30,13 @@ public class AdminCategoriesControllerTests
     public async Task CreateCategory_ReturnsCreatedAtAction()
     {
         // Arrange
-        var category = new Category { Id = "cat-1", Name = "Electronics", Slug = "electronics" };
+        var request = new CreateCategoryRequest { Name = "Electronics", Slug = "electronics" };
         _mockRepository
-            .Setup(r => r.CreateCategoryAsync(category, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(category);
+            .Setup(r => r.CreateCategoryAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Category { Id = "cat-1", Name = "Electronics", Slug = "electronics" });
 
         // Act
-        var result = await _controller.CreateCategory(category, CancellationToken.None);
+        var result = await _controller.CreateCategory(request, CancellationToken.None);
 
         // Assert
         var createdResult = Assert.IsType<CreatedAtActionResult>(result.Result);
@@ -44,19 +45,52 @@ public class AdminCategoriesControllerTests
         Assert.Equal("cat-1", returned.Id);
     }
 
+    [Fact]
+    public async Task CreateCategory_MapsRequestFieldsToEntity()
+    {
+        // Arrange
+        var request = new CreateCategoryRequest
+        {
+            Name = "Electronics",
+            Slug = "electronics",
+            Description = "All electronics",
+            Image = "https://example.com/img.png",
+            Featured = true,
+            ParentCategoryId = "parent-1"
+        };
+
+        Category? capturedCategory = null;
+        _mockRepository
+            .Setup(r => r.CreateCategoryAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
+            .Callback<Category, CancellationToken>((c, _) => capturedCategory = c)
+            .ReturnsAsync(new Category { Id = "cat-1" });
+
+        // Act
+        await _controller.CreateCategory(request, CancellationToken.None);
+
+        // Assert
+        Assert.NotNull(capturedCategory);
+        Assert.Equal("Electronics", capturedCategory.Name);
+        Assert.Equal("electronics", capturedCategory.Slug);
+        Assert.Equal("All electronics", capturedCategory.Description);
+        Assert.Equal("https://example.com/img.png", capturedCategory.Image);
+        Assert.True(capturedCategory.Featured);
+        Assert.Equal("parent-1", capturedCategory.ParentCategoryId);
+    }
+
     // ===== UpdateCategory =====
 
     [Fact]
-    public async Task UpdateCategory_WithMatchingId_ReturnsOk()
+    public async Task UpdateCategory_WithValidRequest_ReturnsOk()
     {
         // Arrange
-        var category = new Category { Id = "cat-1", Name = "Updated Name" };
+        var request = new UpdateCategoryRequest { Name = "Updated Name", Slug = "updated" };
         _mockRepository
-            .Setup(r => r.UpdateCategoryAsync(category, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(category);
+            .Setup(r => r.UpdateCategoryAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new Category { Id = "cat-1", Name = "Updated Name" });
 
         // Act
-        var result = await _controller.UpdateCategory("cat-1", category, CancellationToken.None);
+        var result = await _controller.UpdateCategory("cat-1", request, CancellationToken.None);
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result.Result);
@@ -65,29 +99,36 @@ public class AdminCategoriesControllerTests
     }
 
     [Fact]
-    public async Task UpdateCategory_WithMismatchedId_ReturnsBadRequest()
+    public async Task UpdateCategory_SetsIdFromRouteParameter()
     {
         // Arrange
-        var category = new Category { Id = "cat-1" };
+        var request = new UpdateCategoryRequest { Name = "Test", Slug = "test" };
+
+        Category? capturedCategory = null;
+        _mockRepository
+            .Setup(r => r.UpdateCategoryAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
+            .Callback<Category, CancellationToken>((c, _) => capturedCategory = c)
+            .ReturnsAsync(new Category { Id = "cat-1" });
 
         // Act
-        var result = await _controller.UpdateCategory("different-id", category, CancellationToken.None);
+        await _controller.UpdateCategory("cat-1", request, CancellationToken.None);
 
         // Assert
-        Assert.IsType<BadRequestObjectResult>(result.Result);
+        Assert.NotNull(capturedCategory);
+        Assert.Equal("cat-1", capturedCategory.Id);
     }
 
     [Fact]
     public async Task UpdateCategory_WhenNotFound_ReturnsNotFound()
     {
         // Arrange
-        var category = new Category { Id = "missing" };
+        var request = new UpdateCategoryRequest { Name = "Test", Slug = "test" };
         _mockRepository
-            .Setup(r => r.UpdateCategoryAsync(category, It.IsAny<CancellationToken>()))
+            .Setup(r => r.UpdateCategoryAsync(It.IsAny<Category>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((Category?)null);
 
         // Act
-        var result = await _controller.UpdateCategory("missing", category, CancellationToken.None);
+        var result = await _controller.UpdateCategory("missing", request, CancellationToken.None);
 
         // Assert
         Assert.IsType<NotFoundResult>(result.Result);

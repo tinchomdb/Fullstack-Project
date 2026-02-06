@@ -1,4 +1,4 @@
-
+using Api.DTOs;
 using Application.Repositories;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -15,26 +15,23 @@ public sealed class AdminProductsController(IProductsRepository repository) : Co
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product, CancellationToken cancellationToken)
+    public async Task<ActionResult<Product>> CreateProduct([FromBody] CreateProductRequest request, CancellationToken cancellationToken)
     {
-        var createdProduct = await _repository.CreateProductAsync(product, cancellationToken);
+        var createdProduct = await _repository.CreateProductAsync(request.ToEntity(), cancellationToken);
         return CreatedAtAction("GetProduct", "Products", new { productId = createdProduct.Id, sellerId = createdProduct.SellerId }, createdProduct);
     }
 
     [HttpPut("{productId}/seller/{sellerId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<Product>> UpdateProduct(string productId, string sellerId, [FromBody] Product product, CancellationToken cancellationToken)
+    public async Task<ActionResult<Product>> UpdateProduct(string productId, string sellerId, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
-        if (product.Id != productId || product.SellerId != sellerId)
-        {
-            return BadRequest("Product ID and SellerId must match route parameters");
-        }
-
-        var updatedProduct = await _repository.UpdateProductAsync(product, cancellationToken);
+        var updatedProduct = await _repository.UpdateProductAsync(request.ToEntity(productId, sellerId), cancellationToken);
         return Ok(updatedProduct);
     }
 

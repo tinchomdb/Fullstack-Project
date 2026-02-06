@@ -36,6 +36,7 @@ public sealed class CartsController(
         return Ok(cart);
     }
 
+    [Authorize]
     [HttpPost("my-cart/items")]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
