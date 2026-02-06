@@ -192,4 +192,45 @@ public class ProductsControllerTests
         // Act & Assert
         Assert.Throws<ArgumentNullException>(() => new ProductsController(null!));
     }
+
+    [Fact]
+    public async Task GetFeaturedProducts_ReturnsOkWithProducts()
+    {
+        // Arrange
+        var products = new List<Product>
+        {
+            new() { Id = "1", Name = "Featured Laptop", Price = 999.99m, SellerId = "seller1", Featured = true }
+        };
+        _mockRepository
+            .Setup(r => r.GetFeaturedProductsAsync(null, 20, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(products);
+
+        // Act
+        var result = await _controller.GetFeaturedProducts(cancellationToken: CancellationToken.None);
+
+        // Assert
+        var okResult = Assert.IsType<ActionResult<IReadOnlyList<Product>>>(result);
+        var returnValue = Assert.IsType<OkObjectResult>(okResult.Result);
+        var returnedProducts = Assert.IsAssignableFrom<IReadOnlyList<Product>>(returnValue.Value);
+        Assert.Single(returnedProducts);
+        Assert.True(returnedProducts[0].Featured);
+    }
+
+    [Fact]
+    public async Task GetFeaturedProducts_WithCategoryFilter_PassesCategoryId()
+    {
+        // Arrange
+        var products = new List<Product>();
+        _mockRepository
+            .Setup(r => r.GetFeaturedProductsAsync("electronics", 10, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(products);
+
+        // Act
+        var result = await _controller.GetFeaturedProducts(limit: 10, categoryId: "electronics", cancellationToken: CancellationToken.None);
+
+        // Assert
+        var okResult = Assert.IsType<ActionResult<IReadOnlyList<Product>>>(result);
+        Assert.IsType<OkObjectResult>(okResult.Result);
+        _mockRepository.Verify(r => r.GetFeaturedProductsAsync("electronics", 10, It.IsAny<CancellationToken>()), Times.Once);
+    }
 }
