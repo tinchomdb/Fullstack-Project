@@ -9,14 +9,14 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public sealed class CategoriesController(ICategoriesRepository repository) : ControllerBase
 {
-    private readonly ICategoriesRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    private readonly ICategoriesRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<Category>>> GetCategories(CancellationToken cancellationToken)
     {
-        var categories = await repository.GetCategoriesAsync(cancellationToken);
+        var categories = await _repository.GetCategoriesAsync(cancellationToken);
         return Ok(categories);
     }
 
@@ -26,7 +26,7 @@ public sealed class CategoriesController(ICategoriesRepository repository) : Con
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Category>> GetCategory(string categoryId, CancellationToken cancellationToken)
     {
-        var category = await repository.GetCategoryAsync(categoryId, cancellationToken);
+        var category = await _repository.GetCategoryAsync(categoryId, cancellationToken);
 
         if (category is null)
         {
@@ -43,7 +43,7 @@ public sealed class CategoriesController(ICategoriesRepository repository) : Con
         [FromQuery] string? parentId,
         CancellationToken cancellationToken)
     {
-        var categories = await repository.GetChildrenCategoriesAsync(parentId, cancellationToken);
+        var categories = await _repository.GetChildrenCategoriesAsync(parentId, cancellationToken);
         return Ok(categories);
     }
 }

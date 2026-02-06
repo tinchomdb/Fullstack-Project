@@ -1,12 +1,12 @@
+using Infrastructure.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using Infrastructure.Configuration;
 
 namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HealthController(
+public sealed class HealthController(
     IWebHostEnvironment environment,
     IOptions<CosmosDbSettings> cosmosDbSettings) : ControllerBase
 {
@@ -25,9 +25,9 @@ public class HealthController(
             HasCosmosKey = !string.IsNullOrEmpty(_cosmosDbSettings.Key),
             DatabaseName = _cosmosDbSettings.DatabaseName,
             // Don't expose actual credentials - just check if they're configured
-            ConfigurationStatus = !string.IsNullOrEmpty(_cosmosDbSettings.Account) && 
-                                !string.IsNullOrEmpty(_cosmosDbSettings.Key) 
-                                ? "Fully Configured" 
+            ConfigurationStatus = !string.IsNullOrEmpty(_cosmosDbSettings.Account) &&
+                                !string.IsNullOrEmpty(_cosmosDbSettings.Key)
+                                ? "Fully Configured"
                                 : "Missing Credentials"
         });
     }

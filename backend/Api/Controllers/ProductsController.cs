@@ -10,7 +10,7 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public sealed class ProductsController(IProductsRepository repository) : ControllerBase
 {
-    private readonly IProductsRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    private readonly IProductsRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     [HttpGet]
     [AllowAnonymous]
@@ -20,16 +20,16 @@ public sealed class ProductsController(IProductsRepository repository) : Control
         [FromQuery] ProductQueryParameters parameters,
         CancellationToken cancellationToken)
     {
-        var result = await repository.GetProductsAsync(parameters, cancellationToken);
-        
+        var result = await _repository.GetProductsAsync(parameters, cancellationToken);
+
         if (result.TotalPages > 0 && parameters.Page > result.TotalPages)
         {
-            return BadRequest(new 
-            { 
-                error = $"Page {parameters.Page} exceeds total pages ({result.TotalPages}). Please request a page between 1 and {result.TotalPages}." 
+            return BadRequest(new
+            {
+                error = $"Page {parameters.Page} exceeds total pages ({result.TotalPages}). Please request a page between 1 and {result.TotalPages}."
             });
         }
-        
+
         return Ok(result);
     }
 
@@ -38,7 +38,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetProductsBySeller(string sellerId, CancellationToken cancellationToken)
     {
-        var products = await repository.GetProductsBySellerAsync(sellerId, cancellationToken);
+        var products = await _repository.GetProductsBySellerAsync(sellerId, cancellationToken);
         return Ok(products);
     }
 
@@ -48,7 +48,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Product>> GetProduct(string productId, string sellerId, CancellationToken cancellationToken)
     {
-        var product = await repository.GetProductAsync(productId, sellerId, cancellationToken);
+        var product = await _repository.GetProductAsync(productId, sellerId, cancellationToken);
 
         if (product is null)
         {
@@ -64,7 +64,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Product>> GetProductBySlug(string slug, CancellationToken cancellationToken)
     {
-        var product = await repository.GetProductBySlugAsync(slug, cancellationToken);
+        var product = await _repository.GetProductBySlugAsync(slug, cancellationToken);
 
         if (product is null)
         {
@@ -82,7 +82,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
         [FromQuery] string? categoryId = null,
         CancellationToken cancellationToken = default)
     {
-        var products = await repository.GetFeaturedProductsAsync(categoryId, limit, cancellationToken);
+        var products = await _repository.GetFeaturedProductsAsync(categoryId, limit, cancellationToken);
         return Ok(products);
     }
 }

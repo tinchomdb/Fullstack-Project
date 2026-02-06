@@ -11,7 +11,7 @@ namespace Api.Controllers;
 [Authorize(Roles = "admin")]
 public sealed class AdminProductsController(IProductsRepository repository) : ControllerBase
 {
-    private readonly IProductsRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    private readonly IProductsRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -19,7 +19,7 @@ public sealed class AdminProductsController(IProductsRepository repository) : Co
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<Product>> CreateProduct([FromBody] Product product, CancellationToken cancellationToken)
     {
-        var createdProduct = await repository.CreateProductAsync(product, cancellationToken);
+        var createdProduct = await _repository.CreateProductAsync(product, cancellationToken);
         return CreatedAtAction("GetProduct", "Products", new { productId = createdProduct.Id, sellerId = createdProduct.SellerId }, createdProduct);
     }
 
@@ -34,7 +34,7 @@ public sealed class AdminProductsController(IProductsRepository repository) : Co
             return BadRequest("Product ID and SellerId must match route parameters");
         }
 
-        var updatedProduct = await repository.UpdateProductAsync(product, cancellationToken);
+        var updatedProduct = await _repository.UpdateProductAsync(product, cancellationToken);
         return Ok(updatedProduct);
     }
 
@@ -44,7 +44,7 @@ public sealed class AdminProductsController(IProductsRepository repository) : Co
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> DeleteProduct(string productId, string sellerId, CancellationToken cancellationToken)
     {
-        await repository.DeleteProductAsync(productId, sellerId, cancellationToken);
+        await _repository.DeleteProductAsync(productId, sellerId, cancellationToken);
         return NoContent();
     }
 }

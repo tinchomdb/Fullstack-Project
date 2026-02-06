@@ -1,10 +1,10 @@
+using Application.Services;
+using Infrastructure.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
-using Application.Services;
-using Infrastructure.Configuration;
 
 namespace Api.Controllers;
 
@@ -17,9 +17,9 @@ public sealed class StripeWebhookController(
     IOptions<StripeSettings> stripeSettings,
     ILogger<StripeWebhookController> logger) : ControllerBase
 {
-    private readonly IPaymentService _paymentService = paymentService;
-    private readonly ILogger<StripeWebhookController> _logger = logger;
-    private readonly string _webhookSecret = stripeSettings.Value.WebhookSecret;
+    private readonly IPaymentService _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
+    private readonly ILogger<StripeWebhookController> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly string _webhookSecret = stripeSettings?.Value.WebhookSecret ?? throw new ArgumentNullException(nameof(stripeSettings));
 
     [HttpPost]
     public async Task<IActionResult> HandleWebhook(CancellationToken cancellationToken)
@@ -42,7 +42,7 @@ public sealed class StripeWebhookController(
                 throwOnApiVersionMismatch: false
             );
 
-            _logger.LogInformation("Processing Stripe webhook event: {EventType} - {EventId}", 
+            _logger.LogInformation("Processing Stripe webhook event: {EventType} - {EventId}",
                 stripeEvent.Type, stripeEvent.Id);
 
             if (stripeEvent.Type == "payment_intent.succeeded")
@@ -71,7 +71,7 @@ public sealed class StripeWebhookController(
     }
 
     private async Task HandlePaymentSuccessAsync(
-        PaymentIntent paymentIntent, 
+        PaymentIntent paymentIntent,
         CancellationToken cancellationToken)
     {
         var userId = paymentIntent.Metadata.GetValueOrDefault("user_id");

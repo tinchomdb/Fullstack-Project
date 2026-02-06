@@ -10,14 +10,14 @@ namespace Api.Controllers;
 [Route("api/slides")]
 public sealed class CarouselSlidesController(ICarouselSlidesRepository repository) : ControllerBase
 {
-    private readonly ICarouselSlidesRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    private readonly ICarouselSlidesRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CarouselSlide>>> GetSlides(CancellationToken cancellationToken)
     {
-        var slides = await repository.GetAllSlidesAsync(cancellationToken);
+        var slides = await _repository.GetAllSlidesAsync(cancellationToken);
         return Ok(slides);
     }
 
@@ -26,7 +26,7 @@ public sealed class CarouselSlidesController(ICarouselSlidesRepository repositor
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CarouselSlide>>> GetActiveSlides(CancellationToken cancellationToken)
     {
-        var slides = await repository.GetActiveSlidesAsync(cancellationToken);
+        var slides = await _repository.GetActiveSlidesAsync(cancellationToken);
         return Ok(slides);
     }
 }

@@ -1,8 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using Application.Repositories;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 
 namespace Api.Controllers;
 
@@ -11,7 +11,7 @@ namespace Api.Controllers;
 [Authorize(Roles = "admin")]
 public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repository) : ControllerBase
 {
-    private readonly ICarouselSlidesRepository repository = repository ?? throw new ArgumentNullException(nameof(repository));
+    private readonly ICarouselSlidesRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -19,7 +19,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<IReadOnlyList<CarouselSlide>>> GetSlides(CancellationToken cancellationToken)
     {
-        var slides = await repository.GetAllSlidesAsync(cancellationToken);
+        var slides = await _repository.GetAllSlidesAsync(cancellationToken);
         return Ok(slides);
     }
 
@@ -28,7 +28,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CarouselSlide>>> GetActiveSlides(CancellationToken cancellationToken)
     {
-        var slides = await repository.GetActiveSlidesAsync(cancellationToken);
+        var slides = await _repository.GetActiveSlidesAsync(cancellationToken);
         return Ok(slides);
     }
 
@@ -44,8 +44,8 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
             return BadRequest("SlideId cannot be null or empty");
         }
 
-        var slide = await repository.GetSlideAsync(slideId, cancellationToken);
-        
+        var slide = await _repository.GetSlideAsync(slideId, cancellationToken);
+
         if (slide is null)
         {
             return NotFound();
@@ -74,7 +74,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
             IsActive = request.IsActive ?? true
         };
 
-        var createdSlide = await repository.CreateSlideAsync(slide, cancellationToken);
+        var createdSlide = await _repository.CreateSlideAsync(slide, cancellationToken);
         return CreatedAtAction(nameof(GetSlide), new { slideId = createdSlide.Id }, createdSlide);
     }
 
@@ -96,7 +96,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
             return BadRequest(ModelState);
         }
 
-        var existingSlide = await repository.GetSlideAsync(slideId, cancellationToken);
+        var existingSlide = await _repository.GetSlideAsync(slideId, cancellationToken);
         if (existingSlide is null)
         {
             return NotFound();
@@ -110,7 +110,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
             IsActive = request.IsActive ?? existingSlide.IsActive
         };
 
-        var result = await repository.UpdateSlideAsync(updatedSlide, cancellationToken);
+        var result = await _repository.UpdateSlideAsync(updatedSlide, cancellationToken);
         return Ok(result);
     }
 
@@ -126,13 +126,13 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
             return BadRequest("SlideId cannot be null or empty");
         }
 
-        var existingSlide = await repository.GetSlideAsync(slideId, cancellationToken);
+        var existingSlide = await _repository.GetSlideAsync(slideId, cancellationToken);
         if (existingSlide is null)
         {
             return NotFound();
         }
 
-        await repository.DeleteSlideAsync(slideId, cancellationToken);
+        await _repository.DeleteSlideAsync(slideId, cancellationToken);
         return NoContent();
     }
 
@@ -148,7 +148,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
             return BadRequest(ModelState);
         }
 
-        var reorderedSlides = await repository.ReorderSlidesAsync(request.SlideIds, cancellationToken);
+        var reorderedSlides = await _repository.ReorderSlidesAsync(request.SlideIds, cancellationToken);
         return Ok(reorderedSlides);
     }
 }
