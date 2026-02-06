@@ -1,4 +1,5 @@
 using Api.Controllers;
+using Api.DTOs;
 using Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

@@ -63,3 +63,8 @@ public sealed record CartValidationResponse
     public decimal Total { get; init; }
     public List<string> Warnings { get; init; } = [];
 }
+
+public sealed record MigrateCartRequest
+{
+    public string? GuestSessionId { get; init; }
+}

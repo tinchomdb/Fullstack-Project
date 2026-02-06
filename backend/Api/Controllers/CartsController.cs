@@ -35,6 +35,7 @@ public sealed class CartsController(
         var cart = await _cartService.GetActiveCartAsync(guestSessionId, cancellationToken);
         return Ok(cart);
     }
+
     [HttpPost("my-cart/items")]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -280,20 +281,4 @@ public sealed class CartsController(
 
         return Ok(new { message = "Guest cart successfully migrated to user account" });
     }
-
-}
-
-public sealed record MigrateCartRequest
-{
-    public string? GuestSessionId { get; init; }
-}
-
-public sealed record CartValidationResponse
-{
-    public bool IsValid { get; init; }
-    public string CartId { get; init; } = string.Empty;
-    public decimal Subtotal { get; init; }
-    public decimal ShippingCost { get; init; }
-    public decimal Total { get; init; }
-    public List<string> Warnings { get; init; } = [];
 }

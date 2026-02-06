@@ -1,3 +1,4 @@
+using Api.DTOs;
 using Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,10 +32,4 @@ public sealed class GuestAuthController(
             TokenType = "Bearer"
         });
     }
-}
-
-public sealed record GuestTokenResponse
-{
-    public required string Token { get; init; }
-    public required string TokenType { get; init; }
 }
