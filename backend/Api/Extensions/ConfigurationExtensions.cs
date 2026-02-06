@@ -1,4 +1,5 @@
 using Azure.Identity;
+using Microsoft.Extensions.Logging;
 
 namespace Api.Extensions;
 
@@ -8,8 +9,9 @@ public static class ConfigurationExtensions
     {
         if (builder.Environment.IsProduction())
         {
+            var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
             var keyVaultEndpoint = builder.Configuration["KeyVault:Endpoint"];
-            
+
             if (!string.IsNullOrEmpty(keyVaultEndpoint))
             {
                 try
@@ -17,22 +19,20 @@ public static class ConfigurationExtensions
                     builder.Configuration.AddAzureKeyVault(
                         new Uri(keyVaultEndpoint),
                         new DefaultAzureCredential());
-                    
-                    builder.Logging.AddConsole().AddDebug();
-                    Console.WriteLine($"✅ Successfully connected to Azure Key Vault: {keyVaultEndpoint}");
+
+                    logger.LogInformation("Successfully connected to Azure Key Vault: {Endpoint}", keyVaultEndpoint);
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"⚠️ Warning: Could not connect to Key Vault: {ex.Message}");
-                    Console.WriteLine("Application will continue using configuration from App Settings as fallback.");
+                    logger.LogWarning(ex, "Could not connect to Key Vault. Application will continue using App Settings as fallback");
                 }
             }
             else
             {
-                Console.WriteLine("ℹ️ Key Vault endpoint not configured. Using App Settings for configuration.");
+                logger.LogInformation("Key Vault endpoint not configured. Using App Settings for configuration");
             }
         }
-        
+
         return builder;
     }
 }

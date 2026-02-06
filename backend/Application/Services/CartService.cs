@@ -13,7 +13,9 @@ public sealed class CartService(
     CartMapper cartMapper,
     ILogger<CartService> logger) : ICartService
 {
-    private const int CART_EXPIRATION_DAYS = 30;
+    private const int CartExpirationDays = 30;
+    private const decimal FreeShippingThreshold = 50m;
+    private const decimal StandardShippingCost = 5.99m;
 
     private readonly ICartsRepository _cartsRepository = cartsRepository;
     private readonly IProductsRepository _productsRepository = productsRepository;
@@ -24,14 +26,14 @@ public sealed class CartService(
 
     public async Task<CartResponse> GetActiveCartAsync(string userId, CancellationToken cancellationToken = default)
     {
-        var cart = await GetOrCreateCartAsync(userId, cancellationToken);     
+        var cart = await GetOrCreateCartAsync(userId, cancellationToken);
 
         return _cartMapper.MapToCartResponse(cart);
     }
 
     public async Task<CartResponse> AddItemToCartAsync(
-        string userId, 
-        AddToCartRequest request, 
+        string userId,
+        AddToCartRequest request,
         CancellationToken cancellationToken = default)
     {
         _cartValidator.ValidateAddToCartRequest(request);
@@ -47,7 +49,7 @@ public sealed class CartService(
         _cartValidator.ValidateStock(product, requestedQuantity);
 
         var items = cart.Items.ToList();
-        
+
         if (existingItem is not null)
         {
             UpdateExistingCartItem(items, existingItem, product, existingItem.Quantity + request.Quantity);
@@ -58,7 +60,7 @@ public sealed class CartService(
         }
 
         var updatedCart = await SaveCartAsync(cart, items, cancellationToken);
-        
+
         _logger.LogInformation(
             "Added {Quantity} of product {ProductId} to cart {CartId} for user {UserId}",
             request.Quantity, product.Id, updatedCart.Id, userId);
@@ -81,14 +83,14 @@ public sealed class CartService(
         var cart = await GetCartOrThrowAsync(userId, cancellationToken);
         var existingItem = GetCartItemOrThrow(cart, request.ProductId);
         var product = await GetValidatedProductAsync(request.ProductId, request.SellerId, cancellationToken);
-        
+
         _cartValidator.ValidateStock(product, request.Quantity);
 
         var items = cart.Items.ToList();
         UpdateExistingCartItem(items, existingItem, product, request.Quantity);
 
         var updatedCart = await SaveCartAsync(cart, items, cancellationToken);
-        
+
         _logger.LogInformation(
             "Updated product {ProductId} quantity to {Quantity} in cart {CartId} for user {UserId}",
             request.ProductId, request.Quantity, updatedCart.Id, userId);
@@ -114,7 +116,7 @@ public sealed class CartService(
         }
 
         var updatedCart = await SaveCartAsync(cart, items, cancellationToken);
-        
+
         _logger.LogInformation(
             "Removed product {ProductId} from cart {CartId} for user {UserId}",
             productId, updatedCart.Id, userId);
@@ -151,7 +153,7 @@ public sealed class CartService(
         }
 
         var validatedItems = await ValidateAndRecalculateCartItemsAsync(cart.Items, cancellationToken);
-        
+
         if (validatedItems.Count < cart.Items.Count)
         {
             warnings.Add("Some items were removed due to availability issues");
@@ -191,12 +193,12 @@ public sealed class CartService(
             Total = subtotal + shippingCost,
             LastUpdatedAt = DateTime.UtcNow
         };
-        
+
         await _cartsRepository.UpsertCartAsync(completedCart, cancellationToken);
 
         var order = _cartMapper.CreateOrderFromCart(cart, validatedItems, subtotal, shippingCost);
         var createdOrder = await _ordersRepository.CreateOrderAsync(order, cancellationToken);
-        
+
         _logger.LogInformation(
             "Checked out cart {CartId} creating order {OrderId} for user {UserId}",
             cart.Id, createdOrder.Id, userId);
@@ -240,7 +242,7 @@ public sealed class CartService(
             }
 
             var subtotal = CartMapper.CalculateSubtotal(mergedItems);
-            
+
             userCart = userCart with
             {
                 Items = mergedItems,
@@ -280,11 +282,11 @@ public sealed class CartService(
             await _cartsRepository.DeleteCartAsync(userId, cancellationToken);
             return await CreateNewCartAsync(userId, cancellationToken);
         }
-       
+
         return cart;
-       
+
     }
-    
+
     private async Task<Cart> CreateNewCartAsync(string userId, CancellationToken cancellationToken)
     {
         var newCart = new Cart
@@ -294,7 +296,7 @@ public sealed class CartService(
             Status = CartStatus.Active,
             CreatedAt = DateTime.UtcNow,
             LastUpdatedAt = DateTime.UtcNow,
-            ExpiresAt = DateTime.UtcNow.AddDays(CART_EXPIRATION_DAYS),
+            ExpiresAt = DateTime.UtcNow.AddDays(CartExpirationDays),
             Items = [],
             Subtotal = 0,
             Total = 0
@@ -308,7 +310,7 @@ public sealed class CartService(
     private async Task<Cart> GetCartOrThrowAsync(string userId, CancellationToken cancellationToken)
     {
         var cart = await _cartsRepository.GetActiveCartByUserAsync(userId, cancellationToken);
-        
+
         if (cart is null)
         {
             throw new InvalidOperationException($"No active cart found for user {userId}");
@@ -320,7 +322,7 @@ public sealed class CartService(
     private static CartItem GetCartItemOrThrow(Cart cart, string productId)
     {
         var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
-        
+
         if (item is null)
         {
             throw new InvalidOperationException($"Product {productId} not found in cart");
@@ -336,7 +338,7 @@ public sealed class CartService(
 
     private static decimal CalculateShippingCost(decimal subtotal)
     {
-        return subtotal > 50 ? 0 : 5.99m;
+        return subtotal > FreeShippingThreshold ? 0 : StandardShippingCost;
     }
 
     private static void MergeCartItem(List<CartItem> targetItems, CartItem itemToMerge)
@@ -349,7 +351,7 @@ public sealed class CartService(
             var newQuantity = Math.Min(
                 existingItem.Quantity + itemToMerge.Quantity,
                 CartValidator.MAX_QUANTITY_PER_ITEM);
-            
+
             targetItems[index] = existingItem with
             {
                 Quantity = newQuantity,
@@ -373,8 +375,8 @@ public sealed class CartService(
     {
         var index = items.IndexOf(existingItem);
         items[index] = _cartMapper.UpdateCartItemFromProduct(
-            product, 
-            newQuantity, 
+            product,
+            newQuantity,
             existingItem.AddedDate,
             existingItem.SellerId,
             existingItem.SellerName);
@@ -391,12 +393,6 @@ public sealed class CartService(
         {
             throw new InvalidOperationException($"Product {productId} not found");
         }
-        
-        //TODO: Review stock validation logic
-        /* if (product.Stock <= 0)
-        {
-            throw new InvalidOperationException($"Product {product.Name} is out of stock");
-        } */
 
         return product;
     }
@@ -406,11 +402,10 @@ public sealed class CartService(
         CancellationToken cancellationToken)
     {
         var validatedItems = new List<CartItem>();
-        
+
         foreach (var item in items)
         {
             var product = await GetValidatedProductAsync(item.ProductId, item.SellerId, cancellationToken);
-            /* _cartValidator.ValidateStock(product, item.Quantity); */
 
             var updatedItem = _cartMapper.UpdateCartItemFromProduct(
                 product,
