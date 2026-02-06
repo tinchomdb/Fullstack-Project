@@ -1,5 +1,5 @@
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace Api.Tests.Integration;
@@ -43,25 +43,25 @@ public class HealthControllerIntegrationTests : IAsyncLifetime
         // Assert
         Assert.NotEmpty(content);
         // JSON uses camelCase due to JsonSerializerOptions
+        Assert.Contains("status", content);
         Assert.Contains("environment", content);
-        Assert.Contains("configurationStatus", content);
     }
 
     [Fact]
-    public async Task HealthEndpoint_ContainsExpectedProperties()
+    public async Task HealthEndpoint_ContainsOnlyExpectedProperties()
     {
         // Act
         var response = await _client.GetAsync("/api/health");
         var content = await response.Content.ReadAsStringAsync();
 
         // Assert
-        // JSON property names are in camelCase
+        Assert.Contains("status", content);
         Assert.Contains("environment", content);
-        Assert.Contains("isProduction", content);
-        Assert.Contains("isDevelopment", content);
-        Assert.Contains("hasCosmosAccount", content);
-        Assert.Contains("hasCosmosKey", content);
-        Assert.Contains("databaseName", content);
-        Assert.Contains("configurationStatus", content);
+        // Sensitive infrastructure details should not be exposed
+        Assert.DoesNotContain("isProduction", content);
+        Assert.DoesNotContain("hasCosmosAccount", content);
+        Assert.DoesNotContain("hasCosmosKey", content);
+        Assert.DoesNotContain("databaseName", content);
+        Assert.DoesNotContain("configurationStatus", content);
     }
 }

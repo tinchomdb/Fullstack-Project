@@ -4,6 +4,7 @@ using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Stripe;
 
@@ -12,12 +13,14 @@ namespace Api.Tests.Unit.Controllers;
 public class PaymentsControllerTests
 {
     private readonly Mock<IPaymentService> _mockPaymentService;
+    private readonly Mock<ILogger<PaymentsController>> _mockLogger;
     private readonly PaymentsController _controller;
 
     public PaymentsControllerTests()
     {
         _mockPaymentService = new Mock<IPaymentService>();
-        _controller = new PaymentsController(_mockPaymentService.Object);
+        _mockLogger = new Mock<ILogger<PaymentsController>>();
+        _controller = new PaymentsController(_mockPaymentService.Object, _mockLogger.Object);
         SetupAuthenticatedUser("user-1");
     }
 

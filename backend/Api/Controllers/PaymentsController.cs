@@ -9,9 +9,12 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class PaymentsController(IPaymentService paymentService) : ControllerBase
+public sealed class PaymentsController(
+    IPaymentService paymentService,
+    ILogger<PaymentsController> logger) : ControllerBase
 {
     private readonly IPaymentService _paymentService = paymentService ?? throw new ArgumentNullException(nameof(paymentService));
+    private readonly ILogger<PaymentsController> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
     [Authorize]
     [HttpPost("create-intent")]
@@ -47,7 +50,8 @@ public sealed class PaymentsController(IPaymentService paymentService) : Control
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { error = $"Server error: {ex.Message}" });
+            _logger.LogError(ex, "Failed to create payment intent for user {UserId}", User.GetUserId());
+            return StatusCode(500, new { error = "An unexpected error occurred while processing the payment" });
         }
     }
 }
