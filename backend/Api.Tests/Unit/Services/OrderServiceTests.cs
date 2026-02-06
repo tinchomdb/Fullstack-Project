@@ -1,7 +1,7 @@
+using Api.Tests.Helpers;
 using Application.Repositories;
 using Application.Services;
 using Domain.Entities;
-using Api.Tests.Helpers;
 using Microsoft.Extensions.Logging;
 using Moq;
 

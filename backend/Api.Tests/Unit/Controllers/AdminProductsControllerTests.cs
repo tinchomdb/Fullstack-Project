@@ -1,7 +1,7 @@
 using Api.Controllers;
+using Api.Tests.Helpers;
 using Application.Repositories;
 using Domain.Entities;
-using Api.Tests.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 

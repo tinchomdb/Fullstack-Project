@@ -29,7 +29,7 @@ public class ProductsControllerTests
             new() { Id = "2", Name = "Mouse", Price = 29.99m, SellerId = "seller1" }
         };
         var paginatedResponse = new PaginatedResponse<Product>(products, 2, 1, 10);
-        
+
         _mockRepository
             .Setup(r => r.GetProductsAsync(parameters, It.IsAny<CancellationToken>()))
             .ReturnsAsync(paginatedResponse);
@@ -52,7 +52,7 @@ public class ProductsControllerTests
         var parameters = new ProductQueryParameters { Page = 5, PageSize = 10 };
         // TotalCount = 10, so TotalPages = 1, but Page = 5, which exceeds TotalPages
         var emptyResponse = new PaginatedResponse<Product>(new List<Product>(), 10, 5, 10);
-        
+
         _mockRepository
             .Setup(r => r.GetProductsAsync(parameters, It.IsAny<CancellationToken>()))
             .ReturnsAsync(emptyResponse);
@@ -72,14 +72,14 @@ public class ProductsControllerTests
         // Arrange
         var productId = "product1";
         var sellerId = "seller1";
-        var expectedProduct = new Product 
-        { 
-            Id = productId, 
-            Name = "Laptop", 
+        var expectedProduct = new Product
+        {
+            Id = productId,
+            Name = "Laptop",
             Price = 999.99m,
             SellerId = sellerId
         };
-        
+
         _mockRepository
             .Setup(r => r.GetProductAsync(productId, sellerId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedProduct);
@@ -101,7 +101,7 @@ public class ProductsControllerTests
         // Arrange
         var productId = "nonexistent";
         var sellerId = "seller1";
-        
+
         _mockRepository
             .Setup(r => r.GetProductAsync(productId, sellerId, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Product?)null);
@@ -119,15 +119,15 @@ public class ProductsControllerTests
     {
         // Arrange
         var slug = "laptop-hp-spectre";
-        var expectedProduct = new Product 
-        { 
-            Id = "product1", 
-            Name = "Laptop HP Spectre", 
+        var expectedProduct = new Product
+        {
+            Id = "product1",
+            Name = "Laptop HP Spectre",
             Price = 999.99m,
             Slug = slug,
             SellerId = "seller1"
         };
-        
+
         _mockRepository
             .Setup(r => r.GetProductBySlugAsync(slug, It.IsAny<CancellationToken>()))
             .ReturnsAsync(expectedProduct);
@@ -147,7 +147,7 @@ public class ProductsControllerTests
     {
         // Arrange
         var slug = "nonexistent-product";
-        
+
         _mockRepository
             .Setup(r => r.GetProductBySlugAsync(slug, It.IsAny<CancellationToken>()))
             .ReturnsAsync((Product?)null);
@@ -170,7 +170,7 @@ public class ProductsControllerTests
             new() { Id = "1", Name = "Laptop", Price = 999.99m, SellerId = sellerId },
             new() { Id = "2", Name = "Mouse", Price = 29.99m, SellerId = sellerId }
         };
-        
+
         _mockRepository
             .Setup(r => r.GetProductsBySellerAsync(sellerId, It.IsAny<CancellationToken>()))
             .ReturnsAsync(products);

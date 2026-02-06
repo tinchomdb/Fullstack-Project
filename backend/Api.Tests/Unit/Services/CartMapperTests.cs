@@ -1,6 +1,6 @@
+using Api.Tests.Helpers;
 using Application.Services;
 using Domain.Entities;
-using Api.Tests.Helpers;
 
 namespace Api.Tests.Unit.Services;
 
