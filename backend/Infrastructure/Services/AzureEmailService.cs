@@ -1,3 +1,5 @@
+using System.Net;
+using System.Text;
 using Application.DTOs;
 using Application.Services;
 using Azure;
@@ -5,7 +7,6 @@ using Azure.Communication.Email;
 using Infrastructure.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System.Text;
 
 namespace Infrastructure.Services;
 
@@ -21,7 +22,7 @@ public sealed class AzureEmailService : IEmailService
     {
         _settings = settings.Value;
         _logger = logger;
-        
+
         // Only create EmailClient if email sending is enabled and connection string is configured
         if (_settings.EnableEmailSending && !string.IsNullOrEmpty(_settings.ConnectionString))
         {
@@ -39,14 +40,14 @@ public sealed class AzureEmailService : IEmailService
     {
         if (!_settings.EnableEmailSending)
         {
-            _logger.LogWarning("Email sending is disabled. Skipping order confirmation email for order {OrderId}", 
+            _logger.LogWarning("Email sending is disabled. Skipping order confirmation email for order {OrderId}",
                 emailData.OrderId);
             return;
         }
 
         if (_emailClient == null)
         {
-            _logger.LogWarning("Email client is not configured (missing connection string). Skipping order confirmation email for order {OrderId}", 
+            _logger.LogWarning("Email client is not configured (missing connection string). Skipping order confirmation email for order {OrderId}",
                 emailData.OrderId);
             return;
         }
@@ -80,7 +81,7 @@ public sealed class AzureEmailService : IEmailService
                 "Failed to send order confirmation email for order {OrderId} to {Email}",
                 emailData.OrderId,
                 emailData.RecipientEmail);
-            
+
             // Don't throw - email failure shouldn't break the order process
         }
     }
@@ -88,7 +89,7 @@ public sealed class AzureEmailService : IEmailService
     private EmailContent BuildOrderConfirmationEmailContent(OrderConfirmationEmailData data)
     {
         var subject = $"Order Confirmation - #{data.OrderId}";
-        
+
         var htmlBody = BuildHtmlEmailBody(data);
         var plainTextBody = BuildPlainTextEmailBody(data);
 
@@ -102,7 +103,7 @@ public sealed class AzureEmailService : IEmailService
     private static string BuildHtmlEmailBody(OrderConfirmationEmailData data)
     {
         var sb = new StringBuilder();
-        
+
         sb.AppendLine("<!DOCTYPE html>");
         sb.AppendLine("<html>");
         sb.AppendLine("<head>");
@@ -123,11 +124,11 @@ public sealed class AzureEmailService : IEmailService
         sb.AppendLine("<body>");
         sb.AppendLine("    <div class='container'>");
         sb.AppendLine("        <div class='header'>");
-        sb.AppendLine($"            <h1>Thank You, {data.RecipientName}!</h1>");
+        sb.AppendLine($"            <h1>Thank You, {WebUtility.HtmlEncode(data.RecipientName)}!</h1>");
         sb.AppendLine("            <p>Your order has been confirmed</p>");
         sb.AppendLine("        </div>");
         sb.AppendLine("        <div class='content'>");
-        sb.AppendLine($"            <p>Order Number: <strong>#{data.OrderId}</strong></p>");
+        sb.AppendLine($"            <p>Order Number: <strong>#{WebUtility.HtmlEncode(data.OrderId)}</strong></p>");
         sb.AppendLine($"            <p>Order Date: {data.OrderDate:MMMM dd, yyyy 'at' h:mm tt}</p>");
         sb.AppendLine("            <div class='order-details'>");
         sb.AppendLine("                <h2>Order Items</h2>");
@@ -135,7 +136,7 @@ public sealed class AzureEmailService : IEmailService
         foreach (var item in data.Items)
         {
             sb.AppendLine("                <div class='item'>");
-            sb.AppendLine($"                    <div><strong>{item.ProductName}</strong></div>");
+            sb.AppendLine($"                    <div><strong>{WebUtility.HtmlEncode(item.ProductName)}</strong></div>");
             sb.AppendLine($"                    <div>Quantity: {item.Quantity} × ${item.Price:F2} = ${item.LineTotal:F2}</div>");
             sb.AppendLine("                </div>");
         }
@@ -171,7 +172,7 @@ public sealed class AzureEmailService : IEmailService
     private static string BuildPlainTextEmailBody(OrderConfirmationEmailData data)
     {
         var sb = new StringBuilder();
-        
+
         sb.AppendLine($"Thank You, {data.RecipientName}!");
         sb.AppendLine();
         sb.AppendLine("Your order has been confirmed");
@@ -181,7 +182,7 @@ public sealed class AzureEmailService : IEmailService
         sb.AppendLine();
         sb.AppendLine("ORDER ITEMS");
         sb.AppendLine("===========");
-        
+
         foreach (var item in data.Items)
         {
             sb.AppendLine($"{item.ProductName}");

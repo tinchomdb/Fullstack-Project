@@ -14,15 +14,6 @@ public sealed class CarouselSlidesController(ICarouselSlidesRepository repositor
     [HttpGet]
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<CarouselSlide>>> GetSlides(CancellationToken cancellationToken)
-    {
-        var slides = await _repository.GetAllSlidesAsync(cancellationToken);
-        return Ok(slides);
-    }
-
-    [HttpGet("active")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<CarouselSlide>>> GetActiveSlides(CancellationToken cancellationToken)
     {
         var slides = await _repository.GetActiveSlidesAsync(cancellationToken);

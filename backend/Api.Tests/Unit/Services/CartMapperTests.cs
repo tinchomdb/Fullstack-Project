@@ -37,7 +37,6 @@ public class CartMapperTests
         Assert.Equal(2, itemResponse.Quantity);
         Assert.Equal(100m, itemResponse.UnitPrice);
         Assert.Equal(200m, itemResponse.LineTotal);
-        Assert.True(itemResponse.IsAvailable);
     }
 
     [Fact]

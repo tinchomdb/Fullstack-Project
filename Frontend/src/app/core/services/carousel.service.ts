@@ -38,13 +38,6 @@ export class CarouselService {
   readonly activeSlidesLoading = this.activeSlidesResource.loading;
   readonly activeSlidesError = this.activeSlidesResource.error;
 
-  loadAllSlides(): void {
-    if (this.allSlides() && this.allSlides()!.length > 0) {
-      return;
-    }
-    this.allSlidesResource.load(this.carouselApiService.getSlides());
-  }
-
   loadActiveSlides(): void {
     if (this.activeSlides() && this.activeSlides()!.length > 0) {
       return;
@@ -53,7 +46,7 @@ export class CarouselService {
   }
 
   reloadAllSlides(): void {
-    this.allSlidesResource.load(this.carouselApiService.getSlides());
+    this.allSlidesResource.load(this.carouselApiService.getActiveSlides());
   }
 
   reloadActiveSlides(): void {

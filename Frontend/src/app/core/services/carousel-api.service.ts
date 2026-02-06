@@ -18,15 +18,9 @@ export class CarouselApiService {
   private readonly baseUrl = `${environment.apiBase}/api/admin/slides`;
   private readonly publicUrl = `${environment.apiBase}/api/slides`;
 
-  getSlides(): Observable<CarouselSlide[]> {
-    return this.http
-      .get<CarouselSlideApiModel[]>(this.baseUrl)
-      .pipe(map((response) => response.map(mapCarouselSlideFromApi)));
-  }
-
   getActiveSlides(): Observable<CarouselSlide[]> {
     return this.http
-      .get<CarouselSlideApiModel[]>(`${this.publicUrl}/active`)
+      .get<CarouselSlideApiModel[]>(`${this.publicUrl}`)
       .pipe(map((response) => response.map(mapCarouselSlideFromApi)));
   }
 

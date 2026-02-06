@@ -1,5 +1,4 @@
 using Azure.Identity;
-using Microsoft.Extensions.Logging;
 
 namespace Api.Extensions;
 
@@ -9,7 +8,8 @@ public static class ConfigurationExtensions
     {
         if (builder.Environment.IsProduction())
         {
-            var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
+            using var loggerFactory = LoggerFactory.Create(b => b.AddConsole());
+            var logger = loggerFactory.CreateLogger("KeyVault");
             var keyVaultEndpoint = builder.Configuration["KeyVault:Endpoint"];
 
             if (!string.IsNullOrEmpty(keyVaultEndpoint))

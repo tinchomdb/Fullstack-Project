@@ -196,7 +196,7 @@ public sealed class CartService(
 
         await _cartsRepository.UpsertCartAsync(completedCart, cancellationToken);
 
-        var order = _cartMapper.CreateOrderFromCart(cart, validatedItems, subtotal, shippingCost);
+        var order = _cartMapper.CreateOrderFromCart(completedCart, validatedItems, subtotal, shippingCost);
         var createdOrder = await _ordersRepository.CreateOrderAsync(order, cancellationToken);
 
         _logger.LogInformation(
@@ -401,21 +401,18 @@ public sealed class CartService(
         IReadOnlyList<CartItem> items,
         CancellationToken cancellationToken)
     {
-        var validatedItems = new List<CartItem>();
+        var productTasks = items.Select(item =>
+            GetValidatedProductAsync(item.ProductId, item.SellerId, cancellationToken));
 
-        foreach (var item in items)
-        {
-            var product = await GetValidatedProductAsync(item.ProductId, item.SellerId, cancellationToken);
+        var products = await Task.WhenAll(productTasks);
 
-            var updatedItem = _cartMapper.UpdateCartItemFromProduct(
+        return items.Zip(products, (item, product) =>
+            _cartMapper.UpdateCartItemFromProduct(
                 product,
                 item.Quantity,
                 item.AddedDate,
                 item.SellerId,
-                item.SellerName);
-            validatedItems.Add(updatedItem);
-        }
-
-        return validatedItems;
+                item.SellerName))
+            .ToList();
     }
 }

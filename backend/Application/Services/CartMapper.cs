@@ -26,9 +26,7 @@ public sealed class CartMapper
                 Quantity = item.Quantity,
                 UnitPrice = item.UnitPrice,
                 LineTotal = item.LineTotal,
-                AddedDate = item.AddedDate,
-                IsAvailable = true, // TODO: Check real-time availability
-                AvailableStock = 999 // TODO: Fetch real stock
+                AddedDate = item.AddedDate
             }).ToList(),
             Subtotal = cart.Subtotal,
             Currency = cart.Currency,
@@ -71,8 +69,8 @@ public sealed class CartMapper
     }
 
     public CartItem UpdateCartItemFromProduct(
-        Product product, 
-        int quantity, 
+        Product product,
+        int quantity,
         DateTime addedDate,
         string sellerId,
         string sellerName)
@@ -126,7 +124,7 @@ public sealed class CartMapper
     public Cart RecalculateCartTotals(Cart cart, List<CartItem> items)
     {
         var subtotal = CalculateSubtotal(items);
-        
+
         return cart with
         {
             Items = items,

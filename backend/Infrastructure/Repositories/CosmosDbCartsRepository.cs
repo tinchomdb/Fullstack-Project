@@ -19,7 +19,7 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
     {
         var settings = cosmosDbSettings.Value;
         var database = cosmosClient.GetDatabase(settings.DatabaseName);
-        _container = database.GetContainer(settings.ContainersNames.Carts);
+        _container = database.GetContainer(settings.ContainerNames.Carts);
         _logger = logger;
     }
 
@@ -90,7 +90,7 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
         CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Attempting to delete ALL active carts for user {UserId}", userId);
-        
+
         try
         {
             var query = new QueryDefinition(
@@ -104,7 +104,7 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
             while (iterator.HasMoreResults)
             {
                 var results = await iterator.ReadNextAsync(cancellationToken);
-                
+
                 foreach (var cart in results)
                 {
                     try
@@ -113,7 +113,7 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
                             cart.Id,
                             new PartitionKey(cart.UserId),
                             cancellationToken: cancellationToken);
-                        
+
                         deletedCount++;
                         _logger.LogInformation("Deleted cart {CartId} for user {UserId}", cart.Id, userId);
                     }
@@ -123,7 +123,7 @@ public sealed class CosmosDbCartsRepository : ICartsRepository
                     }
                 }
             }
-            
+
             _logger.LogInformation("Deleted {Count} cart(s) for user {UserId}", deletedCount, userId);
         }
         catch (CosmosException ex)

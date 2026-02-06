@@ -17,7 +17,7 @@ public sealed class CosmosDbUsersRepository : IUsersRepository
     {
         var settings = cosmosDbSettings.Value;
         var database = cosmosClient.GetDatabase(settings.DatabaseName);
-        _container = database.GetContainer(settings.ContainersNames.Users);
+        _container = database.GetContainer(settings.ContainerNames.Users);
     }
 
     public async Task<UserModel?> GetUserAsync(

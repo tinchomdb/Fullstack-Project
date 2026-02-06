@@ -409,6 +409,93 @@ public class CartServiceTests
             () => _service.CheckoutCartAsync("user-1"));
     }
 
+    [Fact]
+    public async Task CheckoutCartAsync_RecalculatesItemPricesFromCurrentProduct()
+    {
+        // Arrange — cart item has stale price (20m), product now costs 30m
+        var item = TestDataBuilder.CreateCartItem(productId: "p1", sellerId: "s1", quantity: 2, unitPrice: 20m);
+        var cart = TestDataBuilder.CreateCart(userId: "user-1", items: [item]);
+        var product = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1", price: 30m, stock: 10);
+
+        SetupCartLookupStrict("user-1", cart);
+        SetupProductLookup(product);
+        SetupCartSave();
+        _mockOrdersRepo
+            .Setup(r => r.CreateOrderAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Order o, CancellationToken _) => o);
+
+        // Act
+        var order = await _service.CheckoutCartAsync("user-1");
+
+        // Assert — order should reflect recalculated price (30m * 2 = 60m)
+        Assert.Equal(60m, order.Subtotal);
+        Assert.Single(order.Items);
+        Assert.Equal(30m, order.Items[0].UnitPrice);
+        Assert.Equal(60m, order.Items[0].LineTotal);
+    }
+
+    [Fact]
+    public async Task CheckoutCartAsync_SavesCompletedCartBeforeCreatingOrder()
+    {
+        // Arrange
+        var item = TestDataBuilder.CreateCartItem(productId: "p1", sellerId: "s1", quantity: 1, unitPrice: 50m);
+        var cart = TestDataBuilder.CreateCart(userId: "user-1", items: [item]);
+        var product = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1", price: 50m, stock: 10);
+
+        SetupCartLookupStrict("user-1", cart);
+        SetupProductLookup(product);
+        SetupCartSave();
+
+        var callOrder = new List<string>();
+        _mockCartsRepo
+            .Setup(r => r.UpsertCartAsync(It.Is<Cart>(c => c.Status == CartStatus.Completed), It.IsAny<CancellationToken>()))
+            .Callback<Cart, CancellationToken>((c, _) => callOrder.Add("UpsertCart"))
+            .ReturnsAsync((Cart c, CancellationToken _) => c);
+        _mockOrdersRepo
+            .Setup(r => r.CreateOrderAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
+            .Callback<Order, CancellationToken>((o, _) => callOrder.Add("CreateOrder"))
+            .ReturnsAsync((Order o, CancellationToken _) => o);
+
+        // Act
+        await _service.CheckoutCartAsync("user-1");
+
+        // Assert — cart must be saved as Completed before order creation
+        Assert.Equal(2, callOrder.Count);
+        Assert.Equal("UpsertCart", callOrder[0]);
+        Assert.Equal("CreateOrder", callOrder[1]);
+    }
+
+    [Fact]
+    public async Task CheckoutCartAsync_WithMultipleItems_ValidatesAllProductsInParallel()
+    {
+        // Arrange — cart with multiple items from different sellers
+        var item1 = TestDataBuilder.CreateCartItem(productId: "p1", sellerId: "s1", quantity: 1, unitPrice: 25m);
+        var item2 = TestDataBuilder.CreateCartItem(productId: "p2", sellerId: "s2", quantity: 2, unitPrice: 15m);
+        var cart = TestDataBuilder.CreateCart(userId: "user-1", items: [item1, item2]);
+
+        var product1 = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1", price: 25m, stock: 10);
+        var product2 = TestDataBuilder.CreateProduct(id: "p2", sellerId: "s2", price: 15m, stock: 20);
+
+        SetupCartLookupStrict("user-1", cart);
+        SetupProductLookup(product1);
+        SetupProductLookup(product2);
+        SetupCartSave();
+        _mockOrdersRepo
+            .Setup(r => r.CreateOrderAsync(It.IsAny<Order>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Order o, CancellationToken _) => o);
+
+        // Act
+        var order = await _service.CheckoutCartAsync("user-1");
+
+        // Assert — both products validated and included
+        Assert.Equal(2, order.Items.Count);
+        Assert.Equal(55m, order.Subtotal); // 25 + 30
+        _mockProductsRepo.Verify(
+            r => r.GetProductAsync("p1", "s1", It.IsAny<CancellationToken>()), Times.Once);
+        _mockProductsRepo.Verify(
+            r => r.GetProductAsync("p2", "s2", It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     // ===== MigrateGuestCartAsync =====
 
     [Fact]

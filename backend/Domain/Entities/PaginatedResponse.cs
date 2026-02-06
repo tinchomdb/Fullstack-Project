@@ -1,6 +1,6 @@
 namespace Domain.Entities;
 
-public record PaginatedResponse<T>(
+public sealed record PaginatedResponse<T>(
     IReadOnlyList<T> Items,
     int TotalCount,
     int Page,

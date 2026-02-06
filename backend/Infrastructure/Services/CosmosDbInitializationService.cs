@@ -36,42 +36,42 @@ public sealed class CosmosDbInitializationService
         // Create containers with proper partition keys
         await CreateContainerAsync(
             database.Database,
-            _settings.ContainersNames.Products,
+            _settings.ContainerNames.Products,
             "/sellerId",
             "Products container - Optimized for seller-specific queries",
             cancellationToken);
 
         await CreateContainerAsync(
             database.Database,
-            _settings.ContainersNames.Orders,
+            _settings.ContainerNames.Orders,
             "/userId",
             "Orders container - Optimized for user order history",
             cancellationToken);
 
         await CreateContainerAsync(
             database.Database,
-            _settings.ContainersNames.Carts,
+            _settings.ContainerNames.Carts,
             "/userId",
             "Carts container - Optimized for user cart operations (id = userId)",
             cancellationToken);
 
         await CreateContainerAsync(
             database.Database,
-            _settings.ContainersNames.Users,
+            _settings.ContainerNames.Users,
             "/id",
             "Users container - User profiles and seller information",
             cancellationToken);
 
         await CreateContainerAsync(
             database.Database,
-            _settings.ContainersNames.Categories,
+            _settings.ContainerNames.Categories,
             "/id",
             "Categories container - Product categories (cache-friendly)",
             cancellationToken);
 
         await CreateContainerAsync(
             database.Database,
-            _settings.ContainersNames.CarouselSlides,
+            _settings.ContainerNames.CarouselSlides,
             "/partitionKey",
             "Carousel Slides container - Homepage carousel management",
             cancellationToken);

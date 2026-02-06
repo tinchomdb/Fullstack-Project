@@ -11,7 +11,6 @@ public sealed record class Product
 
     public string Description { get; init; } = string.Empty;
 
-    [JsonPropertyName("slug")]
     public string Slug { get; init; } = string.Empty;
 
     public decimal Price { get; init; }
@@ -20,7 +19,6 @@ public sealed record class Product
 
     public int Stock { get; init; }
 
-    [JsonPropertyName("sellerId")]
     public string SellerId { get; init; } = string.Empty;
 
     public IReadOnlyList<string> CategoryIds { get; init; } = [];

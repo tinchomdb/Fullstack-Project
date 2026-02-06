@@ -17,6 +17,7 @@ public sealed class DataSeedingService(
 
     public async Task SeedDataAsync(CancellationToken cancellationToken = default)
     {
+        // Toggle manually when seeding is needed during development
         var enableSeeding = false;
         if (!enableSeeding)
         {

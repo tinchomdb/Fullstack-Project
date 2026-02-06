@@ -48,29 +48,6 @@ public class AdminCarouselSlidesControllerTests
         Assert.Equal(2, returned.Count);
     }
 
-    // ===== GetActiveSlides =====
-
-    [Fact]
-    public async Task GetActiveSlides_ReturnsOkWithActiveSlides()
-    {
-        // Arrange
-        var slides = new List<CarouselSlide>
-        {
-            new() { Id = "s1", IsActive = true }
-        };
-        _mockRepository
-            .Setup(r => r.GetActiveSlidesAsync(It.IsAny<CancellationToken>()))
-            .ReturnsAsync(slides);
-
-        // Act
-        var result = await _controller.GetActiveSlides(CancellationToken.None);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(result.Result);
-        var returned = Assert.IsAssignableFrom<IReadOnlyList<CarouselSlide>>(okResult.Value);
-        Assert.Single(returned);
-    }
-
     // ===== GetSlide =====
 
     [Fact]
@@ -117,6 +94,23 @@ public class AdminCarouselSlidesControllerTests
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result.Result);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task GetSlide_WithInvalidId_ReturnsBadRequestWithErrorObject(string? slideId)
+    {
+        // Act
+        var result = await _controller.GetSlide(slideId!, CancellationToken.None);
+
+        // Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
+        var error = badRequest.Value;
+        var errorProperty = error?.GetType().GetProperty("error");
+        Assert.NotNull(errorProperty);
+        Assert.NotNull(errorProperty.GetValue(error));
     }
 
     // ===== CreateSlide =====
@@ -238,6 +232,26 @@ public class AdminCarouselSlidesControllerTests
         Assert.IsType<BadRequestObjectResult>(result.Result);
     }
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task UpdateSlide_WithInvalidId_ReturnsBadRequestWithErrorObject(string? slideId)
+    {
+        // Arrange
+        var request = new UpdateCarouselSlideRequest { Alt = "X" };
+
+        // Act
+        var result = await _controller.UpdateSlide(slideId!, request, CancellationToken.None);
+
+        // Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
+        var error = badRequest.Value;
+        var errorProperty = error?.GetType().GetProperty("error");
+        Assert.NotNull(errorProperty);
+        Assert.NotNull(errorProperty.GetValue(error));
+    }
+
     // ===== DeleteSlide =====
 
     [Fact]
@@ -283,6 +297,23 @@ public class AdminCarouselSlidesControllerTests
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result);
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public async Task DeleteSlide_WithInvalidId_ReturnsBadRequestWithErrorObject(string? slideId)
+    {
+        // Act
+        var result = await _controller.DeleteSlide(slideId!, CancellationToken.None);
+
+        // Assert
+        var badRequest = Assert.IsType<BadRequestObjectResult>(result);
+        var error = badRequest.Value;
+        var errorProperty = error?.GetType().GetProperty("error");
+        Assert.NotNull(errorProperty);
+        Assert.NotNull(errorProperty.GetValue(error));
     }
 
     // ===== ReorderSlides =====

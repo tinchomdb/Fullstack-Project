@@ -16,7 +16,7 @@ public sealed class CosmosDbCategoriesRepository : ICategoriesRepository
     {
         var settings = cosmosDbSettings.Value;
         var database = cosmosClient.GetDatabase(settings.DatabaseName);
-        _container = database.GetContainer(settings.ContainersNames.Categories);
+        _container = database.GetContainer(settings.ContainerNames.Categories);
     }
 
     public async Task<IReadOnlyList<Category>> GetCategoriesAsync(
@@ -118,10 +118,10 @@ public sealed class CosmosDbCategoriesRepository : ICategoriesRepository
         while (queue.Count > 0)
         {
             var currentId = queue.Dequeue();
-            
+
             // Find all categories that have this category as their parent
             var children = allCategories.Where(c => c.ParentCategoryId == currentId);
-            
+
             foreach (var child in children)
             {
                 if (!result.Contains(child.Id))
@@ -140,7 +140,7 @@ public sealed class CosmosDbCategoriesRepository : ICategoriesRepository
         CancellationToken cancellationToken = default)
     {
         var allCategories = await GetCategoriesAsync(cancellationToken);
-        
+
         // If parentCategoryId is null, return root categories (those with no parent)
         return allCategories
             .Where(c => c.ParentCategoryId == parentCategoryId)

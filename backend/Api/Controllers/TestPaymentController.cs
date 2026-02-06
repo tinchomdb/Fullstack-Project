@@ -1,3 +1,4 @@
+#if DEBUG
 using Api.DTOs;
 using Api.Extensions;
 using Application.DTOs;
@@ -210,3 +211,4 @@ public sealed class TestPaymentController(
         }
     }
 }
+#endif

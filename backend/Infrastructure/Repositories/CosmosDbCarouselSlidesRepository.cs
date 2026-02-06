@@ -9,6 +9,7 @@ namespace Infrastructure.Repositories;
 public sealed class CosmosDbCarouselSlidesRepository : ICarouselSlidesRepository
 {
     private readonly Container _container;
+    private const string PartitionKeyValue = "carousel-slides";
 
     public CosmosDbCarouselSlidesRepository(
         CosmosClient cosmosClient,
@@ -16,7 +17,7 @@ public sealed class CosmosDbCarouselSlidesRepository : ICarouselSlidesRepository
     {
         var settings = cosmosDbSettings.Value;
         var database = cosmosClient.GetDatabase(settings.DatabaseName);
-        _container = database.GetContainer(settings.ContainersNames.CarouselSlides);
+        _container = database.GetContainer(settings.ContainerNames.CarouselSlides);
     }
 
     public async Task<IReadOnlyList<CarouselSlide>> GetAllSlidesAsync(
@@ -66,7 +67,7 @@ public sealed class CosmosDbCarouselSlidesRepository : ICarouselSlidesRepository
         {
             var response = await _container.ReadItemAsync<CarouselSlide>(
                 slideId,
-                new PartitionKey("carousel-slides"),
+                new PartitionKey(PartitionKeyValue),
                 cancellationToken: cancellationToken);
 
             return response.Resource;
@@ -81,15 +82,15 @@ public sealed class CosmosDbCarouselSlidesRepository : ICarouselSlidesRepository
         CarouselSlide slide,
         CancellationToken cancellationToken = default)
     {
-        var slideToCreate = slide with 
-        { 
+        var slideToCreate = slide with
+        {
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
 
         var response = await _container.CreateItemAsync(
             slideToCreate,
-            new PartitionKey("carousel-slides"),
+            new PartitionKey(PartitionKeyValue),
             cancellationToken: cancellationToken);
 
         return response.Resource;
@@ -104,7 +105,7 @@ public sealed class CosmosDbCarouselSlidesRepository : ICarouselSlidesRepository
         var response = await _container.ReplaceItemAsync(
             slideToUpdate,
             slide.Id,
-            new PartitionKey("carousel-slides"),
+            new PartitionKey(PartitionKeyValue),
             cancellationToken: cancellationToken);
 
         return response.Resource;
@@ -116,7 +117,7 @@ public sealed class CosmosDbCarouselSlidesRepository : ICarouselSlidesRepository
     {
         await _container.DeleteItemAsync<CarouselSlide>(
             slideId,
-            new PartitionKey("carousel-slides"),
+            new PartitionKey(PartitionKeyValue),
             cancellationToken: cancellationToken);
     }
 
@@ -130,11 +131,11 @@ public sealed class CosmosDbCarouselSlidesRepository : ICarouselSlidesRepository
         {
             var slideId = slideIds[i];
             var existingSlide = await GetSlideAsync(slideId, cancellationToken);
-            
+
             if (existingSlide is not null)
             {
-                var updatedSlide = existingSlide with 
-                { 
+                var updatedSlide = existingSlide with
+                {
                     Order = i + 1,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -142,7 +143,7 @@ public sealed class CosmosDbCarouselSlidesRepository : ICarouselSlidesRepository
                 var response = await _container.ReplaceItemAsync(
                     updatedSlide,
                     slideId,
-                    new PartitionKey("carousel-slides"),
+                    new PartitionKey(PartitionKeyValue),
                     cancellationToken: cancellationToken);
 
                 reorderedSlides.Add(response.Resource);

@@ -57,7 +57,7 @@ export class AdminCarouselComponent implements OnInit, OnDestroy {
     });
 
   ngOnInit(): void {
-    this.carouselService.loadAllSlides();
+    this.carouselService.loadActiveSlides();
   }
 
   ngOnDestroy(): void {

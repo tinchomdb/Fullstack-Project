@@ -23,15 +23,6 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
         return Ok(slides);
     }
 
-    [HttpGet("active")]
-    [AllowAnonymous]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<CarouselSlide>>> GetActiveSlides(CancellationToken cancellationToken)
-    {
-        var slides = await _repository.GetActiveSlidesAsync(cancellationToken);
-        return Ok(slides);
-    }
-
     [HttpGet("{slideId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -41,7 +32,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
     {
         if (string.IsNullOrWhiteSpace(slideId))
         {
-            return BadRequest("SlideId cannot be null or empty");
+            return BadRequest(new { error = "SlideId cannot be null or empty" });
         }
 
         var slide = await _repository.GetSlideAsync(slideId, cancellationToken);
@@ -61,11 +52,6 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<CarouselSlide>> CreateSlide([FromBody] CreateCarouselSlideRequest request, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         var slide = new CarouselSlide
         {
             ImageUrl = request.ImageUrl,
@@ -88,12 +74,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
     {
         if (string.IsNullOrWhiteSpace(slideId))
         {
-            return BadRequest("SlideId cannot be null or empty");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
+            return BadRequest(new { error = "SlideId cannot be null or empty" });
         }
 
         var existingSlide = await _repository.GetSlideAsync(slideId, cancellationToken);
@@ -123,7 +104,7 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
     {
         if (string.IsNullOrWhiteSpace(slideId))
         {
-            return BadRequest("SlideId cannot be null or empty");
+            return BadRequest(new { error = "SlideId cannot be null or empty" });
         }
 
         var existingSlide = await _repository.GetSlideAsync(slideId, cancellationToken);
@@ -143,11 +124,6 @@ public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repo
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<IReadOnlyList<CarouselSlide>>> ReorderSlides([FromBody] ReorderCarouselSlidesRequest request, CancellationToken cancellationToken)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         var reorderedSlides = await _repository.ReorderSlidesAsync(request.SlideIds, cancellationToken);
         return Ok(reorderedSlides);
     }

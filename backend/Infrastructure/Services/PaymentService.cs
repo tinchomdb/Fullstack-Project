@@ -9,11 +9,13 @@ namespace Infrastructure.Services;
 
 public sealed class PaymentService(
     ICartService cartService,
+    IOrdersRepository ordersRepository,
     IUsersRepository usersRepository,
     IEmailService emailService,
     ILogger<PaymentService> logger) : IPaymentService
 {
     private readonly ICartService _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
+    private readonly IOrdersRepository _ordersRepository = ordersRepository ?? throw new ArgumentNullException(nameof(ordersRepository));
     private readonly IUsersRepository _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
     private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
     private readonly ILogger<PaymentService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -90,6 +92,8 @@ public sealed class PaymentService(
                 PaymentIntentId = paymentIntentId,
                 Status = OrderStatus.Processing
             };
+
+            await _ordersRepository.UpdateOrderAsync(updatedOrder, cancellationToken);
 
             _logger.LogInformation(
                 "Created order {OrderId} from payment {PaymentIntentId} for user {UserId}",

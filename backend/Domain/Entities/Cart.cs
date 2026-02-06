@@ -7,11 +7,8 @@ public sealed record class Cart
     [JsonPropertyName("id")]
     public string Id { get; init; } = Guid.NewGuid().ToString();
 
-    [JsonPropertyName("userId")]
     public string UserId { get; init; } = string.Empty;
 
-    [JsonPropertyName("status")]
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public CartStatus Status { get; init; } = CartStatus.Active;
 
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;

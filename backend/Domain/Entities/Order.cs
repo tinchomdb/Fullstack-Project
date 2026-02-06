@@ -7,7 +7,6 @@ public sealed record class Order
     [JsonPropertyName("id")]
     public string Id { get; init; } = Guid.NewGuid().ToString();
 
-    [JsonPropertyName("userId")]
     public string UserId { get; init; } = string.Empty;
 
     public string? OriginalCartId { get; init; }
@@ -18,7 +17,6 @@ public sealed record class Order
 
     public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
-    [JsonConverter(typeof(JsonStringEnumConverter))]
     public OrderStatus Status { get; init; }
 
     public IReadOnlyList<OrderItem> Items { get; init; } = [];

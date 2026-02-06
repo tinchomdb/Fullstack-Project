@@ -16,7 +16,7 @@ public sealed class CosmosDbOrdersRepository : IOrdersRepository
     {
         var settings = cosmosDbSettings.Value;
         var database = cosmosClient.GetDatabase(settings.DatabaseName);
-        _container = database.GetContainer(settings.ContainersNames.Orders);
+        _container = database.GetContainer(settings.ContainerNames.Orders);
     }
 
     public async Task<IReadOnlyList<Order>> GetOrdersByUserAsync(

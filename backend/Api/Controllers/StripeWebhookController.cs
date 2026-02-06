@@ -32,7 +32,7 @@ public sealed class StripeWebhookController(
             if (string.IsNullOrWhiteSpace(stripeSignature))
             {
                 _logger.LogWarning("Webhook request missing Stripe-Signature header");
-                return BadRequest("Missing Stripe-Signature header");
+                return BadRequest(new { error = "Missing Stripe-Signature header" });
             }
 
             var stripeEvent = EventUtility.ConstructEvent(
@@ -59,7 +59,7 @@ public sealed class StripeWebhookController(
         catch (StripeException ex)
         {
             _logger.LogError(ex, "Stripe webhook signature verification failed");
-            return BadRequest("Invalid signature");
+            return BadRequest(new { error = "Invalid signature" });
         }
         catch (Exception ex)
         {

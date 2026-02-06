@@ -18,7 +18,7 @@ public sealed class CosmosDbProductsRepository : IProductsRepository
     {
         var settings = cosmosDbSettings.Value;
         var database = cosmosClient.GetDatabase(settings.DatabaseName);
-        _container = database.GetContainer(settings.ContainersNames.Products);
+        _container = database.GetContainer(settings.ContainerNames.Products);
         _categoriesRepository = categoriesRepository ?? throw new ArgumentNullException(nameof(categoriesRepository));
     }
 

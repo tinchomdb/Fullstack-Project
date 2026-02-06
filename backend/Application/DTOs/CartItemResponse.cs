@@ -12,6 +12,4 @@ public sealed record CartItemResponse
     public decimal UnitPrice { get; init; }
     public decimal LineTotal { get; init; }
     public DateTime AddedDate { get; init; }
-    public bool IsAvailable { get; init; } = true;
-    public int AvailableStock { get; init; }
 }
