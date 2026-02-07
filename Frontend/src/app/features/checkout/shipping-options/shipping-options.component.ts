@@ -1,5 +1,5 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormSectionComponent } from '../../../shared/ui/form-section/form-section.component';
 import {
   FormRadioGroupComponent,
@@ -20,4 +20,8 @@ export interface ShippingOption extends RadioOption {
 export class ShippingOptionsComponent {
   form = input.required<FormGroup>();
   options = input.required<readonly ShippingOption[]>();
+
+  protected control(name: string): FormControl {
+    return this.form().get(name) as FormControl;
+  }
 }

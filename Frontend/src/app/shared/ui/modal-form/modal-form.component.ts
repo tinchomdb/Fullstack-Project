@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
-import { CommonModule } from '@angular/common';
 
 import { CloseButtonComponent } from '../close-button/close-button.component';
 
 @Component({
   selector: 'app-modal-form',
-  imports: [CommonModule, CloseButtonComponent],
+  imports: [CloseButtonComponent],
   templateUrl: './modal-form.component.html',
   styleUrls: ['./modal-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

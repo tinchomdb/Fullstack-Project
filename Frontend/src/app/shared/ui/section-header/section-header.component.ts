@@ -1,11 +1,10 @@
-import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
 import { HeadingComponent, HeadingLevel } from '../heading/heading.component';
 
 @Component({
   selector: 'app-section-header',
-  imports: [CommonModule, HeadingComponent],
+  imports: [HeadingComponent],
   templateUrl: './section-header.component.html',
   styleUrl: './section-header.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

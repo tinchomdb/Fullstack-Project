@@ -1,4 +1,4 @@
-import { inject, Injectable } from '@angular/core';
+import { computed, inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 
@@ -49,9 +49,7 @@ export class CartApiService {
   private readonly guestAuthService = inject(GuestAuthService);
   private readonly baseUrl = `${environment.apiBase}/api/carts`;
 
-  private get isGuest(): boolean {
-    return !this.authService.isLoggedIn();
-  }
+  private readonly isGuest = computed(() => !this.authService.isLoggedIn());
 
   getActiveCart(): Observable<Cart | null> {
     return this.http
@@ -105,7 +103,7 @@ export class CartApiService {
   }
 
   private getEndpoint(suffix: string): string {
-    return this.isGuest
+    return this.isGuest()
       ? `${this.baseUrl}/guest-cart${suffix}`
       : `${this.baseUrl}/my-cart${suffix}`;
   }

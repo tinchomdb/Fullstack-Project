@@ -1,13 +1,13 @@
 import { Component, inject, ChangeDetectionStrategy, OnInit, computed } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { OrderStateService } from '../../core/services/order-state.service';
 
 @Component({
   selector: 'app-order-success',
-  imports: [CommonModule, ButtonComponent],
+  imports: [CurrencyPipe, DatePipe, ButtonComponent],
   templateUrl: './order-success.component.html',
   styleUrl: './order-success.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

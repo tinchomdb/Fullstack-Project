@@ -13,7 +13,7 @@ import { GuestAuthService } from './guest-auth.service';
 export class GuestAuthInterceptor implements HttpInterceptor {
   private readonly guestAuthService = inject(GuestAuthService);
 
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (!this.isGuestCartRequest(req)) {
       return next.handle(req);
     }
@@ -28,10 +28,10 @@ export class GuestAuthInterceptor implements HttpInterceptor {
   }
 
   private handleRequest(
-    req: HttpRequest<any>,
+    req: HttpRequest<unknown>,
     token: string,
     next: HttpHandler,
-  ): Observable<HttpEvent<any>> {
+  ): Observable<HttpEvent<unknown>> {
     const authReq = this.addAuthHeader(req, token);
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -48,7 +48,7 @@ export class GuestAuthInterceptor implements HttpInterceptor {
     );
   }
 
-  private addAuthHeader(req: HttpRequest<any>, token: string): HttpRequest<any> {
+  private addAuthHeader(req: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
     return req.clone({
       setHeaders: {
         Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ export class GuestAuthInterceptor implements HttpInterceptor {
     });
   }
 
-  private isGuestCartRequest(req: HttpRequest<any>): boolean {
+  private isGuestCartRequest(req: HttpRequest<unknown>): boolean {
     return req.url.includes('/api/carts/guest-cart');
   }
 }

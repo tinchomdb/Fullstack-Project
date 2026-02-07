@@ -1,8 +1,8 @@
 export interface ShippingAddress {
-  street: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
-  isDefault?: boolean;
+  readonly street: string;
+  readonly city: string;
+  readonly state: string;
+  readonly zipCode: string;
+  readonly country: string;
+  readonly isDefault?: boolean;
 }

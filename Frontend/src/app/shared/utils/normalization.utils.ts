@@ -19,3 +19,10 @@ export function ensureNumber(value: unknown, fallback = 0): number {
 
   return Number.isFinite(parsed) ? parsed : fallback;
 }
+
+export function ensureBoolean(value: unknown, fallback = false): boolean {
+  if (typeof value === 'boolean') {
+    return value;
+  }
+  return fallback;
+}

@@ -14,7 +14,7 @@ import {
 } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-import { CartService } from './cart.service';
+import { CartService, type ValidateCheckoutResponse } from './cart.service';
 import { StripeService } from './stripe.service';
 import { OrderStateService } from './order-state.service';
 import { AuthService } from '../auth/auth.service';
@@ -72,8 +72,11 @@ export class CheckoutService {
   readonly cartIsEmpty = this.cartService.isEmpty;
   readonly cartUserId = this.cartService.cartUserId;
 
-  readonly isProcessing = signal(false);
-  readonly error = signal<string | null>(null);
+  private readonly _isProcessing = signal(false);
+  private readonly _error = signal<string | null>(null);
+
+  readonly isProcessing = this._isProcessing.asReadonly();
+  readonly error = this._error.asReadonly();
 
   readonly shippingOptions = SHIPPING_OPTIONS;
   readonly countries = COUNTRIES;
@@ -144,28 +147,28 @@ export class CheckoutService {
     const cartId = cart?.id ?? '';
     const shippingCost = this.selectedShippingCost() ?? 0;
 
-    this.error.set(null);
+    this._error.set(null);
 
     return this.stripeService.initializePayment(amount, email, cartId, shippingCost).pipe(
       catchError((error) => {
         console.error('Payment initialization error:', error);
-        this.error.set('Failed to initialize payment. Please try again.');
+        this._error.set('Failed to initialize payment. Please try again.');
         return throwError(() => error);
       }),
     );
   }
 
-  validateCart(): Observable<any> {
-    this.error.set(null);
+  validateCart(): Observable<ValidateCheckoutResponse> {
+    this._error.set(null);
     return this.cartService.validateCheckout().pipe(
       tap((response) => {
         if (!response.isValid && response.warnings?.length) {
-          this.error.set(`Cart issues: ${response.warnings.join(', ')}`);
+          this._error.set(`Cart issues: ${response.warnings.join(', ')}`);
         }
       }),
       catchError((error) => {
         console.error('Cart validation error:', error);
-        this.error.set('Failed to validate cart. Please try again.');
+        this._error.set('Failed to validate cart. Please try again.');
         return throwError(() => error);
       }),
     );
@@ -177,8 +180,8 @@ export class CheckoutService {
       return throwError(() => new Error('Form validation failed'));
     }
 
-    this.isProcessing.set(true);
-    this.error.set(null);
+    this._isProcessing.set(true);
+    this._error.set(null);
 
     const cart = this.cart();
     const email = this.shippingForm.value.email ?? '';
@@ -187,8 +190,8 @@ export class CheckoutService {
     const shippingCost = this.selectedShippingCost() ?? 0;
 
     if (!cart || !userId) {
-      this.error.set('Payment details missing. Please try again.');
-      this.isProcessing.set(false);
+      this._error.set('Payment details missing. Please try again.');
+      this._isProcessing.set(false);
       return throwError(() => new Error('Payment details missing'));
     }
 
@@ -223,10 +226,10 @@ export class CheckoutService {
       }),
       catchError((error) => {
         console.error('Payment failed:', error);
-        this.error.set('Payment processing failed. Please try again.');
+        this._error.set('Payment processing failed. Please try again.');
         return throwError(() => error);
       }),
-      finalize(() => this.isProcessing.set(false)),
+      finalize(() => this._isProcessing.set(false)),
     );
   }
 

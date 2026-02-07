@@ -39,9 +39,7 @@ export class AuthService {
     this.destroy$.complete();
   }
 
-  private get isIframe(): boolean {
-    return window !== window.parent && !window.opener;
-  }
+  private readonly isIframe = window !== window.parent && !window.opener;
 
   private initializeAuth(): void {
     if (this.isIframe) {
@@ -132,8 +130,8 @@ export class AuthService {
           }
           this.authInitialized.set(true);
         },
-        error: (error: any) => {
-          if (error.name === 'InteractionRequiredAuthError') {
+        error: (error: unknown) => {
+          if (error instanceof Error && error.name === 'InteractionRequiredAuthError') {
             // Token expired and needs user interaction to refresh
             // Downgrade to guest state to avoid immediate redirect loop
             console.info('Session expired. Downgrading to guest state.');

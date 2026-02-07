@@ -1,5 +1,5 @@
 import { Component, input, ChangeDetectionStrategy } from '@angular/core';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.component';
 import { FormSectionComponent } from '../../../shared/ui/form-section/form-section.component';
 
@@ -13,4 +13,8 @@ import { FormSectionComponent } from '../../../shared/ui/form-section/form-secti
 export class ShippingInformationFormComponent {
   form = input.required<FormGroup>();
   countries = input.required<readonly { code: string; name: string }[]>();
+
+  protected control(name: string): FormControl {
+    return this.form().get(name) as FormControl;
+  }
 }

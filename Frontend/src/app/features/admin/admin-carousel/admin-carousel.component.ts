@@ -68,7 +68,7 @@ export class AdminCarouselComponent implements OnInit, OnDestroy {
   /**
    * Generic error handler for all operations
    */
-  private handleError(operation: string, error: any): void {
+  private handleError(operation: string, error: unknown): void {
     console.error(`Failed to ${operation}:`, error);
     this.isFormSubmitting.set(false);
   }

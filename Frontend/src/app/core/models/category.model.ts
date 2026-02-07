@@ -1,11 +1,11 @@
 export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  image?: string;
-  featured?: boolean;
-  parentCategoryId?: string;
-  subcategoryIds: string[];
-  type: string;
+  readonly id: string;
+  readonly name: string;
+  readonly slug: string;
+  readonly description?: string;
+  readonly image?: string;
+  readonly featured?: boolean;
+  readonly parentCategoryId?: string;
+  readonly subcategoryIds: readonly string[];
+  readonly type: string;
 }

@@ -1,5 +1,5 @@
 import { Component, input, output, ChangeDetectionStrategy, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { ButtonComponent } from '../button/button.component';
 import { StarIconComponent } from '../icons/star-icon.component';
 import { CheckCircleIconComponent } from '../icons/check-circle-icon.component';
@@ -7,7 +7,7 @@ import { Cart } from '../../../core/models/cart.model';
 
 @Component({
   selector: 'app-order-summary-panel',
-  imports: [CommonModule, ButtonComponent, StarIconComponent, CheckCircleIconComponent],
+  imports: [ButtonComponent, StarIconComponent, CheckCircleIconComponent],
   templateUrl: './order-summary-panel.component.html',
   styleUrl: './order-summary-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

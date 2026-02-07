@@ -1,7 +1,7 @@
 <app-form-section [title]="'Shipping Information'">
   <div class="form-grid">
     <app-form-field
-      [control]="$any(form().get('firstName'))"
+      [control]="control('firstName')"
       [id]="'firstName'"
       [label]="'First Name'"
       [errorMessage]="'First name is required'"
@@ -9,7 +9,7 @@
     />
 
     <app-form-field
-      [control]="$any(form().get('lastName'))"
+      [control]="control('lastName')"
       [id]="'lastName'"
       [label]="'Last Name'"
       [errorMessage]="'Last name is required'"
@@ -17,7 +17,7 @@
     />
 
     <app-form-field
-      [control]="$any(form().get('email'))"
+      [control]="control('email')"
       [id]="'email'"
       [label]="'Email'"
       [type]="'email'"
@@ -27,7 +27,7 @@
     />
 
     <app-form-field
-      [control]="$any(form().get('phone'))"
+      [control]="control('phone')"
       [id]="'phone'"
       [label]="'Phone'"
       [type]="'tel'"
@@ -37,7 +37,7 @@
     />
 
     <app-form-field
-      [control]="$any(form().get('address'))"
+      [control]="control('address')"
       [id]="'address'"
       [label]="'Address'"
       [fullWidth]="true"
@@ -46,7 +46,7 @@
     />
 
     <app-form-field
-      [control]="$any(form().get('city'))"
+      [control]="control('city')"
       [id]="'city'"
       [label]="'City'"
       [errorMessage]="'City is required'"
@@ -54,7 +54,7 @@
     />
 
     <app-form-field
-      [control]="$any(form().get('state'))"
+      [control]="control('state')"
       [id]="'state'"
       [label]="'State'"
       [errorMessage]="'State is required'"
@@ -62,7 +62,7 @@
     />
 
     <app-form-field
-      [control]="$any(form().get('zipCode'))"
+      [control]="control('zipCode')"
       [id]="'zipCode'"
       [label]="'ZIP Code'"
       [errorMessage]="'Valid ZIP code is required'"
@@ -70,7 +70,7 @@
     />
 
     <app-form-field
-      [control]="$any(form().get('country'))"
+      [control]="control('country')"
       [id]="'country'"
       [label]="'Country'"
       [type]="'select'"

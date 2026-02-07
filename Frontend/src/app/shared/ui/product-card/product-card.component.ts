@@ -1,4 +1,4 @@
-import { CommonModule, CurrencyPipe, NgOptimizedImage } from '@angular/common';
+import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input, computed, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
@@ -9,7 +9,7 @@ import { ButtonComponent } from '../button/button.component';
 
 @Component({
   selector: 'app-product-card',
-  imports: [CommonModule, CurrencyPipe, NgOptimizedImage, ButtonComponent, RouterLink],
+  imports: [CurrencyPipe, NgOptimizedImage, ButtonComponent, RouterLink],
   templateUrl: './product-card.component.html',
   styleUrl: './product-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

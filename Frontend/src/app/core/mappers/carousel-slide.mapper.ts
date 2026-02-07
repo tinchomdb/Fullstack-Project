@@ -1,13 +1,6 @@
 import { CarouselSlide } from '../models/carousel-slide.model';
 import { CarouselSlideApiModel } from '../models/api/carousel-slide-api.model';
-import { ensureString, ensureNumber } from '../../shared/utils/normalization.utils';
-
-function ensureBoolean(value: unknown, fallback = false): boolean {
-  if (typeof value === 'boolean') {
-    return value;
-  }
-  return fallback;
-}
+import { ensureString, ensureNumber, ensureBoolean } from '../../shared/utils/normalization.utils';
 
 export function mapCarouselSlideFromApi(dto: CarouselSlideApiModel): CarouselSlide {
   return {

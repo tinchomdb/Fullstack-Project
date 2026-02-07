@@ -7,12 +7,10 @@ import {
   computed,
   effect,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-image-gallery-manager',
-  imports: [CommonModule, FormsModule],
+  imports: [],
   templateUrl: './image-gallery-manager.component.html',
   styleUrl: './image-gallery-manager.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

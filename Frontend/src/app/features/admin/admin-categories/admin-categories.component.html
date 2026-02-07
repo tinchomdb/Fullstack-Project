@@ -12,7 +12,7 @@
     >
       <form [formGroup]="categoryForm" (ngSubmit)="saveCategory()">
         <app-form-field
-          [control]="$any(categoryForm.get('name'))"
+          [control]="control('name')"
           [id]="'name'"
           [label]="'Category Name'"
           [fullWidth]="true"
@@ -21,7 +21,7 @@
 
         <div class="slug-field-wrapper">
           <app-form-field
-            [control]="$any(categoryForm.get('slug'))"
+            [control]="control('slug')"
             [id]="'slug'"
             [label]="'Slug'"
             [fullWidth]="true"
@@ -40,7 +40,7 @@
         </div>
 
         <app-form-field
-          [control]="$any(categoryForm.get('description'))"
+          [control]="control('description')"
           [id]="'description'"
           [label]="'Description'"
           [type]="'textarea'"
@@ -49,7 +49,7 @@
         />
 
         <app-form-field
-          [control]="$any(categoryForm.get('image'))"
+          [control]="control('image')"
           [id]="'image'"
           [label]="'Image URL'"
           [fullWidth]="true"
@@ -57,14 +57,14 @@
         />
 
         <app-form-checkbox
-          [control]="$any(categoryForm.get('featured'))"
+          [control]="control('featured')"
           [id]="'featured'"
           [label]="'Mark as Featured'"
           [subtitle]="'Featured categories will be highlighted on the homepage'"
         />
 
         <app-form-field
-          [control]="$any(categoryForm.get('parentCategoryId'))"
+          [control]="control('parentCategoryId')"
           [id]="'parentCategoryId'"
           [label]="'Parent Category'"
           [type]="'select'"

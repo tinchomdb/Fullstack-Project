@@ -34,7 +34,7 @@
         }
 
         <app-form-field
-          [control]="$any(productForm.get('name'))"
+          [control]="control('name')"
           [id]="'name'"
           [label]="'Product Name'"
           [fullWidth]="true"
@@ -43,7 +43,7 @@
 
         <div class="slug-field-wrapper">
           <app-form-field
-            [control]="$any(productForm.get('slug'))"
+            [control]="control('slug')"
             [id]="'slug'"
             [label]="'Slug'"
             [fullWidth]="true"
@@ -62,7 +62,7 @@
         </div>
 
         <app-form-field
-          [control]="$any(productForm.get('description'))"
+          [control]="control('description')"
           [id]="'description'"
           [label]="'Description'"
           [type]="'textarea'"
@@ -72,7 +72,7 @@
 
         <div class="form-row">
           <app-form-field
-            [control]="$any(productForm.get('price'))"
+            [control]="control('price')"
             [id]="'price'"
             [label]="'Price'"
             [type]="'number'"
@@ -80,7 +80,7 @@
           />
 
           <app-form-field
-            [control]="$any(productForm.get('currency'))"
+            [control]="control('currency')"
             [id]="'currency'"
             [label]="'Currency'"
             [type]="'select'"
@@ -92,7 +92,7 @@
           </app-form-field>
 
           <app-form-field
-            [control]="$any(productForm.get('stock'))"
+            [control]="control('stock')"
             [id]="'stock'"
             [label]="'Stock'"
             [type]="'number'"
@@ -101,7 +101,7 @@
         </div>
 
         <app-form-field
-          [control]="$any(productForm.get('categoryId'))"
+          [control]="control('categoryId')"
           [id]="'categoryId'"
           [label]="'Category'"
           [type]="'select'"
@@ -115,7 +115,7 @@
         </app-form-field>
 
         <app-form-field
-          [control]="$any(productForm.get('sellerId'))"
+          [control]="control('sellerId')"
           [id]="'sellerId'"
           [label]="'Seller ID'"
           [fullWidth]="true"
@@ -128,7 +128,7 @@
         />
 
         <app-form-checkbox
-          [control]="$any(productForm.get('featured'))"
+          [control]="control('featured')"
           [id]="'featured'"
           [label]="'Mark as Featured'"
           [subtitle]="'Featured products will be highlighted on the homepage'"

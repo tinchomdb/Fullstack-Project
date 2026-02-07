@@ -1,10 +1,10 @@
 export interface SellerProfile {
-  storeName: string;
-  storeDescription?: string;
-  logoUrl?: string;
-  averageRating: number;
-  totalProducts: number;
-  totalOrders: number;
-  totalReviews: number;
-  lastProductAddedAt?: string;
+  readonly storeName: string;
+  readonly storeDescription?: string;
+  readonly logoUrl?: string;
+  readonly averageRating: number;
+  readonly totalProducts: number;
+  readonly totalOrders: number;
+  readonly totalReviews: number;
+  readonly lastProductAddedAt?: string;
 }

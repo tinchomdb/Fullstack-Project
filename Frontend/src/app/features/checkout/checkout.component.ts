@@ -1,6 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
 
 import { CheckoutService } from '../../core/services/checkout.service';
 import { ButtonComponent } from '../../shared/ui/button/button.component';
@@ -13,7 +12,6 @@ import { PaymentMethodComponent } from './payment-method/payment-method.componen
 @Component({
   selector: 'app-checkout',
   imports: [
-    CommonModule,
     ButtonComponent,
     OrderSummaryPanelComponent,
     SidebarLayoutComponent,

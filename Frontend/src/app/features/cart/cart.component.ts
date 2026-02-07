@@ -1,5 +1,5 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 
 import { CartService } from '../../core/services/cart.service';
@@ -13,7 +13,6 @@ import { CartIconComponent } from '../../shared/ui/icons/cart-icon.component';
 @Component({
   selector: 'app-cart',
   imports: [
-    CommonModule,
     ButtonComponent,
     CartItemComponent,
     OrderSummaryPanelComponent,

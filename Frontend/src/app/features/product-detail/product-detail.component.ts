@@ -1,5 +1,5 @@
 import { Component, inject, signal, ChangeDetectionStrategy, input, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
 
@@ -13,12 +13,7 @@ import { BreadcrumbService } from '../../core/services/breadcrumb.service';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [
-    CommonModule,
-    ProductImageGalleryComponent,
-    ProductBuyBoxComponent,
-    ProductInfoComponent,
-  ],
+  imports: [ProductImageGalleryComponent, ProductBuyBoxComponent, ProductInfoComponent],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

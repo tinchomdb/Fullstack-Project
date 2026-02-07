@@ -1,10 +1,10 @@
 import { ProductSortField, SortDirection } from './product-filters.model';
 
 export interface SortOption {
-  label: string;
-  sortBy: ProductSortField;
-  sortDirection: SortDirection;
-  value: string;
+  readonly label: string;
+  readonly sortBy: ProductSortField;
+  readonly sortDirection: SortDirection;
+  readonly value: string;
 }
 
 export const SORT_OPTIONS: readonly SortOption[] = [

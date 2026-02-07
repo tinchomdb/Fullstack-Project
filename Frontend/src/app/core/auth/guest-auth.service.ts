@@ -27,7 +27,8 @@ export class GuestAuthService {
   private readonly baseUrl = `${environment.apiBase}/api/GuestAuth`;
   private cachedToken: string | null = this.getStoredToken();
   private pendingTokenRequest$: Observable<string> | null = null;
-  hasToken = signal(!!this.cachedToken && !this.isTokenExpired(this.cachedToken));
+  private readonly _hasToken = signal(!!this.cachedToken && !this.isTokenExpired(this.cachedToken));
+  readonly hasToken = this._hasToken.asReadonly();
 
   ensureGuestToken(): Observable<string> {
     const storedToken = this.cachedToken;

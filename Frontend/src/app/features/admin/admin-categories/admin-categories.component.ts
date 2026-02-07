@@ -1,5 +1,11 @@
 import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category } from '../../../core/models/category.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -36,6 +42,10 @@ export class AdminCategoriesComponent implements OnInit {
   readonly editingCategory = signal<Category | null>(null);
 
   categoryForm!: FormGroup;
+
+  protected control(name: string): FormControl {
+    return this.categoryForm.get(name) as FormControl;
+  }
 
   ngOnInit(): void {
     this.initForm();

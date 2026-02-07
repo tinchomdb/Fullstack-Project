@@ -1,7 +1,7 @@
 export interface CarouselSlide {
-  id: string;
-  imageUrl: string;
-  alt: string;
-  order: number;
-  isActive: boolean;
+  readonly id: string;
+  readonly imageUrl: string;
+  readonly alt: string;
+  readonly order: number;
+  readonly isActive: boolean;
 }

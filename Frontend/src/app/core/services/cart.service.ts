@@ -8,7 +8,7 @@ import { Product } from '../models/product.model';
 import { AuthService } from '../auth/auth.service';
 import { GuestAuthService } from '../auth/guest-auth.service';
 import { LoadingOverlayService } from './loading-overlay.service';
-import { CartApiService } from './cart-api.service';
+import { CartApiService, type ValidateCheckoutResponse } from './cart-api.service';
 import { OrderStateService } from './order-state.service';
 
 export type { CheckoutRequest } from './cart-api.service';
@@ -33,7 +33,8 @@ export class CartService {
   readonly loading = this.cartResource.loading;
   readonly error = this.cartResource.error;
   readonly cartUserId = computed(() => this.cart()?.userId ?? null);
-  readonly cartReady = signal(false);
+  private readonly _cartReady = signal(false);
+  readonly cartReady = this._cartReady.asReadonly();
 
   // Computed properties
   readonly itemCount = computed(
@@ -67,8 +68,8 @@ export class CartService {
     this.cartResource.load(
       this.cartApi.getActiveCart().pipe(
         tap({
-          next: () => this.cartReady.set(true),
-          error: () => this.cartReady.set(true), // ✅ Also ready on error
+          next: () => this._cartReady.set(true),
+          error: () => this._cartReady.set(true),
         }),
       ),
     );
@@ -120,7 +121,7 @@ export class CartService {
     );
   }
 
-  validateCheckout(): Observable<any> {
+  validateCheckout(): Observable<ValidateCheckoutResponse> {
     const currentCart = this.cart();
     if (!currentCart) throw new Error('No active cart to validate');
     return this.cartApi.validateCheckout();

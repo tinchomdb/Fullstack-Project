@@ -8,7 +8,7 @@ import {
   effect,
   untracked,
 } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductsService } from '../../../core/services/products.service';
 import { AdminProductsFiltersService } from '../../../core/services/admin-products-filters.service';
 import { CategoriesService } from '../../../core/services/categories.service';
@@ -93,6 +93,10 @@ export class AdminProductsComponent implements OnInit {
       const field = this.productForm.get(fieldName);
       return field ? field.invalid && field.touched : false;
     });
+
+  protected control(name: string): FormControl {
+    return this.productForm.get(name) as FormControl;
+  }
 
   constructor() {
     let isFirstRun = true;

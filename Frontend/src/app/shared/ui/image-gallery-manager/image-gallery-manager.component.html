@@ -3,10 +3,12 @@
     <h3>Product Images</h3>
     <div class="add-image-form">
       <input
+        #urlInput
         type="url"
         class="image-url-input"
         placeholder="Enter image URL..."
-        [(ngModel)]="newImageUrl"
+        [value]="newImageUrl()"
+        (input)="newImageUrl.set(urlInput.value)"
         (keyup.enter)="canAddImage() && addImage()"
       />
       <button class="add-button" (click)="addImage()" [disabled]="!canAddImage()" type="button">

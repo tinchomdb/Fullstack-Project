@@ -1,6 +1,6 @@
 <app-form-section [title]="'Shipping Options'">
   <app-form-radio-group
-    [control]="$any(form().get('shippingOption'))"
+    [control]="control('shippingOption')"
     [options]="options()"
     [name]="'shippingOption'"
   >
