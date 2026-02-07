@@ -71,15 +71,9 @@ public sealed class CartMapper
     public CartItem UpdateCartItemFromProduct(
         Product product,
         int quantity,
-        DateTime addedDate,
-        string sellerId,
-        string sellerName)
+        DateTime addedDate)
     {
-        return CreateCartItemFromProduct(product, quantity, addedDate) with
-        {
-            SellerId = sellerId,
-            SellerName = sellerName
-        };
+        return CreateCartItemFromProduct(product, quantity, addedDate);
     }
 
     public Order CreateOrderFromCart(Cart cart, List<CartItem> validatedItems, decimal subtotal, decimal shippingCost)
@@ -95,6 +89,7 @@ public sealed class CartMapper
             {
                 ProductId = cartItem.ProductId,
                 ProductName = cartItem.ProductName,
+                Slug = cartItem.Slug,
                 Quantity = cartItem.Quantity,
                 UnitPrice = cartItem.UnitPrice,
                 LineTotal = cartItem.LineTotal

@@ -61,12 +61,17 @@ public sealed class StripeWebhookController(
             _logger.LogError(ex, "Stripe webhook signature verification failed");
             return BadRequest(new { error = "Invalid signature" });
         }
+        catch (InvalidOperationException ex)
+        {
+            // Business logic failures (e.g., no cart found) — don't retry
+            _logger.LogError(ex, "Business logic error processing Stripe webhook");
+            return Ok();
+        }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing Stripe webhook");
-            // Return 200 OK to prevent Stripe from retrying this webhook
-            // The error is already logged above
-            return Ok();
+            // Transient errors (DB timeout, network) — return 500 so Stripe retries
+            _logger.LogError(ex, "Transient error processing Stripe webhook");
+            return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
 

@@ -145,19 +145,18 @@ public class CartMapperTests
     // --- UpdateCartItemFromProduct ---
 
     [Fact]
-    public void UpdateCartItemFromProduct_PreservesSellerAndDate()
+    public void UpdateCartItemFromProduct_UsesProductSellerInfo()
     {
         // Arrange
         var product = TestDataBuilder.CreateProduct(id: "p1", price: 50m);
         var originalDate = new DateTime(2025, 6, 1, 0, 0, 0, DateTimeKind.Utc);
 
         // Act
-        var item = _mapper.UpdateCartItemFromProduct(
-            product, 4, originalDate, "original-seller", "Original Store");
+        var item = _mapper.UpdateCartItemFromProduct(product, 4, originalDate);
 
         // Assert
-        Assert.Equal("original-seller", item.SellerId);
-        Assert.Equal("Original Store", item.SellerName);
+        Assert.Equal(product.SellerId, item.SellerId);
+        Assert.Equal(product.Seller.DisplayName, item.SellerName);
         Assert.Equal(originalDate, item.AddedDate);
         Assert.Equal(4, item.Quantity);
         Assert.Equal(200m, item.LineTotal);
@@ -212,6 +211,23 @@ public class CartMapperTests
         Assert.Equal(999m, order.Items[0].UnitPrice);
         Assert.Equal("p2", order.Items[1].ProductId);
         Assert.Equal(2, order.Items[1].Quantity);
+    }
+
+    [Fact]
+    public void CreateOrderFromCart_MapsSlugToOrderItems()
+    {
+        // Arrange
+        var cart = TestDataBuilder.CreateCart();
+        var items = new List<CartItem>
+        {
+            TestDataBuilder.CreateCartItem(productId: "p1", productName: "Gaming Laptop")
+        };
+
+        // Act
+        var order = _mapper.CreateOrderFromCart(cart, items, subtotal: 29.99m, shippingCost: 0m);
+
+        // Assert
+        Assert.Equal("gaming-laptop", order.Items[0].Slug);
     }
 
     // --- CalculateSubtotal ---

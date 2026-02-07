@@ -96,7 +96,7 @@ public sealed class CosmosDbInitializationService
         containerProperties.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
 
         // Exclude large fields from indexing to reduce RU costs
-        if (containerName == "products")
+        if (string.Equals(containerName, _settings.ContainerNames.Products, StringComparison.OrdinalIgnoreCase))
         {
             containerProperties.IndexingPolicy.ExcludedPaths.Add(
                 new ExcludedPath { Path = "/description/*" });
@@ -109,7 +109,7 @@ public sealed class CosmosDbInitializationService
         }
 
         // Set TTL for carts (30 days for abandoned carts)
-        if (containerName == "carts")
+        if (string.Equals(containerName, _settings.ContainerNames.Carts, StringComparison.OrdinalIgnoreCase))
         {
             containerProperties.DefaultTimeToLive = CartTtlSeconds;
         }

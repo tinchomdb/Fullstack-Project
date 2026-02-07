@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Application.Repositories;
 using Domain.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -77,7 +78,7 @@ public sealed class ProductsController(IProductsRepository repository) : Control
     [AllowAnonymous]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<Product>>> GetFeaturedProducts(
-        [FromQuery] int limit = 20,
+        [FromQuery][Range(1, 50)] int limit = 20,
         [FromQuery] string? categoryId = null,
         CancellationToken cancellationToken = default)
     {

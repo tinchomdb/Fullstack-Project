@@ -14,11 +14,56 @@ public sealed class PaymentService(
     IEmailService emailService,
     ILogger<PaymentService> logger) : IPaymentService
 {
+    private static readonly HashSet<decimal> ValidShippingCosts = [5.99m, 12.99m, 24.99m];
+
     private readonly ICartService _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
     private readonly IOrdersRepository _ordersRepository = ordersRepository ?? throw new ArgumentNullException(nameof(ordersRepository));
     private readonly IUsersRepository _usersRepository = usersRepository ?? throw new ArgumentNullException(nameof(usersRepository));
     private readonly IEmailService _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
     private readonly ILogger<PaymentService> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+    public async Task<CartTotalValidationResult> ValidateCartTotalAsync(
+        string userId,
+        long requestedAmountInCents,
+        decimal shippingCost,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (!ValidShippingCosts.Contains(shippingCost))
+            {
+                return CartTotalValidationResult.Failure(
+                    $"Invalid shipping cost: {shippingCost}. Valid options are: {string.Join(", ", ValidShippingCosts)}.");
+            }
+
+            var cart = await _cartService.GetActiveCartAsync(userId, cancellationToken);
+
+            if (cart.Items.Count == 0)
+            {
+                return CartTotalValidationResult.Failure("Cart is empty. Please add items before checkout.");
+            }
+
+            var subtotal = cart.Total;
+            var totalWithShipping = subtotal + shippingCost;
+            var cartTotalInCents = (long)Math.Round(totalWithShipping * 100);
+
+            if (requestedAmountInCents != cartTotalInCents)
+            {
+                _logger.LogWarning(
+                    "Payment amount mismatch for user {UserId}: requested {Requested} cents, cart total {CartTotal} cents",
+                    userId, requestedAmountInCents, cartTotalInCents);
+                return CartTotalValidationResult.Failure(
+                    $"Amount mismatch. Expected {cartTotalInCents} cents based on cart total.");
+            }
+
+            return CartTotalValidationResult.Success();
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Cart validation failed for user {UserId}", userId);
+            return CartTotalValidationResult.Failure("No active cart found. Please add items before checkout.");
+        }
+    }
 
     public async Task<CreatePaymentIntentResponse> CreatePaymentIntentAsync(
         CreatePaymentIntentRequest request,
@@ -31,7 +76,8 @@ public sealed class PaymentService(
         {
             { "email", request.Email },
             { "created_at", DateTime.UtcNow.ToString("O") },
-            { "user_id", userId }
+            { "user_id", userId },
+            { "shipping_cost", request.ShippingCost.ToString("F2") }
         };
 
         if (!string.IsNullOrWhiteSpace(request.CartId))
@@ -78,9 +124,17 @@ public sealed class PaymentService(
 
         try
         {
-            // Note: Cart was already validated by the frontend before creating the payment intent
-            // We only perform lightweight validation here (stock check, price recalculation)
-            // in CheckoutCartAsync to ensure nothing critical has changed
+            // Idempotency check: if order already exists for this payment, return it
+            var existingOrder = await _ordersRepository.GetOrderByPaymentIntentIdAsync(
+                paymentIntentId, cancellationToken);
+
+            if (existingOrder is not null)
+            {
+                _logger.LogInformation(
+                    "Order {OrderId} already exists for payment {PaymentIntentId}, skipping duplicate processing",
+                    existingOrder.Id, paymentIntentId);
+                return existingOrder;
+            }
 
             // Checkout the cart and create the order
             // This will validate stock and recalculate prices one final time

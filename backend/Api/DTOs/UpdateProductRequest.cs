@@ -35,7 +35,7 @@ public sealed record UpdateProductRequest
 
     public bool Featured { get; init; }
 
-    public Product ToEntity(string productId, string sellerId) => new()
+    public Product ToEntity(string productId, string sellerId, DateTime createdAt) => new()
     {
         Id = productId,
         Name = Name,
@@ -48,6 +48,8 @@ public sealed record UpdateProductRequest
         CategoryIds = CategoryIds,
         Seller = Seller,
         ImageUrls = ImageUrls,
-        Featured = Featured
+        Featured = Featured,
+        CreatedAt = createdAt,
+        UpdatedAt = DateTime.UtcNow
     };
 }

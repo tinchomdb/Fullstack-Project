@@ -41,9 +41,24 @@ public sealed class PaymentsController(
             return BadRequest(new { error = "Email is required" });
         }
 
+        if (string.IsNullOrWhiteSpace(request.CartId))
+        {
+            return BadRequest(new { error = "CartId is required" });
+        }
+
         try
         {
             var userId = User.GetUserId();
+
+            // Server-side cart validation: ensure amount matches actual cart total
+            var cartValidation = await _paymentService.ValidateCartTotalAsync(
+                userId, request.Amount, request.ShippingCost, cancellationToken);
+
+            if (!cartValidation.IsValid)
+            {
+                return BadRequest(new { error = cartValidation.ErrorMessage });
+            }
+
             var response = await _paymentService.CreatePaymentIntentAsync(
                 request,
                 userId,

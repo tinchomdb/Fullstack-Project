@@ -29,9 +29,18 @@ public sealed class AdminProductsController(IProductsRepository repository) : Co
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<Product>> UpdateProduct(string productId, string sellerId, [FromBody] UpdateProductRequest request, CancellationToken cancellationToken)
     {
-        var updatedProduct = await _repository.UpdateProductAsync(request.ToEntity(productId, sellerId), cancellationToken);
+        var existingProduct = await _repository.GetProductAsync(productId, sellerId, cancellationToken);
+
+        if (existingProduct is null)
+        {
+            return NotFound();
+        }
+
+        var updatedProduct = await _repository.UpdateProductAsync(
+            request.ToEntity(productId, sellerId, existingProduct.CreatedAt), cancellationToken);
         return Ok(updatedProduct);
     }
 
@@ -39,8 +48,16 @@ public sealed class AdminProductsController(IProductsRepository repository) : Co
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteProduct(string productId, string sellerId, CancellationToken cancellationToken)
     {
+        var existingProduct = await _repository.GetProductAsync(productId, sellerId, cancellationToken);
+
+        if (existingProduct is null)
+        {
+            return NotFound();
+        }
+
         await _repository.DeleteProductAsync(productId, sellerId, cancellationToken);
         return NoContent();
     }

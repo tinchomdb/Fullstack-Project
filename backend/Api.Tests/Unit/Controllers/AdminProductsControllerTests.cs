@@ -99,6 +99,7 @@ public class AdminProductsControllerTests
     public async Task UpdateProduct_WithValidRequest_ReturnsOk()
     {
         // Arrange
+        var existingProduct = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1");
         var request = new UpdateProductRequest
         {
             Name = "Updated",
@@ -108,6 +109,9 @@ public class AdminProductsControllerTests
             Stock = 50
         };
         var updatedProduct = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1", name: "Updated");
+        _mockRepository
+            .Setup(r => r.GetProductAsync("p1", "s1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingProduct);
         _mockRepository
             .Setup(r => r.UpdateProductAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(updatedProduct);
@@ -122,9 +126,35 @@ public class AdminProductsControllerTests
     }
 
     [Fact]
+    public async Task UpdateProduct_WhenNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        var request = new UpdateProductRequest
+        {
+            Name = "Updated",
+            Description = "Updated desc",
+            Slug = "updated",
+            Price = 39.99m,
+            Stock = 50
+        };
+        _mockRepository
+            .Setup(r => r.GetProductAsync("missing", "s1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Product?)null);
+
+        // Act
+        var result = await _controller.UpdateProduct("missing", "s1", request, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result.Result);
+        _mockRepository.Verify(
+            r => r.UpdateProductAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()), Times.Never);
+    }
+
+    [Fact]
     public async Task UpdateProduct_SetsIdAndSellerIdFromRouteParameters()
     {
         // Arrange
+        var existingProduct = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1");
         var request = new UpdateProductRequest
         {
             Name = "Test",
@@ -135,6 +165,9 @@ public class AdminProductsControllerTests
         };
 
         Product? capturedProduct = null;
+        _mockRepository
+            .Setup(r => r.GetProductAsync("p1", "s1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingProduct);
         _mockRepository
             .Setup(r => r.UpdateProductAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
             .Callback<Product, CancellationToken>((p, _) => capturedProduct = p)
@@ -149,11 +182,50 @@ public class AdminProductsControllerTests
         Assert.Equal("s1", capturedProduct.SellerId);
     }
 
+    [Fact]
+    public async Task UpdateProduct_PreservesOriginalCreatedAt()
+    {
+        // Arrange
+        var originalCreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        var existingProduct = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1");
+        existingProduct = existingProduct with { CreatedAt = originalCreatedAt };
+        var request = new UpdateProductRequest
+        {
+            Name = "Updated",
+            Description = "Desc",
+            Slug = "updated",
+            Price = 10m,
+            Stock = 5
+        };
+
+        Product? capturedProduct = null;
+        _mockRepository
+            .Setup(r => r.GetProductAsync("p1", "s1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingProduct);
+        _mockRepository
+            .Setup(r => r.UpdateProductAsync(It.IsAny<Product>(), It.IsAny<CancellationToken>()))
+            .Callback<Product, CancellationToken>((p, _) => capturedProduct = p)
+            .ReturnsAsync(TestDataBuilder.CreateProduct());
+
+        // Act
+        await _controller.UpdateProduct("p1", "s1", request, CancellationToken.None);
+
+        // Assert
+        Assert.NotNull(capturedProduct);
+        Assert.Equal(originalCreatedAt, capturedProduct.CreatedAt);
+    }
+
     // ===== DeleteProduct =====
 
     [Fact]
     public async Task DeleteProduct_ReturnsNoContent()
     {
+        // Arrange
+        var existingProduct = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1");
+        _mockRepository
+            .Setup(r => r.GetProductAsync("p1", "s1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(existingProduct);
+
         // Act
         var result = await _controller.DeleteProduct("p1", "s1", CancellationToken.None);
 
@@ -161,5 +233,22 @@ public class AdminProductsControllerTests
         Assert.IsType<NoContentResult>(result);
         _mockRepository.Verify(
             r => r.DeleteProductAsync("p1", "s1", It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task DeleteProduct_WhenNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        _mockRepository
+            .Setup(r => r.GetProductAsync("missing", "s1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Product?)null);
+
+        // Act
+        var result = await _controller.DeleteProduct("missing", "s1", CancellationToken.None);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result);
+        _mockRepository.Verify(
+            r => r.DeleteProductAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

@@ -53,8 +53,8 @@ export class StripeService {
     }
   }
 
-  initializePayment(amount: number, email: string, cartId: string): Observable<void> {
-    return this.paymentApi.createPaymentIntent({ amount, email, cartId }).pipe(
+  initializePayment(amount: number, email: string, cartId: string, shippingCost: number): Observable<void> {
+    return this.paymentApi.createPaymentIntent({ amount, email, cartId, shippingCost }).pipe(
       switchMap((response) => {
         // Capture the payment intent ID for later use
         if (response.paymentIntentId) {

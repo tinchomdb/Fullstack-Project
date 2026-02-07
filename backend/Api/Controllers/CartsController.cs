@@ -10,7 +10,7 @@ namespace Api.Controllers;
 [Route("api/[controller]")]
 public sealed class CartsController(
     ICartService cartService,
-    ILogger<CartsController> logger) : OwnershipValidatedController
+    ILogger<CartsController> logger) : ControllerBase
 {
     private readonly ICartService _cartService = cartService ?? throw new ArgumentNullException(nameof(cartService));
     private readonly ILogger<CartsController> _logger = logger ?? throw new ArgumentNullException(nameof(logger));

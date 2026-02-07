@@ -30,13 +30,16 @@ public class PaymentsControllerTests
     public async Task CreatePaymentIntent_WithValidRequest_ReturnsOk()
     {
         // Arrange
-        var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "test@example.com" };
+        var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "test@example.com", CartId = "cart-1", ShippingCost = 5.99m };
         var response = new CreatePaymentIntentResponse
         {
             ClientSecret = "pi_secret",
             Amount = 5000,
             PaymentIntentId = "pi_123"
         };
+        _mockPaymentService
+            .Setup(s => s.ValidateCartTotalAsync("user-1", 5000, 5.99m, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CartTotalValidationResult.Success());
         _mockPaymentService
             .Setup(s => s.CreatePaymentIntentAsync(request, "user-1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(response);
@@ -103,7 +106,10 @@ public class PaymentsControllerTests
     public async Task CreatePaymentIntent_WhenStripeException_ReturnsBadRequest()
     {
         // Arrange
-        var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "test@example.com" };
+        var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "test@example.com", CartId = "cart-1", ShippingCost = 5.99m };
+        _mockPaymentService
+            .Setup(s => s.ValidateCartTotalAsync("user-1", 5000, 5.99m, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CartTotalValidationResult.Success());
         _mockPaymentService
             .Setup(s => s.CreatePaymentIntentAsync(request, "user-1", It.IsAny<CancellationToken>()))
             .ThrowsAsync(new StripeException("Card declined"));
@@ -119,7 +125,10 @@ public class PaymentsControllerTests
     public async Task CreatePaymentIntent_WhenGenericException_Returns500()
     {
         // Arrange
-        var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "test@example.com" };
+        var request = new CreatePaymentIntentRequest { Amount = 5000, Email = "test@example.com", CartId = "cart-1", ShippingCost = 5.99m };
+        _mockPaymentService
+            .Setup(s => s.ValidateCartTotalAsync("user-1", 5000, 5.99m, It.IsAny<CancellationToken>()))
+            .ReturnsAsync(CartTotalValidationResult.Success());
         _mockPaymentService
             .Setup(s => s.CreatePaymentIntentAsync(request, "user-1", It.IsAny<CancellationToken>()))
             .ThrowsAsync(new Exception("Unexpected error"));

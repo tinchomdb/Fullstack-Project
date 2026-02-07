@@ -142,10 +142,11 @@ export class CheckoutService {
     const amount = Math.round(this.totalWithShipping() * 100); // Convert to cents
     const cart = this.cart();
     const cartId = cart?.id ?? '';
+    const shippingCost = this.selectedShippingCost() ?? 0;
 
     this.error.set(null);
 
-    return this.stripeService.initializePayment(amount, email, cartId).pipe(
+    return this.stripeService.initializePayment(amount, email, cartId, shippingCost).pipe(
       catchError((error) => {
         console.error('Payment initialization error:', error);
         this.error.set('Failed to initialize payment. Please try again.');

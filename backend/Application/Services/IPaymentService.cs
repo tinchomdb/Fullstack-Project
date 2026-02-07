@@ -15,4 +15,10 @@ public interface IPaymentService
         string userId,
         string email,
         CancellationToken cancellationToken = default);
+
+    Task<CartTotalValidationResult> ValidateCartTotalAsync(
+        string userId,
+        long requestedAmountInCents,
+        decimal shippingCost,
+        CancellationToken cancellationToken = default);
 }

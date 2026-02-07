@@ -8,6 +8,7 @@ export interface CreatePaymentIntentRequest {
   amount: number;
   email: string;
   cartId?: string;
+  shippingCost: number;
 }
 
 export interface CreatePaymentIntentResponse {

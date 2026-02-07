@@ -66,6 +66,31 @@ public sealed class CosmosDbOrdersRepository : IOrdersRepository
         }
     }
 
+    public async Task<Order?> GetOrderByPaymentIntentIdAsync(
+        string paymentIntentId,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new QueryDefinition(
+            "SELECT * FROM c WHERE c.paymentIntentId = @paymentIntentId AND c.type = @type")
+            .WithParameter("@paymentIntentId", paymentIntentId)
+            .WithParameter("@type", "Order");
+
+        var iterator = _container.GetItemQueryIterator<Order>(query);
+
+        while (iterator.HasMoreResults)
+        {
+            var response = await iterator.ReadNextAsync(cancellationToken);
+            var order = response.FirstOrDefault();
+
+            if (order is not null)
+            {
+                return order;
+            }
+        }
+
+        return null;
+    }
+
     public async Task<Order> CreateOrderAsync(
         Order order,
         CancellationToken cancellationToken = default)

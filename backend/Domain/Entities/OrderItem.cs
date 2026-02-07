@@ -6,6 +6,8 @@ public sealed record class OrderItem
 
     public string ProductName { get; init; } = string.Empty;
 
+    public string Slug { get; init; } = string.Empty;
+
     public string ImageUrl { get; init; } = string.Empty;
 
     public string SellerId { get; init; } = string.Empty;

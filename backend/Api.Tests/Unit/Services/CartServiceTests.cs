@@ -60,15 +60,12 @@ public class CartServiceTests
     }
 
     [Fact]
-    public async Task GetActiveCartAsync_WithNoCart_CreatesNewCart()
+    public async Task GetActiveCartAsync_WithNoCart_ReturnsEmptyCartWithoutPersisting()
     {
         // Arrange
         _mockCartsRepo
             .Setup(r => r.GetActiveCartByUserAsync("user-1", It.IsAny<CancellationToken>()))
             .ReturnsAsync((Cart?)null);
-        _mockCartsRepo
-            .Setup(r => r.UpsertCartAsync(It.IsAny<Cart>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Cart c, CancellationToken _) => c);
 
         // Act
         var response = await _service.GetActiveCartAsync("user-1");
@@ -76,11 +73,11 @@ public class CartServiceTests
         // Assert
         Assert.Equal("user-1", response.UserId);
         Assert.Empty(response.Items);
-        _mockCartsRepo.Verify(r => r.UpsertCartAsync(It.IsAny<Cart>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockCartsRepo.Verify(r => r.UpsertCartAsync(It.IsAny<Cart>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Fact]
-    public async Task GetActiveCartAsync_WithExpiredCart_CreatesNewCart()
+    public async Task GetActiveCartAsync_WithExpiredCart_DeletesAndReturnsEmpty()
     {
         // Arrange
         var expiredCart = TestDataBuilder.CreateCart(
@@ -89,17 +86,15 @@ public class CartServiceTests
         _mockCartsRepo
             .Setup(r => r.GetActiveCartByUserAsync("user-1", It.IsAny<CancellationToken>()))
             .ReturnsAsync(expiredCart);
-        _mockCartsRepo
-            .Setup(r => r.UpsertCartAsync(It.IsAny<Cart>(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((Cart c, CancellationToken _) => c);
 
         // Act
         var response = await _service.GetActiveCartAsync("user-1");
 
         // Assert
         Assert.Equal("user-1", response.UserId);
+        Assert.Empty(response.Items);
         _mockCartsRepo.Verify(r => r.DeleteCartAsync("user-1", It.IsAny<CancellationToken>()), Times.Once);
-        _mockCartsRepo.Verify(r => r.UpsertCartAsync(It.IsAny<Cart>(), It.IsAny<CancellationToken>()), Times.Once);
+        _mockCartsRepo.Verify(r => r.UpsertCartAsync(It.IsAny<Cart>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
     // ===== AddItemToCartAsync =====
@@ -363,6 +358,35 @@ public class CartServiceTests
         // Act & Assert
         await Assert.ThrowsAsync<InvalidOperationException>(
             () => _service.ValidateCartForCheckoutAsync("user-1"));
+    }
+
+    [Fact]
+    public async Task ValidateCartForCheckoutAsync_WithUnavailableProduct_SkipsItGracefully()
+    {
+        // Arrange — cart has 2 items, but one product is unavailable
+        var items = new List<CartItem>
+        {
+            TestDataBuilder.CreateCartItem(productId: "p1", sellerId: "s1", quantity: 1, unitPrice: 100m),
+            TestDataBuilder.CreateCartItem(productId: "p2", sellerId: "s2", quantity: 1, unitPrice: 50m)
+        };
+        var cart = TestDataBuilder.CreateCart(items: items, subtotal: 150m, total: 150m);
+        var availableProduct = TestDataBuilder.CreateProduct(id: "p1", sellerId: "s1", price: 100m, stock: 10);
+
+        _mockCartsRepo
+            .Setup(r => r.GetActiveCartByUserAsync("user-1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(cart);
+        _mockProductsRepo
+            .Setup(r => r.GetProductAsync("p1", "s1", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(availableProduct);
+        _mockProductsRepo
+            .Setup(r => r.GetProductAsync("p2", "s2", It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new Exception("Product not found"));
+
+        // Act — should NOT throw; unavailable product is skipped
+        var response = await _service.ValidateCartForCheckoutAsync("user-1");
+
+        // Assert — only p1 is validated, p2 skipped
+        Assert.True(response.IsValid);
     }
 
     // ===== CheckoutCartAsync =====

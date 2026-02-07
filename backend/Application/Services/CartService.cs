@@ -26,7 +26,18 @@ public sealed class CartService(
 
     public async Task<CartResponse> GetActiveCartAsync(string userId, CancellationToken cancellationToken = default)
     {
-        var cart = await GetOrCreateCartAsync(userId, cancellationToken);
+        var cart = await _cartsRepository.GetActiveCartByUserAsync(userId, cancellationToken);
+
+        if (cart is null || IsCartExpired(cart))
+        {
+            if (cart is not null && IsCartExpired(cart))
+            {
+                _logger.LogInformation("Cart {CartId} for user {UserId} has expired", cart.Id, userId);
+                await _cartsRepository.DeleteCartAsync(userId, cancellationToken);
+            }
+
+            return _cartMapper.CreateEmptyCartResponse(userId);
+        }
 
         return _cartMapper.MapToCartResponse(cart);
     }
@@ -377,9 +388,7 @@ public sealed class CartService(
         items[index] = _cartMapper.UpdateCartItemFromProduct(
             product,
             newQuantity,
-            existingItem.AddedDate,
-            existingItem.SellerId,
-            existingItem.SellerName);
+            existingItem.AddedDate);
     }
 
     private async Task<Product> GetValidatedProductAsync(
@@ -401,18 +410,29 @@ public sealed class CartService(
         IReadOnlyList<CartItem> items,
         CancellationToken cancellationToken)
     {
-        var productTasks = items.Select(item =>
-            GetValidatedProductAsync(item.ProductId, item.SellerId, cancellationToken));
+        var productTasks = items.Select(async item =>
+        {
+            try
+            {
+                var product = await _productsRepository.GetProductAsync(
+                    item.ProductId, item.SellerId, cancellationToken);
+                return (item, Product: product);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Product {ProductId} unavailable during cart validation", item.ProductId);
+                return (item, Product: (Product?)null);
+            }
+        });
 
-        var products = await Task.WhenAll(productTasks);
+        var results = await Task.WhenAll(productTasks);
 
-        return items.Zip(products, (item, product) =>
-            _cartMapper.UpdateCartItemFromProduct(
-                product,
-                item.Quantity,
-                item.AddedDate,
-                item.SellerId,
-                item.SellerName))
+        return results
+            .Where(r => r.Product is not null)
+            .Select(r => _cartMapper.UpdateCartItemFromProduct(
+                r.Product!,
+                r.item.Quantity,
+                r.item.AddedDate))
             .ToList();
     }
 }

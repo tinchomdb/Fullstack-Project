@@ -13,4 +13,8 @@ public sealed record CreatePaymentIntentRequest
     public string Email { get; init; } = string.Empty;
 
     public string? CartId { get; init; }
+
+    [Required]
+    [Range(0, double.MaxValue)]
+    public decimal ShippingCost { get; init; }
 }

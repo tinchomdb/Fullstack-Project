@@ -14,6 +14,7 @@ namespace Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public sealed class TestPaymentController(
     IPaymentService paymentService,
     ICartService cartService,

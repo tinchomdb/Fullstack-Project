@@ -244,8 +244,8 @@ public sealed class CachedProductsRepository : IProductsRepository
     private void InvalidateProductCaches(Product product)
     {
         _cache.Remove(AllProductsKey);
-        _cache.Remove($"{ProductKeyPrefix}{product.Id}_{product.Seller.Id}");
-        _cache.Remove($"{ProductsBySellerPrefix}{product.Seller.Id}");
+        _cache.Remove($"{ProductKeyPrefix}{product.Id}_{product.SellerId}");
+        _cache.Remove($"{ProductsBySellerPrefix}{product.SellerId}");
 
         // Invalidate slug-based cache
         if (!string.IsNullOrEmpty(product.Slug))
