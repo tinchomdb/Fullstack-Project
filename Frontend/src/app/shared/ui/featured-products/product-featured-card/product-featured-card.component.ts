@@ -1,18 +1,8 @@
 import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  effect,
-  inject,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { Product } from '../../../../core/models/product.model';
-import { CartService } from '../../../../core/services/cart.service';
-import { ProductsService } from '../../../../core/services/products.service';
 import { BadgeComponent } from '../../badge/badge.component';
 import { ButtonComponent } from '../../button/button.component';
 
@@ -39,20 +29,14 @@ export class ProductFeaturedCardComponent {
   readonly variant = input<CardVariant>(CARD_VARIANT.VERTICAL);
   readonly priority = input<boolean>(false);
   readonly index = input<number>(0);
+  readonly productLink = input.required<string>();
 
   readonly addToCart = output<Product>();
 
-  private readonly cartService = inject(CartService);
-  private readonly productsService = inject(ProductsService);
-
   private readonly addingProductId = signal<string | null>(null);
 
-  protected buildProductLink(): string {
-    return this.productsService.buildProductUrl(this.product());
-  }
-
   protected isAddingToCart(): boolean {
-    return this.addingProductId() === this.product().id && this.cartService.loading();
+    return this.addingProductId() === this.product().id;
   }
 
   onAddToCart(event: Event): void {

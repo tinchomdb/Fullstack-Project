@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, computed } from '@an
 
 import { Product } from '../../../core/models/product.model';
 import { CartService } from '../../../core/services/cart.service';
+import { ProductsService } from '../../../core/services/products.service';
 import {
   ProductFeaturedCardComponent,
   CardVariant,
@@ -30,6 +31,7 @@ export class FeaturedProductsComponent {
 
   private readonly breakpointService = inject(BreakpointService);
   private readonly cartService = inject(CartService);
+  private readonly productsService = inject(ProductsService);
 
   protected readonly cardVariants = computed(() => {
     const count = this.products().length;
@@ -41,6 +43,10 @@ export class FeaturedProductsComponent {
     const count = this.products().length;
     return `grid-${Math.min(count, MAX_GRID_COLUMNS)}`;
   });
+
+  protected buildProductLink(product: Product): string {
+    return this.productsService.buildProductUrl(product);
+  }
 
   protected onAddToCart(product: Product): void {
     this.cartService.addToCart(product, 1);

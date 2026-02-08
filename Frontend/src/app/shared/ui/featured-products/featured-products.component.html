@@ -11,6 +11,7 @@
           [variant]="cardVariants()[i]"
           [priority]="i < 2"
           [index]="i"
+          [productLink]="buildProductLink(product)"
           (addToCart)="onAddToCart($event)"
         />
       </div>

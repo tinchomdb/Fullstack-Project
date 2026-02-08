@@ -1,7 +1,7 @@
 <article class="featured-card" [style.--stagger-index]="index()" data-testid="featured-card">
   <a
     class="card-link"
-    [routerLink]="buildProductLink()"
+    [routerLink]="productLink()"
     [attr.aria-label]="'View details for ' + product().name"
   >
     <div class="media">

@@ -1,8 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { ProductCardComponent } from './product-card.component';
-import { CartService } from '../../../core/services/cart.service';
-import { ProductsService } from '../../../core/services/products.service';
 import { Product } from '../../../core/models/product.model';
 import { Component } from '@angular/core';
 import { provideRouter } from '@angular/router';
@@ -25,32 +23,30 @@ const mockProduct: Product = {
 };
 
 @Component({
-  template: `<app-product-card [product]="product" />`,
+  template: `<app-product-card
+    [product]="product"
+    [productLink]="productLink"
+    (addToCart)="onAddToCart($event)"
+  />`,
   imports: [ProductCardComponent],
 })
 class TestHostComponent {
   product = mockProduct;
+  productLink = '/products/test-product';
+  addedProduct: Product | null = null;
+
+  onAddToCart(product: Product): void {
+    this.addedProduct = product;
+  }
 }
 
 describe('ProductCardComponent', () => {
   let fixture: ComponentFixture<TestHostComponent>;
-  let cartSpy: jasmine.SpyObj<CartService>;
-  let productsSpy: jasmine.SpyObj<ProductsService>;
 
   beforeEach(async () => {
-    cartSpy = jasmine.createSpyObj('CartService', ['addToCart'], {
-      loading: signal(false),
-    });
-    productsSpy = jasmine.createSpyObj('ProductsService', ['buildProductUrl']);
-    productsSpy.buildProductUrl.and.returnValue('/product/test-product');
-
     await TestBed.configureTestingModule({
       imports: [TestHostComponent],
-      providers: [
-        provideRouter([]),
-        { provide: CartService, useValue: cartSpy },
-        { provide: ProductsService, useValue: productsSpy },
-      ],
+      providers: [provideRouter([])],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);
@@ -65,16 +61,16 @@ describe('ProductCardComponent', () => {
     expect(getComponent()).toBeTruthy();
   });
 
-  it('should compute product link', () => {
-    expect(getComponent()['productLink']()).toBe('/product/test-product');
+  it('should use product link from input', () => {
+    expect(getComponent().productLink()).toBe('/products/test-product');
   });
 
   it('should not be adding to cart initially', () => {
     expect(getComponent()['isAddingToCart']()).toBeFalse();
   });
 
-  it('should add to cart on onAddToCart', () => {
+  it('should emit addToCart on onAddToCart', () => {
     getComponent().onAddToCart();
-    expect(cartSpy.addToCart).toHaveBeenCalledWith(mockProduct, 1);
+    expect(fixture.componentInstance.addedProduct).toEqual(mockProduct);
   });
 });

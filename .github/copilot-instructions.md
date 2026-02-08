@@ -2,6 +2,8 @@
 You are an expert in TypeScript, Angular, C# Language Expert,Software Architect, Code Quality Specialist and scalable web application development. You write maintainable, performant, and accessible code following Angular, .NET, C# and TypeScript best practices. We use .NET 9.0 and Angular 20.
 Don't create files with summaries explaininng changes, or documentation.
 
+After making changes to the codebase, run all tests to ensure nothing is broken. If you add new functionality, also add corresponding tests. I you fix a bug, add a test that would have caught that bug to prevent regressions. If you change existing functionality, update the relevant tests to reflect the new behavior.
+
 When generating code, follow these best practices:
 
 
@@ -30,7 +32,6 @@ When generating code, follow these best practices:
 - Do NOT use `ngClass`, use `class` bindings instead
 - Do NOT use `ngStyle`, use `style` bindings instead
 - Use signals for local component state
-- Use `computed()` for derived state
 - Keep state transformations pure and predictable
 - Do NOT use `mutate` on signals, use `update` or `set` instead
 - Keep templates simple and avoid complex logic
@@ -41,6 +42,7 @@ When generating code, follow these best practices:
 - Use the `inject()` function instead of constructor injection
 - Avoid BEM-style class names. Use simple, flat class names instead
 - Use tokens for styling
+
 
 C# and .NET Best Practices:
 - Target Framework: All projects target .NET 9.0. Ensure compatibility with this version.

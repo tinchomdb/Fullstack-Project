@@ -1,10 +1,8 @@
 import { CurrencyPipe, NgOptimizedImage } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 
 import { Product } from '../../../core/models/product.model';
-import { CartService } from '../../../core/services/cart.service';
-import { ProductsService } from '../../../core/services/products.service';
 import { ButtonComponent } from '../button/button.component';
 
 @Component({
@@ -17,19 +15,14 @@ import { ButtonComponent } from '../button/button.component';
 export class ProductCardComponent {
   readonly product = input.required<Product>();
   readonly index = input<number>(0);
+  readonly productLink = input.required<string>();
 
-  private readonly cartService = inject(CartService);
-  private readonly productsService = inject(ProductsService);
+  readonly addToCart = output<Product>();
 
   private readonly addingProductId = signal<string | null>(null);
 
-  protected readonly productLink = computed(() => {
-    const prod = this.product();
-    return this.productsService.buildProductUrl(prod);
-  });
-
   protected isAddingToCart(): boolean {
-    return this.addingProductId() === this.product().id && this.cartService.loading();
+    return this.addingProductId() === this.product().id;
   }
 
   onAddToCart(): void {
@@ -37,7 +30,7 @@ export class ProductCardComponent {
     if (!product || this.addingProductId()) return;
 
     this.addingProductId.set(product.id);
-    this.cartService.addToCart(product, 1);
+    this.addToCart.emit(product);
 
     setTimeout(() => {
       this.addingProductId.set(null);
