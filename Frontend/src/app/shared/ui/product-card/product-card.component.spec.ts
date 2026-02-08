@@ -4,6 +4,7 @@ import { ProductCardComponent } from './product-card.component';
 import { Product } from '../../../core/models/product.model';
 import { Component } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { IMAGE_LOADER, ImageLoaderConfig } from '@angular/common';
 
 const mockProduct: Product = {
   id: 'p1',
@@ -46,7 +47,14 @@ describe('ProductCardComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [TestHostComponent],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        {
+          provide: IMAGE_LOADER,
+          useValue: (config: ImageLoaderConfig) =>
+            `data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7`,
+        },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(TestHostComponent);

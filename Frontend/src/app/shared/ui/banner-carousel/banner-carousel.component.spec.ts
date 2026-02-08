@@ -10,10 +10,13 @@ describe('BannerCarouselComponent', () => {
   let activeSlides: ReturnType<typeof signal<readonly CarouselSlide[]>>;
   let carouselSpy: jasmine.SpyObj<CarouselService>;
 
+  const TRANSPARENT_PNG =
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQIHWNgAAIABQABNjN9GQAAAAlwSFlzAAAWJQAAFiUBSVIk8AAAAA0lEQVQI12NgYPgPAAEDAQDZqt2zAAAAAElFTkSuQmCC';
+
   const mockSlides: CarouselSlide[] = [
-    { id: '1', imageUrl: 'img1.jpg', alt: 'Slide 1', order: 0, isActive: true },
-    { id: '2', imageUrl: 'img2.jpg', alt: 'Slide 2', order: 1, isActive: true },
-    { id: '3', imageUrl: 'img3.jpg', alt: 'Slide 3', order: 2, isActive: true },
+    { id: '1', imageUrl: TRANSPARENT_PNG, alt: 'Slide 1', order: 0, isActive: true },
+    { id: '2', imageUrl: TRANSPARENT_PNG, alt: 'Slide 2', order: 1, isActive: true },
+    { id: '3', imageUrl: TRANSPARENT_PNG, alt: 'Slide 3', order: 2, isActive: true },
   ];
 
   beforeEach(async () => {

@@ -81,6 +81,7 @@ describe('ProductDetailComponent', () => {
   });
 
   it('should set error on load failure', () => {
+    spyOn(console, 'error');
     productsService.getProductBySlug.and.returnValue(throwError(() => new Error('Not found')));
     fixture.componentRef.setInput('slug', 'bad-slug');
     fixture.detectChanges();

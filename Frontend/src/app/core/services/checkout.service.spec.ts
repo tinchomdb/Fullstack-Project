@@ -105,6 +105,7 @@ describe('CheckoutService', () => {
   });
 
   it('should set error when payment initialization fails', () => {
+    spyOn(console, 'error');
     stripeServiceSpy.initializePayment.and.returnValue(throwError(() => new Error('Init failed')));
     service.shippingForm.patchValue({ email: 'test@example.com' });
 
@@ -133,6 +134,7 @@ describe('CheckoutService', () => {
   });
 
   it('should set error when cart validation fails', () => {
+    spyOn(console, 'error');
     cartServiceSpy.validateCheckout.and.returnValue(
       throwError(() => new Error('Validation failed')),
     );

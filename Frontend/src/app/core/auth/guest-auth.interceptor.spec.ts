@@ -66,6 +66,7 @@ describe('GuestAuthInterceptor', () => {
   });
 
   it('should propagate non-401 errors', () => {
+    spyOn(console, 'error');
     httpClient.get('/api/carts/guest-cart').subscribe({
       error: (err) => {
         expect(err.status).toBe(500);

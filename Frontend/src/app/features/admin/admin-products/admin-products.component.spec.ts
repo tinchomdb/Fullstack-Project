@@ -189,6 +189,7 @@ describe('AdminProductsComponent', () => {
     });
 
     it('should set formError on create failure', () => {
+      spyOn(console, 'error');
       productsService.createProduct.and.returnValue(
         throwError(() => ({ message: 'Duplicate slug' })),
       );
@@ -208,6 +209,7 @@ describe('AdminProductsComponent', () => {
     });
 
     it('should set formError on update failure', () => {
+      spyOn(console, 'error');
       productsService.updateProduct.and.returnValue(
         throwError(() => ({ message: 'Update failed' })),
       );
@@ -231,6 +233,7 @@ describe('AdminProductsComponent', () => {
     });
 
     it('should alert on delete error', () => {
+      spyOn(console, 'error');
       spyOn(window, 'confirm').and.returnValue(true);
       spyOn(window, 'alert');
       productsService.deleteProduct.and.returnValue(

@@ -76,6 +76,8 @@ describe('CategoriesService', () => {
 
     service.loadCategories();
     httpMock.expectNone((r) => r.url.includes('/api/categories'));
+
+    expect(service.categories().length).toBe(3);
   });
 
   it('should force reload categories', () => {
@@ -85,6 +87,8 @@ describe('CategoriesService', () => {
     service.reloadCategories();
     const req = httpMock.expectOne((r) => r.url.includes('/api/categories'));
     req.flush(mockCategories);
+
+    expect(service.categories().length).toBe(3);
   });
 
   it('should build category tree', () => {

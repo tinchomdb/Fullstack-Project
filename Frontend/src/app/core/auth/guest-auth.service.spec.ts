@@ -62,9 +62,12 @@ describe('GuestAuthService', () => {
   });
 
   it('should get new token after clearing', () => {
-    service.getNewToken().subscribe();
+    service.getNewToken().subscribe((token) => {
+      expect(token).toBe('new-token');
+    });
 
     const req = httpMock.expectOne(`${environment.apiBase}/api/GuestAuth/guest-token`);
+    expect(req.request.method).toBe('POST');
     req.flush({ token: 'new-token', tokenType: 'Bearer' });
   });
 });

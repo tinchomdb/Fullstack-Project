@@ -71,12 +71,10 @@ describe('StripeService', () => {
       of({ clientSecret: 'cs_test', paymentIntentId: 'pi_test', amount: 5000 }),
     );
 
-    // The Stripe loadStripe might fail in test environment, but the API call should happen
-    service.initializePayment(5000, 'test@test.com', 'cart-1', 5.99).subscribe({
-      error: () => {
-        // loadStripe may fail in test without real Stripe keys
-      },
-    });
+    // Mock the private initialize method to avoid loading real Stripe.js
+    spyOn(service as any, 'initialize').and.returnValue(Promise.resolve());
+
+    service.initializePayment(5000, 'test@test.com', 'cart-1', 5.99).subscribe();
 
     expect(paymentApiSpy.createPaymentIntent).toHaveBeenCalledWith({
       amount: 5000,

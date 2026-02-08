@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
-import { Observable, from, switchMap, tap, catchError, throwError } from 'rxjs';
+import { Observable, from, switchMap, catchError, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { PaymentApiService } from './payment-api.service';
@@ -141,7 +141,6 @@ export class StripeService {
         amount,
       })
       .pipe(
-        tap(() => console.log('Test payment endpoint called successfully')),
         switchMap(() => from(Promise.resolve())),
         catchError((error) => {
           console.error('Test payment endpoint failed:', error);

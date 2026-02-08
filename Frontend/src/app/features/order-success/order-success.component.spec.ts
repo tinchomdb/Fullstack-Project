@@ -56,11 +56,13 @@ describe('OrderSuccessComponent', () => {
   });
 
   it('should compute hasOrder as false when no order', () => {
+    spyOn(console, 'warn');
     createComponent(null);
     expect((component as any).hasOrder()).toBe(false);
   });
 
   it('should redirect to products when no order on init', () => {
+    spyOn(console, 'warn');
     createComponent(null);
     expect(router.navigate).toHaveBeenCalledWith(['/products']);
   });

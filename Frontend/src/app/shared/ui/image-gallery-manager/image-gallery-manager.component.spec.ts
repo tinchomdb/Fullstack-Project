@@ -3,6 +3,10 @@ import { Component, signal } from '@angular/core';
 import { ImageGalleryManagerComponent } from './image-gallery-manager.component';
 import { ComponentFixture } from '@angular/core/testing';
 
+const IMG1 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+const IMG2 = 'data:image/gif;base64,R0lGODlhAQABAIAAAAUEBAAAACwAAAAAAQABAAACAkQBADs=';
+const IMG3 = 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+
 @Component({
   template: `<app-image-gallery-manager
     [images]="images()"
@@ -11,7 +15,7 @@ import { ComponentFixture } from '@angular/core/testing';
   imports: [ImageGalleryManagerComponent],
 })
 class TestHostComponent {
-  images = signal<readonly string[]>(['img1.jpg', 'img2.jpg', 'img3.jpg']);
+  images = signal<readonly string[]>([IMG1, IMG2, IMG3]);
   changedImages: string[] = [];
   onImagesChange(images: string[]): void {
     this.changedImages = images;
@@ -42,7 +46,7 @@ describe('ImageGalleryManagerComponent', () => {
   });
 
   it('should sync imageList from images input', () => {
-    expect(getComponent().imageList()).toEqual(['img1.jpg', 'img2.jpg', 'img3.jpg']);
+    expect(getComponent().imageList()).toEqual([IMG1, IMG2, IMG3]);
   });
 
   it('should compute hasImages', () => {
@@ -72,8 +76,8 @@ describe('ImageGalleryManagerComponent', () => {
 
   it('should remove image by index', () => {
     getComponent().removeImage(1);
-    expect(getComponent().imageList()).toEqual(['img1.jpg', 'img3.jpg']);
-    expect(host.changedImages).toEqual(['img1.jpg', 'img3.jpg']);
+    expect(getComponent().imageList()).toEqual([IMG1, IMG3]);
+    expect(host.changedImages).toEqual([IMG1, IMG3]);
   });
 
   it('should clear selectedImageIndex when removing selected', () => {
@@ -102,27 +106,27 @@ describe('ImageGalleryManagerComponent', () => {
     expect(getComponent().selectedImage()).toBeNull();
 
     getComponent().selectImage(0);
-    expect(getComponent().selectedImage()).toBe('img1.jpg');
+    expect(getComponent().selectedImage()).toBe(IMG1);
   });
 
   it('should move image up', () => {
     getComponent().moveUp(1);
-    expect(getComponent().imageList()).toEqual(['img2.jpg', 'img1.jpg', 'img3.jpg']);
+    expect(getComponent().imageList()).toEqual([IMG2, IMG1, IMG3]);
   });
 
   it('should not move first image up', () => {
     getComponent().moveUp(0);
-    expect(getComponent().imageList()).toEqual(['img1.jpg', 'img2.jpg', 'img3.jpg']);
+    expect(getComponent().imageList()).toEqual([IMG1, IMG2, IMG3]);
   });
 
   it('should move image down', () => {
     getComponent().moveDown(0);
-    expect(getComponent().imageList()).toEqual(['img2.jpg', 'img1.jpg', 'img3.jpg']);
+    expect(getComponent().imageList()).toEqual([IMG2, IMG1, IMG3]);
   });
 
   it('should not move last image down', () => {
     getComponent().moveDown(2);
-    expect(getComponent().imageList()).toEqual(['img1.jpg', 'img2.jpg', 'img3.jpg']);
+    expect(getComponent().imageList()).toEqual([IMG1, IMG2, IMG3]);
   });
 
   it('should update selectedIndex when moving selected image up', () => {
