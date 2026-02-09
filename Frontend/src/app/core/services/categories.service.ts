@@ -38,7 +38,7 @@ export class CategoriesService {
   readonly categories = computed(() =>
     this.rawCategories().map((category) => ({
       ...category,
-      url: `/category/${this.buildCategoryPath(category.id, this.rawCategoryMap())}`,
+      url: `/category/${this.buildCategorySlugPath(category.id, this.rawCategoryMap())}`,
     })),
   );
 
@@ -55,6 +55,8 @@ export class CategoriesService {
     this.loadCategories();
   }
 
+  // --- Loading ---
+
   loadCategories(): void {
     if (this.rawCategories().length > 0) {
       return;
@@ -65,6 +67,8 @@ export class CategoriesService {
   reloadCategories(): void {
     this.categoriesResource.load(this.getAllCategories());
   }
+
+  // --- Admin CRUD ---
 
   createCategory(category: Partial<Category>): Observable<Category> {
     return this.http
@@ -84,38 +88,7 @@ export class CategoriesService {
       .pipe(tap(() => this.reloadCategories()));
   }
 
-  getAvailableParentCategories(excludeCategoryId?: string): Category[] {
-    if (!excludeCategoryId) {
-      return [...this.categories()];
-    }
-
-    const descendantIds = this.collectAllDescendants(excludeCategoryId);
-    return this.categories().filter((c) => !descendantIds.has(c.id));
-  }
-
-  getParentCategoryName(parentId?: string): string {
-    if (!parentId) return 'None';
-    return this.categoryMap().get(parentId)?.name ?? 'Unknown';
-  }
-
-  getChildCategories(parentCategoryId: string): Category[] {
-    return this.categories().filter((c) => c.parentCategoryId === parentCategoryId);
-  }
-
-  getCategoryPath(categoryId: string): Category[] {
-    const path: Category[] = [];
-    const map = this.categoryMap();
-    let currentCategory = map.get(categoryId);
-
-    while (currentCategory) {
-      path.unshift(currentCategory);
-      currentCategory = currentCategory.parentCategoryId
-        ? map.get(currentCategory.parentCategoryId)
-        : undefined;
-    }
-
-    return path;
-  }
+  // --- Lookups ---
 
   getCategoryById(categoryId: string): Category | undefined {
     return this.categoryMap().get(categoryId);
@@ -134,14 +107,48 @@ export class CategoriesService {
     return this.categories().find((c) => c.slug === lastCategorySlug);
   }
 
-  private buildCategoryPath(categoryId: string, map: Map<string, Category>): string {
+  // --- Tree navigation ---
+
+  getCategoryPath(categoryId: string): Category[] {
+    return this.walkAncestors(categoryId, this.categoryMap());
+  }
+
+  getChildCategories(parentCategoryId: string): Category[] {
+    return this.categories().filter((c) => c.parentCategoryId === parentCategoryId);
+  }
+
+  getAvailableParentCategories(excludeCategoryId?: string): Category[] {
+    if (!excludeCategoryId) {
+      return [...this.categories()];
+    }
+
+    const descendantIds = this.collectAllDescendants(excludeCategoryId);
+    return this.categories().filter((c) => !descendantIds.has(c.id));
+  }
+
+  getParentCategoryName(parentId?: string): string {
+    if (!parentId) return 'None';
+    return this.categoryMap().get(parentId)?.name ?? 'Unknown';
+  }
+
+  // --- Private helpers ---
+
+  private walkAncestors(categoryId: string, map: Map<string, Category>): Category[] {
     const path: Category[] = [];
     let current = map.get(categoryId);
+
     while (current) {
       path.unshift(current);
       current = current.parentCategoryId ? map.get(current.parentCategoryId) : undefined;
     }
-    return path.map((c) => c.slug).join('/');
+
+    return path;
+  }
+
+  private buildCategorySlugPath(categoryId: string, map: Map<string, Category>): string {
+    return this.walkAncestors(categoryId, map)
+      .map((c) => c.slug)
+      .join('/');
   }
 
   private getAllCategories(): Observable<readonly Category[]> {

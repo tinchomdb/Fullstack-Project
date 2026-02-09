@@ -1,5 +1,5 @@
 import { inject, Injectable, computed, effect, untracked, signal } from '@angular/core';
-import { map, Observable, of, tap } from 'rxjs';
+import { map, Observable, tap, finalize } from 'rxjs';
 
 import { Cart } from '../models/cart.model';
 import { Order } from '../models/order.model';
@@ -128,15 +128,14 @@ export class CartService {
   }
 
   private mergeGuestAndUserCarts(): void {
-    this.cartApi.migrateGuestCart().subscribe({
-      next: () => {
-        this.guestAuthService.clearToken();
-        this.loadCart();
-      },
-      error: () => {
-        this.guestAuthService.clearToken();
-        this.loadCart();
-      },
-    });
+    this.cartApi
+      .migrateGuestCart()
+      .pipe(
+        finalize(() => {
+          this.guestAuthService.clearToken();
+          this.loadCart();
+        }),
+      )
+      .subscribe();
   }
 }

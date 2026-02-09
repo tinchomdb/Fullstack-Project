@@ -70,4 +70,28 @@ describe('GuestAuthService', () => {
     expect(req.request.method).toBe('POST');
     req.flush({ token: 'new-token', tokenType: 'Bearer' });
   });
+
+  it('should update hasToken to true after storing a token', () => {
+    expect(service.hasToken()).toBeFalse();
+
+    service.ensureGuestToken().subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiBase}/api/GuestAuth/guest-token`);
+    req.flush({ token: 'test-jwt-token', tokenType: 'Bearer' });
+
+    expect(service.hasToken()).toBeTrue();
+  });
+
+  it('should update hasToken to false after clearing token', () => {
+    service.ensureGuestToken().subscribe();
+
+    const req = httpMock.expectOne(`${environment.apiBase}/api/GuestAuth/guest-token`);
+    req.flush({ token: 'test-jwt-token', tokenType: 'Bearer' });
+
+    expect(service.hasToken()).toBeTrue();
+
+    service.clearToken();
+
+    expect(service.hasToken()).toBeFalse();
+  });
 });

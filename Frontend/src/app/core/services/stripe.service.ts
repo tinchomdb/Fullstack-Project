@@ -1,6 +1,6 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
-import { Observable, from, switchMap, catchError, throwError } from 'rxjs';
+import { Observable, from, switchMap, catchError, throwError, map } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { PaymentApiService } from './payment-api.service';
@@ -29,37 +29,6 @@ export class StripeService {
 
   private readonly elementId = 'payment-element';
 
-  async initialize(clientSecret: string): Promise<void> {
-    if (this.isInitializing()) {
-      throw new Error('Stripe already initializing');
-    }
-
-    this._isInitializing.set(true);
-
-    try {
-      this._clientSecret.set(clientSecret);
-
-      if (!this.stripe) {
-        this.stripe = await loadStripe(environment.stripePublishableKey, {
-          developerTools: {
-            assistant: {
-              enabled: false,
-            },
-          },
-        });
-      }
-
-      if (!this.stripe) {
-        throw new Error('Failed to initialize Stripe');
-      }
-
-      this.elements = this.stripe.elements({ clientSecret });
-      this._isReady.set(true);
-    } finally {
-      this._isInitializing.set(false);
-    }
-  }
-
   initializePayment(
     amount: number,
     email: string,
@@ -68,7 +37,6 @@ export class StripeService {
   ): Observable<void> {
     return this.paymentApi.createPaymentIntent({ amount, email, cartId, shippingCost }).pipe(
       switchMap((response) => {
-        // Capture the payment intent ID for later use
         if (response.paymentIntentId) {
           this._paymentIntentId.set(response.paymentIntentId);
         }
@@ -86,19 +54,9 @@ export class StripeService {
     this.paymentElement.mount(`#${this.elementId}`);
     this._isMounted.set(true);
 
-    // Listen to changes in the payment element
     this.paymentElement.on('change', (event) => {
       this._isFormComplete.set(event.complete);
     });
-  }
-
-  unmountPaymentElement(): void {
-    if (this.paymentElement) {
-      this.paymentElement.unmount();
-      this.paymentElement = null;
-      this._isFormComplete.set(false);
-      this._isMounted.set(false);
-    }
   }
 
   async confirmPayment(returnUrl: string): Promise<void> {
@@ -131,8 +89,6 @@ export class StripeService {
       return throwError(() => new Error('Payment intent ID not available'));
     }
 
-    // Call the test endpoint to simulate the webhook
-
     return this.paymentApi
       .testCompletePayment({
         paymentIntentId,
@@ -141,12 +97,21 @@ export class StripeService {
         amount,
       })
       .pipe(
-        switchMap(() => from(Promise.resolve())),
+        map(() => void 0),
         catchError((error) => {
           console.error('Test payment endpoint failed:', error);
           return throwError(() => error);
         }),
       );
+  }
+
+  unmountPaymentElement(): void {
+    if (this.paymentElement) {
+      this.paymentElement.unmount();
+      this.paymentElement = null;
+      this._isFormComplete.set(false);
+      this._isMounted.set(false);
+    }
   }
 
   reset(): void {
@@ -156,5 +121,36 @@ export class StripeService {
     this._paymentIntentId.set(null);
     this._isReady.set(false);
     this._isInitializing.set(false);
+  }
+
+  private async initialize(clientSecret: string): Promise<void> {
+    if (this.isInitializing()) {
+      throw new Error('Stripe already initializing');
+    }
+
+    this._isInitializing.set(true);
+
+    try {
+      this._clientSecret.set(clientSecret);
+
+      if (!this.stripe) {
+        this.stripe = await loadStripe(environment.stripePublishableKey, {
+          developerTools: {
+            assistant: {
+              enabled: false,
+            },
+          },
+        });
+      }
+
+      if (!this.stripe) {
+        throw new Error('Failed to initialize Stripe');
+      }
+
+      this.elements = this.stripe.elements({ clientSecret });
+      this._isReady.set(true);
+    } finally {
+      this._isInitializing.set(false);
+    }
   }
 }

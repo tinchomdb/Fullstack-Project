@@ -1,11 +1,11 @@
 <app-form-section [title]="'Payment Method'">
-  @if (checkout.stripeService.clientSecret()) {
+  @if (checkout.stripeClientSecret()) {
     <app-stripe-payment-form />
   } @else if (checkout.error()) {
     <div class="error-message" role="alert">
       {{ checkout.error() }}
     </div>
-  } @else if (checkout.stripeService.isInitializing()) {
+  } @else if (checkout.stripeIsInitializing()) {
     <div class="loading-payment">Initializing payment...</div>
   } @else {
     <div class="loading-payment">Please fill in your email address above to continue.</div>

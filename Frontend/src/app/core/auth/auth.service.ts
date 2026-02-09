@@ -1,4 +1,5 @@
-import { Injectable, signal, inject, computed } from '@angular/core';
+import { Injectable, signal, inject, computed, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MsalService, MsalBroadcastService } from '@azure/msal-angular';
 import {
   AuthenticationResult,
@@ -7,8 +8,7 @@ import {
   EventType,
   AccountInfo,
 } from '@azure/msal-browser';
-import { Subject } from 'rxjs';
-import { filter, takeUntil } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 import { apiScope } from './auth-config';
 
 @Injectable({
@@ -17,14 +17,18 @@ import { apiScope } from './auth-config';
 export class AuthService {
   private readonly msalService = inject(MsalService);
   private readonly msalBroadcastService = inject(MsalBroadcastService);
-  private readonly destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
-  readonly isLoggedIn = signal(false);
-  readonly isAdmin = signal(false);
-  readonly authInitialized = signal(false);
+  private readonly _isLoggedIn = signal(false);
+  private readonly _isAdmin = signal(false);
+  private readonly _authInitialized = signal(false);
+
+  readonly isLoggedIn = this._isLoggedIn.asReadonly();
+  readonly isAdmin = this._isAdmin.asReadonly();
+  readonly authInitialized = this._authInitialized.asReadonly();
 
   readonly userId = computed(() => {
-    this.isLoggedIn();
+    this._isLoggedIn();
     const account = this.getActiveAccount();
     return account?.localAccountId;
   });
@@ -34,15 +38,27 @@ export class AuthService {
     this.subscribeToAuthEvents();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  login(redirectUrl?: string): void {
+    this.msalService.loginRedirect({
+      scopes: ['openid', 'profile', 'email'],
+      redirectStartPage: redirectUrl || window.location.pathname,
+    });
   }
 
-  private readonly isIframe = window !== window.parent && !window.opener;
+  logout(): void {
+    this.msalService.logoutRedirect({
+      account: this.getActiveAccount(),
+      postLogoutRedirectUri: '/',
+    });
+  }
+
+  getActiveAccount(): AccountInfo | null {
+    return this.msalService.instance.getActiveAccount();
+  }
 
   private initializeAuth(): void {
-    if (this.isIframe) {
+    const isIframe = window !== window.parent && !window.opener;
+    if (isIframe) {
       return;
     }
 
@@ -64,7 +80,7 @@ export class AuthService {
     this.msalBroadcastService.inProgress$
       .pipe(
         filter((status: InteractionStatus) => status === InteractionStatus.None),
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(() => this.syncAuthState());
 
@@ -79,7 +95,7 @@ export class AuthService {
           ];
           return relevantEvents.includes(msg.eventType);
         }),
-        takeUntil(this.destroy$),
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((event: EventMessage) => {
         if (event.eventType === EventType.LOGIN_SUCCESS) {
@@ -97,9 +113,9 @@ export class AuthService {
     if (account) {
       this.refreshTokenClaims(account);
     } else {
-      this.isLoggedIn.set(false);
-      this.isAdmin.set(false);
-      this.authInitialized.set(true);
+      this._isLoggedIn.set(false);
+      this._isAdmin.set(false);
+      this._authInitialized.set(true);
     }
   }
 
@@ -126,9 +142,9 @@ export class AuthService {
           if (result.account) {
             this.msalService.instance.setActiveAccount(result.account);
             this.updateAdminStatus(result.account);
-            this.isLoggedIn.set(true);
+            this._isLoggedIn.set(true);
           }
-          this.authInitialized.set(true);
+          this._authInitialized.set(true);
         },
         error: (error: unknown) => {
           if (error instanceof Error && error.name === 'InteractionRequiredAuthError') {
@@ -136,42 +152,20 @@ export class AuthService {
             // Downgrade to guest state to avoid immediate redirect loop
             console.info('Session expired. Downgrading to guest state.');
             this.msalService.instance.setActiveAccount(null);
-            this.isLoggedIn.set(false);
-            this.isAdmin.set(false);
+            this._isLoggedIn.set(false);
+            this._isAdmin.set(false);
           } else {
             console.error('Error refreshing token claims:', error);
-            this.isLoggedIn.set(false);
+            this._isLoggedIn.set(false);
           }
-          this.authInitialized.set(true);
+          this._authInitialized.set(true);
         },
       });
   }
 
   private updateAdminStatus(account: AccountInfo): void {
-    const claims = account.idTokenClaims as Record<string, any> | undefined;
+    const claims = account.idTokenClaims as Record<string, unknown> | undefined;
     const roles = (claims?.['roles'] as string[]) || [];
-    this.isAdmin.set(roles.includes('admin'));
-  }
-
-  getActiveAccount(): AccountInfo | null {
-    return this.msalService.instance.getActiveAccount();
-  }
-
-  login(redirectUrl?: string): void {
-    this.msalService.loginRedirect({
-      scopes: ['openid', 'profile', 'email'],
-      redirectStartPage: redirectUrl || window.location.pathname,
-    });
-  }
-
-  logout(): void {
-    this.msalService.logoutRedirect({
-      account: this.getActiveAccount(),
-      postLogoutRedirectUri: '/',
-    });
-  }
-
-  getUserId(): string | undefined {
-    return this.userId();
+    this._isAdmin.set(roles.includes('admin'));
   }
 }

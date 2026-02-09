@@ -19,24 +19,19 @@ export class BreadcrumbService {
     });
   }
 
-  private updateBreadcrumbsFromCurrentRoute(): void {
-    const url = this.router.url;
-    const urlTree = this.router.parseUrl(url);
-    const segments = urlTree.root.children['primary']?.segments || [];
-    this.updateBreadcrumbs(segments.map((s) => s.path));
-  }
-
-  private updateBreadcrumbs(segments: string[]): void {
-    const breadcrumbs = this.buildBreadcrumbs(segments);
-    this.breadcrumbsState.set(breadcrumbs);
-  }
-
   updateBreadcrumbsForProductDetailsPage(productName: string, categoryId: string): void {
     const categoryPath = this.categoryService.getCategoryPath(categoryId);
     const categorySegments = categoryPath.map((c) => c.slug);
     const breadcrumbs = this.buildBreadcrumbs(['category', ...categorySegments]);
     breadcrumbs.push({ label: productName });
     this.breadcrumbsState.set(breadcrumbs);
+  }
+
+  private updateBreadcrumbsFromCurrentRoute(): void {
+    const url = this.router.url;
+    const urlTree = this.router.parseUrl(url);
+    const segments = urlTree.root.children['primary']?.segments || [];
+    this.breadcrumbsState.set(this.buildBreadcrumbs(segments.map((s) => s.path)));
   }
 
   private buildBreadcrumbs(segments: string[]): BreadcrumbItem[] {

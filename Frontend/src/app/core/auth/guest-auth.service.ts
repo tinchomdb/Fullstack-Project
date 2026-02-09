@@ -70,6 +70,7 @@ export class GuestAuthService {
     this.removeStoredToken();
     this.cachedToken = null;
     this.pendingTokenRequest$ = null;
+    this._hasToken.set(false);
   }
 
   getNewToken(): Observable<string> {
@@ -85,6 +86,7 @@ export class GuestAuthService {
       console.error('Failed to store guest token:', error);
       this.cachedToken = token;
     }
+    this._hasToken.set(true);
   }
 
   private getStoredToken(): string | null {

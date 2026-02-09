@@ -63,7 +63,7 @@ const ZIP_PATTERN = /^[A-Z0-9\s\-]{2,}$/i;
 @Injectable({ providedIn: 'root' })
 export class CheckoutService {
   private readonly cartService = inject(CartService);
-  readonly stripeService = inject(StripeService);
+  private readonly stripeService = inject(StripeService);
   private readonly orderState = inject(OrderStateService);
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
@@ -85,6 +85,10 @@ export class CheckoutService {
   readonly shippingOptionForm = this.createShippingOptionForm();
 
   private readonly forms = [this.shippingForm, this.shippingOptionForm];
+
+  // Stripe state exposed for template binding
+  readonly stripeClientSecret = this.stripeService.clientSecret;
+  readonly stripeIsInitializing = this.stripeService.isInitializing;
 
   private readonly emailValue = toSignal(
     this.shippingForm.get('email')!.valueChanges.pipe(startWith('')),

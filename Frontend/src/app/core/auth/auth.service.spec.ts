@@ -1,5 +1,4 @@
 import { TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
 import { of, Subject, throwError } from 'rxjs';
 import { AuthService } from './auth.service';
 import { MsalService, MsalBroadcastService } from '@azure/msal-angular';
@@ -103,19 +102,16 @@ describe('AuthService', () => {
     expect(service.userId()).toBeUndefined();
   });
 
-  it('should return userId via getUserId()', () => {
-    expect(service.getUserId()).toBeUndefined();
-  });
-
   it('should sync auth state when interaction completes', () => {
     inProgress$.next(InteractionStatus.None);
     // Should not throw; auth state synced
     expect(service.isLoggedIn()).toBeFalse();
   });
 
-  it('should complete ngOnDestroy without error', () => {
-    service.ngOnDestroy();
-    // No error means cleanup was successful
-    expect(service).toBeTruthy();
+  it('should expose readonly signals that cannot be set externally', () => {
+    // ReadonlySignal from .asReadonly() should not have a working .set method
+    expect((service.isLoggedIn as any).set).not.toBeDefined();
+    expect((service.isAdmin as any).set).not.toBeDefined();
+    expect((service.authInitialized as any).set).not.toBeDefined();
   });
 });

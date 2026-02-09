@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { map, Observable, tap } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
@@ -11,6 +11,7 @@ import { PaginatedResponse } from '../models/paginated-response.model';
 import { ProductFiltersApiParams } from '../models/product-filters.model';
 import { LoadingOverlayService } from './loading-overlay.service';
 import { Resource } from '../../shared/utils/resource';
+import { buildHttpParams } from '../../shared/utils/http-params.util';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
@@ -99,50 +100,17 @@ export class ProductsService {
       .pipe(map(mapProductFromApi));
   }
 
-  private getFeaturedProducts(categoryId?: string, limit?: number): Observable<Product[]> {
-    let params = new HttpParams();
-
-    if (categoryId) {
-      params = params.set('categoryId', categoryId);
-    }
-
-    if (limit) {
-      params = params.set('limit', limit.toString());
-    }
-
-    return this.http
-      .get<ProductApiModel[]>(`${this.baseUrl}/featured`, { params })
-      .pipe(map((products) => products.map(mapProductFromApi)));
-  }
-
   private getFilteredProducts(
     filters: ProductFiltersApiParams,
   ): Observable<PaginatedResponse<Product>> {
-    let params = new HttpParams();
-
-    if (filters.sortBy !== undefined) {
-      params = params.set('sortBy', filters.sortBy);
-    }
-
-    if (filters.sortDirection !== undefined) {
-      params = params.set('sortDirection', filters.sortDirection);
-    }
-
-    if (filters.page !== undefined) {
-      params = params.set('page', filters.page.toString());
-    }
-
-    if (filters.pageSize !== undefined) {
-      params = params.set('pageSize', filters.pageSize.toString());
-    }
-
-    if (filters.categoryId) {
-      params = params.set('categoryId', filters.categoryId);
-    }
-
-    if (filters.searchTerm) {
-      params = params.set('searchTerm', filters.searchTerm);
-    }
+    const params = buildHttpParams({
+      sortBy: filters.sortBy,
+      sortDirection: filters.sortDirection,
+      page: filters.page,
+      pageSize: filters.pageSize,
+      categoryId: filters.categoryId,
+      searchTerm: filters.searchTerm,
+    });
 
     return this.http.get<PaginatedResponse<ProductApiModel>>(`${this.baseUrl}`, { params }).pipe(
       map((response) => ({
@@ -150,5 +118,13 @@ export class ProductsService {
         items: response.items.map(mapProductFromApi),
       })),
     );
+  }
+
+  private getFeaturedProducts(categoryId?: string, limit?: number): Observable<Product[]> {
+    const params = buildHttpParams({ categoryId, limit });
+
+    return this.http
+      .get<ProductApiModel[]>(`${this.baseUrl}/featured`, { params })
+      .pipe(map((products) => products.map(mapProductFromApi)));
   }
 }

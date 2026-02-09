@@ -1,7 +1,7 @@
 import { Injectable, inject, signal, computed, DestroyRef } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router } from '@angular/router';
-import { Subject, filter } from 'rxjs';
+import { filter } from 'rxjs';
 
 import { ProductFilters, ProductFiltersApiParams } from '../models/product-filters.model';
 import { DEFAULT_SORT_OPTION, SORT_OPTIONS, SortOption } from '../models/sort-option.model';
@@ -94,12 +94,6 @@ export class FiltersService {
     }
   }
 
-  // Increment to next page for infinite scroll
-
-  loadNextPage(): void {
-    this.pageSignal.update((current) => current + 1);
-  }
-
   setAllFilters(filters: Partial<ProductFilters>): void {
     if (filters.sortBy && filters.sortDirection) {
       const sortOption = SORT_OPTIONS.find(
@@ -120,6 +114,10 @@ export class FiltersService {
     this.categoryIdSignal.set(filters.categoryId ?? null);
 
     this.searchTermSignal.set(filters.searchTerm?.trim() || null);
+  }
+
+  loadNextPage(): void {
+    this.pageSignal.update((current) => current + 1);
   }
 
   resetToFirstPage(): void {

@@ -92,7 +92,7 @@ export class CartApiService {
   }
 
   migrateGuestCart(): Observable<{ message: string }> {
-    let sessionId = this.guestAuthService.requestGuestSessionId();
+    const sessionId = this.guestAuthService.requestGuestSessionId();
 
     if (!sessionId) {
       throw new Error('No guest session ID available for migration');
