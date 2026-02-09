@@ -4,11 +4,7 @@ import { BannerCarouselComponent } from './banner-carousel.component';
 import { CarouselSlide } from '../../../core/models/carousel-slide.model';
 
 @Component({
-  template: `<app-banner-carousel
-    [slides]="slides()"
-    [loading]="loading()"
-    [error]="error()"
-  />`,
+  template: `<app-banner-carousel [slides]="slides()" [loading]="loading()" [error]="error()" />`,
   imports: [BannerCarouselComponent],
 })
 class TestHostComponent {

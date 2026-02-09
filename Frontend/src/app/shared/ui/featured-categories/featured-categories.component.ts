@@ -1,12 +1,8 @@
 import { ChangeDetectionStrategy, Component, input, inject, computed } from '@angular/core';
 
 import { Category } from '../../../core/models/category.model';
-import {
-  CategoryCardComponent,
-} from './category-card/category-card.component';
-import {
-  BreakpointService,
-} from '../../../core/services/breakpoint.service';
+import { CategoryCardComponent } from './category-card/category-card.component';
+import { BreakpointService } from '../../../core/services/breakpoint.service';
 import { getCategoryCardVariants } from '../../utils/card-variants.utils';
 
 const MAX_GRID_COLUMNS = 6;

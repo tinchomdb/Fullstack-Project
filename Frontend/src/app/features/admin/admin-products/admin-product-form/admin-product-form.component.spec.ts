@@ -1,15 +1,26 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
-import {
-  AdminProductFormComponent,
-  AdminProductFormData,
-} from './admin-product-form.component';
+import { AdminProductFormComponent, AdminProductFormData } from './admin-product-form.component';
 import { Product } from '../../../../core/models/product.model';
 import { Category } from '../../../../core/models/category.model';
 
 const mockCategories: Category[] = [
-  { id: 'cat-1', name: 'Electronics', slug: 'electronics', subcategoryIds: [], type: 'Category', url: '/category/electronics' },
-  { id: 'cat-2', name: 'Books', slug: 'books', subcategoryIds: [], type: 'Category', url: '/category/books' },
+  {
+    id: 'cat-1',
+    name: 'Electronics',
+    slug: 'electronics',
+    subcategoryIds: [],
+    type: 'Category',
+    url: '/category/electronics',
+  },
+  {
+    id: 'cat-2',
+    name: 'Books',
+    slug: 'books',
+    subcategoryIds: [],
+    type: 'Category',
+    url: '/category/books',
+  },
 ];
 
 const mockProduct: Product = {

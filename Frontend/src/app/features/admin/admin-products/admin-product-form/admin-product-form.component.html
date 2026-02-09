@@ -92,10 +92,7 @@
     [errorMessage]="'Seller ID is required'"
   />
 
-  <app-image-gallery-manager
-    [images]="productImages()"
-    (imagesChange)="onImagesChange($event)"
-  />
+  <app-image-gallery-manager [images]="productImages()" (imagesChange)="onImagesChange($event)" />
 
   <app-form-checkbox
     [control]="control('featured')"

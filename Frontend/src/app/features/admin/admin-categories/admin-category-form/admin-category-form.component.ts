@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  inject,
-  effect,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, inject, effect } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Category } from '../../../../core/models/category.model';
 import { ButtonComponent } from '../../../../shared/ui/button/button.component';
@@ -24,12 +17,7 @@ export interface AdminCategoryFormData {
 
 @Component({
   selector: 'app-admin-category-form',
-  imports: [
-    ReactiveFormsModule,
-    ButtonComponent,
-    FormFieldComponent,
-    FormCheckboxComponent,
-  ],
+  imports: [ReactiveFormsModule, ButtonComponent, FormFieldComponent, FormCheckboxComponent],
   templateUrl: './admin-category-form.component.html',
   styleUrl: './admin-category-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

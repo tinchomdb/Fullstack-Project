@@ -1,12 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject, input, output, computed } from '@angular/core';
 
 import { Product } from '../../../core/models/product.model';
-import {
-  ProductFeaturedCardComponent,
-} from './product-featured-card/product-featured-card.component';
-import {
-  BreakpointService,
-} from '../../../core/services/breakpoint.service';
+import { ProductFeaturedCardComponent } from './product-featured-card/product-featured-card.component';
+import { BreakpointService } from '../../../core/services/breakpoint.service';
 import { HeadingComponent } from '../heading/heading.component';
 import { getProductCardVariants, CardVariant, CARD_VARIANT } from '../../utils/card-variants.utils';
 

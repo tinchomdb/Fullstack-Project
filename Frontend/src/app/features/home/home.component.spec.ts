@@ -65,7 +65,9 @@ describe('HomeComponent', () => {
         { provide: CategoriesService, useValue: categoriesService },
         {
           provide: CartService,
-          useValue: { addToCart: jasmine.createSpy('addToCart').and.returnValue({ subscribe: () => {} }) },
+          useValue: {
+            addToCart: jasmine.createSpy('addToCart').and.returnValue({ subscribe: () => {} }),
+          },
         },
 
         {

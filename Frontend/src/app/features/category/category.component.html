@@ -2,16 +2,11 @@
   <app-heading [content]="pageHeading()" [level]="'h1'" />
 
   @if (subcategories().length > 0) {
-    <app-featured-categories
-      [categories]="subcategories()"
-    />
+    <app-featured-categories [categories]="subcategories()" />
   }
 
   @if (featuredProducts().length > 0) {
-    <app-featured-products
-      [products]="featuredProducts()"
-      (addToCart)="onAddToCart($event)"
-    />
+    <app-featured-products [products]="featuredProducts()" (addToCart)="onAddToCart($event)" />
   }
 
   <app-product-list-section

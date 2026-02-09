@@ -1,13 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
-import {
-  AdminCategoryFormComponent,
-  AdminCategoryFormData,
-} from './admin-category-form.component';
+import { AdminCategoryFormComponent, AdminCategoryFormData } from './admin-category-form.component';
 import { Category } from '../../../../core/models/category.model';
 
 const mockCategories: Category[] = [
-  { id: 'cat-1', name: 'Electronics', slug: 'electronics', subcategoryIds: [], type: 'Category', url: '/category/electronics' },
+  {
+    id: 'cat-1',
+    name: 'Electronics',
+    slug: 'electronics',
+    subcategoryIds: [],
+    type: 'Category',
+    url: '/category/electronics',
+  },
 ];
 
 const mockCategory: Category = {

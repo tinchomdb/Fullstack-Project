@@ -10,10 +10,7 @@
         (sortChange)="onSortChange($event)"
       />
     </div>
-    <app-product-grid
-      [products]="products()"
-      (addToCart)="onAddToCart($event)"
-    />
+    <app-product-grid [products]="products()" (addToCart)="onAddToCart($event)" />
 
     @if (hasMore() && !loadingMore()) {
       <div

@@ -134,5 +134,4 @@ describe('ProductsService', () => {
     );
     reloadReq.flush({ items: [], totalCount: 0, page: 1, pageSize: 20, totalPages: 0 });
   });
-
 });

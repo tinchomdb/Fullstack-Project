@@ -67,7 +67,10 @@ export class CategoryComponent {
 
   // Sort state
   protected readonly currentSortValue = this.filtersService.currentSortValue;
-  protected readonly sortOptions = SORT_OPTIONS.map((opt) => ({ value: opt.value, label: opt.label }));
+  protected readonly sortOptions = SORT_OPTIONS.map((opt) => ({
+    value: opt.value,
+    label: opt.label,
+  }));
 
   protected onLoadMore(): void {
     this.listManager.loadMore();

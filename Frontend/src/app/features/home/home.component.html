@@ -6,16 +6,11 @@
   />
 
   @if (featuredCategories().length > 0) {
-    <app-featured-categories
-      [categories]="featuredCategories()"
-    />
+    <app-featured-categories [categories]="featuredCategories()" />
   }
 
   @if (featuredProducts().length > 0) {
-    <app-featured-products
-      [products]="featuredProducts()"
-      (addToCart)="onAddToCart($event)"
-    />
+    <app-featured-products [products]="featuredProducts()" (addToCart)="onAddToCart($event)" />
   }
 
   <app-product-list-section

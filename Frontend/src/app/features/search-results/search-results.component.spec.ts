@@ -40,9 +40,10 @@ describe('SearchResultsComponent', () => {
         { provide: FiltersService, useValue: filtersService },
         {
           provide: CartService,
-          useValue: { addToCart: jasmine.createSpy('addToCart').and.returnValue({ subscribe: () => {} }) },
+          useValue: {
+            addToCart: jasmine.createSpy('addToCart').and.returnValue({ subscribe: () => {} }),
+          },
         },
-
       ],
     }).overrideComponent(SearchResultsComponent, {
       set: {

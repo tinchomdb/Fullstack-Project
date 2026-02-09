@@ -8,7 +8,14 @@ import { provideRouter } from '@angular/router';
 import { Category } from '../../../core/models/category.model';
 
 const mockCategories: Category[] = [
-  { id: 'cat-1', name: 'Electronics', slug: 'electronics', subcategoryIds: [], type: 'Category', url: '/category/electronics' },
+  {
+    id: 'cat-1',
+    name: 'Electronics',
+    slug: 'electronics',
+    subcategoryIds: [],
+    type: 'Category',
+    url: '/category/electronics',
+  },
 ];
 
 @Component({
