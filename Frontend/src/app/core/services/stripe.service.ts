@@ -82,7 +82,7 @@ export class StripeService {
    * In development, calls the test endpoint to simulate the webhook.
    * TODO: In production, the real Stripe webhook will handle order creation.
    */
-  completePayment(cartId: string, email: string, amount: number): Observable<void> {
+  completePayment(cartId: string, email: string, amount: number): Observable<string> {
     const paymentIntentId = this.paymentIntentId();
 
     if (!paymentIntentId) {
@@ -97,7 +97,12 @@ export class StripeService {
         amount,
       })
       .pipe(
-        map(() => void 0),
+        map((response) => {
+          if (!response.orderId) {
+            throw new Error('Order ID not returned from payment');
+          }
+          return response.orderId;
+        }),
         catchError((error) => {
           console.error('Test payment endpoint failed:', error);
           return throwError(() => error);

@@ -17,9 +17,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { CartService, type ValidateCheckoutResponse } from './cart.service';
 import { StripeService } from './stripe.service';
 import { OrderStateService } from './order-state.service';
+import { OrderApiService } from './order-api.service';
 import { AuthService } from '../auth/auth.service';
 import { Order } from '../models/order.model';
-import { OrderStatus } from '../models/order-status.model';
 import { COUNTRIES } from '../../shared/constants/countries';
 
 export interface CheckoutRequest {
@@ -65,6 +65,7 @@ export class CheckoutService {
   private readonly cartService = inject(CartService);
   private readonly stripeService = inject(StripeService);
   private readonly orderState = inject(OrderStateService);
+  private readonly orderApi = inject(OrderApiService);
   private readonly authService = inject(AuthService);
   private readonly fb = inject(FormBuilder);
 
@@ -191,7 +192,6 @@ export class CheckoutService {
     const email = this.shippingForm.value.email ?? '';
     const cartUserId = this.cartUserId();
     const userId = cartUserId ?? this.authService.userId();
-    const shippingCost = this.selectedShippingCost() ?? 0;
 
     if (!cart || !userId) {
       this._error.set('Payment details missing. Please try again.');
@@ -210,23 +210,9 @@ export class CheckoutService {
       tap(() => {
         this.cartService.loadCart();
       }),
-      map(() => {
-        // Return a dummy order object - the real order was created by the webhook
-        // TODO: The component will redirect to order success page and fetch the real order there
-        const dummyOrder: Order = {
-          id: '123456789',
-          userId,
-          orderDate: new Date().toISOString(),
-          status: OrderStatus.Pending,
-          items: [],
-          subtotal: cart.subtotal,
-          shippingCost,
-          total: this.totalWithShipping(),
-          currency: 'USD',
-        };
-        // Store the order in OrderStateService so the success page can access it
-        this.orderState.setLastOrder(dummyOrder);
-        return dummyOrder;
+      switchMap((orderId) => this.orderApi.getOrder(orderId)),
+      tap((order) => {
+        this.orderState.setLastOrder(order);
       }),
       catchError((error) => {
         console.error('Payment failed:', error);

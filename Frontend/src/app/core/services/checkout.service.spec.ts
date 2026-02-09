@@ -1,4 +1,4 @@
-import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { signal } from '@angular/core';
@@ -6,13 +6,16 @@ import { CheckoutService } from './checkout.service';
 import { CartService } from './cart.service';
 import { StripeService } from './stripe.service';
 import { OrderStateService } from './order-state.service';
+import { OrderApiService } from './order-api.service';
 import { AuthService } from '../auth/auth.service';
+import { OrderStatus } from '../models/order-status.model';
 
 describe('CheckoutService', () => {
   let service: CheckoutService;
   let cartServiceSpy: jasmine.SpyObj<CartService>;
   let stripeServiceSpy: jasmine.SpyObj<StripeService>;
   let orderStateSpy: jasmine.SpyObj<OrderStateService>;
+  let orderApiSpy: jasmine.SpyObj<OrderApiService>;
 
   beforeEach(() => {
     cartServiceSpy = jasmine.createSpyObj('CartService', ['validateCheckout', 'loadCart'], {
@@ -44,6 +47,7 @@ describe('CheckoutService', () => {
     );
 
     orderStateSpy = jasmine.createSpyObj('OrderStateService', ['setLastOrder']);
+    orderApiSpy = jasmine.createSpyObj('OrderApiService', ['getOrder']);
 
     TestBed.configureTestingModule({
       imports: [ReactiveFormsModule],
@@ -52,6 +56,7 @@ describe('CheckoutService', () => {
         { provide: CartService, useValue: cartServiceSpy },
         { provide: StripeService, useValue: stripeServiceSpy },
         { provide: OrderStateService, useValue: orderStateSpy },
+        { provide: OrderApiService, useValue: orderApiSpy },
         { provide: AuthService, useValue: { userId: signal('user-1') } },
       ],
     });
@@ -151,6 +156,54 @@ describe('CheckoutService', () => {
       error: (err) => {
         expect(err.message).toBe('Form validation failed');
       },
+    });
+  });
+
+  it('should fetch real order and store it on successful submitCheckout', () => {
+    // Make forms valid
+    service.shippingForm.patchValue({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      phone: '+1234567890',
+      address: '123 Main Street',
+      city: 'New York',
+      state: 'NY',
+      zipCode: '10001',
+      country: 'United States',
+    });
+
+    const mockRealOrder = {
+      id: 'real-order-id',
+      userId: 'user-1',
+      orderDate: '2026-02-09T12:00:00Z',
+      status: OrderStatus.Processing,
+      items: [
+        {
+          productId: 'prod-1',
+          productName: 'Widget',
+          quantity: 2,
+          unitPrice: 50,
+          lineTotal: 100,
+        },
+      ],
+      subtotal: 100,
+      shippingCost: 5.99,
+      total: 105.99,
+      currency: 'USD',
+    };
+
+    stripeServiceSpy.confirmPayment.and.returnValue(Promise.resolve());
+    stripeServiceSpy.completePayment.and.returnValue(of('real-order-id'));
+    orderApiSpy.getOrder.and.returnValue(of(mockRealOrder));
+    cartServiceSpy.loadCart.and.stub();
+
+    service.submitCheckout('http://localhost/return').subscribe((order) => {
+      expect(order.id).toBe('real-order-id');
+      expect(order.items.length).toBe(1);
+      expect(order.total).toBe(105.99);
+      expect(orderStateSpy.setLastOrder).toHaveBeenCalledWith(mockRealOrder);
+      expect(orderApiSpy.getOrder).toHaveBeenCalledWith('real-order-id');
     });
   });
 });

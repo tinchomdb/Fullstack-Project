@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { of, throwError } from 'rxjs';
+import { of } from 'rxjs';
 import { StripeService } from './stripe.service';
 import { PaymentApiService } from './payment-api.service';
 
@@ -86,7 +86,9 @@ describe('StripeService', () => {
 
   it('should call testCompletePayment when completePayment is invoked', () => {
     (service as any)._paymentIntentId.set('pi_123');
-    paymentApiSpy.testCompletePayment.and.returnValue(of({ success: true, message: 'OK' }));
+    paymentApiSpy.testCompletePayment.and.returnValue(
+      of({ success: true, message: 'OK', orderId: 'order-abc' }),
+    );
 
     service.completePayment('cart-1', 'test@test.com', 5000).subscribe();
 
@@ -95,6 +97,31 @@ describe('StripeService', () => {
       cartId: 'cart-1',
       email: 'test@test.com',
       amount: 5000,
+    });
+  });
+
+  it('should return orderId from completePayment', () => {
+    (service as any)._paymentIntentId.set('pi_123');
+    paymentApiSpy.testCompletePayment.and.returnValue(
+      of({ success: true, message: 'OK', orderId: 'order-xyz' }),
+    );
+
+    let result: string | undefined;
+    service.completePayment('cart-1', 'test@test.com', 5000).subscribe((id) => {
+      result = id;
+    });
+
+    expect(result).toBe('order-xyz');
+  });
+
+  it('should throw error when orderId is missing from response', () => {
+    (service as any)._paymentIntentId.set('pi_123');
+    paymentApiSpy.testCompletePayment.and.returnValue(of({ success: true, message: 'OK' }));
+
+    service.completePayment('cart-1', 'test@test.com', 5000).subscribe({
+      error: (err) => {
+        expect(err.message).toBe('Order ID not returned from payment');
+      },
     });
   });
 });
