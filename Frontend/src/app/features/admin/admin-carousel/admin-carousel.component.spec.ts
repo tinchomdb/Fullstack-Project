@@ -195,9 +195,7 @@ describe('AdminCarouselComponent', () => {
     });
   });
 
-  it('should complete destroy$ on destroy', () => {
-    spyOn((component as any).destroy$, 'complete');
-    component.ngOnDestroy();
-    expect((component as any).destroy$.complete).toHaveBeenCalled();
+  it('should clean up on destroy without errors', () => {
+    expect(() => fixture.destroy()).not.toThrow();
   });
 });

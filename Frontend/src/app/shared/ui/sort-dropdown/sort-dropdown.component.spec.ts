@@ -1,49 +1,66 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { SortDropdownComponent } from './sort-dropdown.component';
-import { FiltersService } from '../../../core/services/filters.service';
-import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../../../core/models/sort-option.model';
+import { DropdownOption } from '../dropdown/dropdown.component';
+
+const mockOptions: DropdownOption[] = [
+  { value: 'newest', label: 'Newest' },
+  { value: 'price-asc', label: 'Price: Low to High' },
+  { value: 'price-desc', label: 'Price: High to Low' },
+];
+
+@Component({
+  template: `<app-sort-dropdown
+    [currentValue]="currentValue"
+    [options]="options"
+    (sortChange)="lastEmitted = $event"
+  />`,
+  imports: [SortDropdownComponent],
+})
+class TestHostComponent {
+  currentValue = 'newest';
+  options = mockOptions;
+  lastEmitted: string | null = null;
+}
 
 describe('SortDropdownComponent', () => {
-  let fixture: ComponentFixture<SortDropdownComponent>;
-  let component: SortDropdownComponent;
-  let filtersSpy: jasmine.SpyObj<FiltersService>;
+  let fixture: ComponentFixture<TestHostComponent>;
+  let host: TestHostComponent;
 
   beforeEach(async () => {
-    filtersSpy = jasmine.createSpyObj('FiltersService', ['setSortOption'], {
-      currentSortOption: signal(DEFAULT_SORT_OPTION),
-    });
-
     await TestBed.configureTestingModule({
-      imports: [SortDropdownComponent],
-      providers: [{ provide: FiltersService, useValue: filtersSpy }],
+      imports: [TestHostComponent],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SortDropdownComponent);
-    component = fixture.componentInstance;
+    fixture = TestBed.createComponent(TestHostComponent);
+    host = fixture.componentInstance;
     fixture.detectChanges();
   });
 
+  function getComponent(): SortDropdownComponent {
+    return fixture.debugElement.children[0].componentInstance;
+  }
+
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(getComponent()).toBeTruthy();
   });
 
-  it('should map sort options to dropdown options', () => {
-    expect(component['sortOptions'].length).toBe(SORT_OPTIONS.length);
+  it('should receive options via input', () => {
+    expect(getComponent().options()).toEqual(mockOptions);
   });
 
-  it('should compute currentSortValue', () => {
-    expect(component['currentSortValue']()).toBe(DEFAULT_SORT_OPTION.value);
+  it('should receive currentValue via input', () => {
+    expect(getComponent().currentValue()).toBe('newest');
   });
 
-  it('should call setSortOption on valid sort change', () => {
-    const option = SORT_OPTIONS[1];
-    component.onSortChange(option.value);
-    expect(filtersSpy.setSortOption).toHaveBeenCalledWith(option);
+  it('should emit sortChange on sort change', () => {
+    getComponent().onSortChange('price-asc');
+    expect(host.lastEmitted).toBe('price-asc');
   });
 
-  it('should not call setSortOption for invalid value', () => {
-    component.onSortChange('nonexistent');
-    expect(filtersSpy.setSortOption).not.toHaveBeenCalled();
+  it('should reflect updated currentValue', () => {
+    host.currentValue = 'price-desc';
+    fixture.detectChanges();
+    expect(getComponent().currentValue()).toBe('price-desc');
   });
 });

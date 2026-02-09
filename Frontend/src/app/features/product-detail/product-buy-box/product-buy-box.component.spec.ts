@@ -20,6 +20,7 @@ describe('ProductBuyBoxComponent', () => {
     imageUrls: [],
     createdAt: '',
     updatedAt: '',
+    url: '/products/test',
   };
 
   beforeEach(() => {

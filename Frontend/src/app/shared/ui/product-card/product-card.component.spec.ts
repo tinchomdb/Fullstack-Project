@@ -21,6 +21,7 @@ const mockProduct: Product = {
   featured: false,
   createdAt: '2024-01-01',
   updatedAt: '2024-01-01',
+  url: '/products/test-product',
 };
 
 @Component({

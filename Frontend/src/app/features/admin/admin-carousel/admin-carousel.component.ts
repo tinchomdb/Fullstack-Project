@@ -1,14 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   inject,
   signal,
   computed,
   OnInit,
-  OnDestroy,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
 import { CarouselService } from '../../../core/services/carousel.service';
 import { CarouselSlide } from '../../../core/models/carousel-slide.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -22,10 +22,10 @@ import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-che
   styleUrl: './admin-carousel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminCarouselComponent implements OnInit, OnDestroy {
+export class AdminCarouselComponent implements OnInit {
   private readonly carouselService = inject(CarouselService);
   private readonly fb = inject(FormBuilder);
-  private readonly destroy$ = new Subject<void>();
+  private readonly destroyRef = inject(DestroyRef);
 
   readonly slides = this.carouselService.allSlides;
   readonly loading = this.carouselService.allSlidesLoading;
@@ -60,11 +60,6 @@ export class AdminCarouselComponent implements OnInit, OnDestroy {
     this.carouselService.loadActiveSlides();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   /**
    * Generic error handler for all operations
    */
@@ -92,7 +87,7 @@ export class AdminCarouselComponent implements OnInit, OnDestroy {
 
     this.carouselService
       .createSlide(slide)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.handleFormSuccess(() => this.resetNewSlideForm()),
         error: (err) => this.handleError('create slide', err),
@@ -127,7 +122,7 @@ export class AdminCarouselComponent implements OnInit, OnDestroy {
 
     this.carouselService
       .updateSlide(slideId, form)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => this.handleFormSuccess(() => this.closeEditForm()),
         error: (err) => this.handleError('update slide', err),
@@ -150,7 +145,7 @@ export class AdminCarouselComponent implements OnInit, OnDestroy {
     if (confirmDelete) {
       this.carouselService
         .deleteSlide(id)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: () => {
             // If we're editing the deleted slide, close the edit form
@@ -166,7 +161,7 @@ export class AdminCarouselComponent implements OnInit, OnDestroy {
   toggleActive(id: string): void {
     const result = this.carouselService.toggleSlideActive(id);
     if (result) {
-      result.pipe(takeUntil(this.destroy$)).subscribe({
+      result.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
         next: () => {
           // Slide toggled successfully
         },
@@ -203,7 +198,7 @@ export class AdminCarouselComponent implements OnInit, OnDestroy {
 
     this.carouselService
       .reorderSlides(slideIds)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: () => {
           // Slides reordered successfully

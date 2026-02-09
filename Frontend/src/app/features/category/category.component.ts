@@ -2,7 +2,10 @@ import { ChangeDetectionStrategy, Component, inject, computed } from '@angular/c
 
 import { CategoriesService } from '../../core/services/categories.service';
 import { FiltersService } from '../../core/services/filters.service';
+import { CartService } from '../../core/services/cart.service';
 import { ProductListManager, PRODUCT_LIST_CONFIG } from '../../core/managers/product-list.manager';
+import { SORT_OPTIONS } from '../../core/models/sort-option.model';
+import { Product } from '../../core/models/product.model';
 import { FeaturedProductsComponent } from '../../shared/ui/featured-products/featured-products.component';
 import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories/featured-categories.component';
 import { HeadingComponent } from '../../shared/ui/heading/heading.component';
@@ -28,6 +31,7 @@ export class CategoryComponent {
   private readonly listManager = inject(ProductListManager);
   private readonly categoriesService = inject(CategoriesService);
   private readonly filtersService = inject(FiltersService);
+  private readonly cartService = inject(CartService);
 
   protected readonly headingId = 'category-heading';
 
@@ -61,7 +65,19 @@ export class CategoryComponent {
     return category ? category.name : 'Category';
   });
 
+  // Sort state
+  protected readonly currentSortValue = this.filtersService.currentSortValue;
+  protected readonly sortOptions = SORT_OPTIONS.map((opt) => ({ value: opt.value, label: opt.label }));
+
   protected onLoadMore(): void {
     this.listManager.loadMore();
+  }
+
+  protected onAddToCart(product: Product): void {
+    this.cartService.addToCart(product, 1);
+  }
+
+  protected onSortChange(value: string): void {
+    this.filtersService.setSortByValue(value);
   }
 }

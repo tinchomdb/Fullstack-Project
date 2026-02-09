@@ -1,16 +1,14 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  OnInit,
   OnDestroy,
+  input,
   signal,
   computed,
   effect,
-  inject,
 } from '@angular/core';
 
 import { NavigationArrowComponent } from '../navigation-arrow/navigation-arrow.component';
-import { CarouselService } from '../../../core/services/carousel.service';
 import { CarouselSlide } from '../../../core/models/carousel-slide.model';
 
 @Component({
@@ -20,15 +18,14 @@ import { CarouselSlide } from '../../../core/models/carousel-slide.model';
   styleUrl: './banner-carousel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BannerCarouselComponent implements OnInit, OnDestroy {
-  private readonly carouselService = inject(CarouselService);
+export class BannerCarouselComponent implements OnDestroy {
+  readonly slides = input<readonly CarouselSlide[]>([]);
+  readonly loading = input<boolean>(false);
+  readonly error = input<string | null>(null);
+
   private autoRotateInterval?: number;
   private readonly autoRotateDelay = 5000;
   private previousSlideCount = -1;
-
-  protected readonly slides = computed(() => this.carouselService.activeSlides() ?? []);
-  protected readonly loading = computed(() => this.carouselService.activeSlidesLoading());
-  protected readonly error = computed(() => this.carouselService.activeSlidesError());
 
   private readonly currentPosition = signal(0);
   private readonly isTransitioning = signal(false);
@@ -91,11 +88,6 @@ export class BannerCarouselComponent implements OnInit, OnDestroy {
       this.startAutoRotate();
       this.setTrackPosition(1, true);
     });
-  }
-
-  ngOnInit(): void {
-    this.carouselService.loadActiveSlides();
-    this.startAutoRotate();
   }
 
   ngOnDestroy(): void {

@@ -3,8 +3,13 @@ import { signal } from '@angular/core';
 import { HomeComponent } from './home.component';
 import { ProductListManager, PRODUCT_LIST_CONFIG } from '../../core/managers/product-list.manager';
 import { CategoriesService } from '../../core/services/categories.service';
+import { CartService } from '../../core/services/cart.service';
+
+import { CarouselService } from '../../core/services/carousel.service';
+import { FiltersService } from '../../core/services/filters.service';
 import { Category } from '../../core/models/category.model';
 import { Product } from '../../core/models/product.model';
+import { DEFAULT_SORT_OPTION, SORT_OPTIONS } from '../../core/models/sort-option.model';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -21,6 +26,7 @@ describe('HomeComponent', () => {
     featured: true,
     subcategoryIds: [],
     type: 'Category',
+    url: `/category/category-${i}`,
   }));
 
   const mockProduct: Product = {
@@ -36,6 +42,7 @@ describe('HomeComponent', () => {
     imageUrls: [],
     createdAt: '',
     updatedAt: '',
+    url: '/products/product-1',
   };
 
   beforeEach(() => {
@@ -54,7 +61,30 @@ describe('HomeComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [HomeComponent],
-      providers: [{ provide: CategoriesService, useValue: categoriesService }],
+      providers: [
+        { provide: CategoriesService, useValue: categoriesService },
+        {
+          provide: CartService,
+          useValue: { addToCart: jasmine.createSpy('addToCart').and.returnValue({ subscribe: () => {} }) },
+        },
+
+        {
+          provide: CarouselService,
+          useValue: {
+            activeSlides: signal([]),
+            activeSlidesLoading: signal(false),
+            activeSlidesError: signal(null),
+            loadActiveSlides: jasmine.createSpy('loadActiveSlides'),
+          },
+        },
+        {
+          provide: FiltersService,
+          useValue: {
+            currentSortOption: signal(DEFAULT_SORT_OPTION),
+            setSortOption: jasmine.createSpy('setSortOption'),
+          },
+        },
+      ],
     }).overrideComponent(HomeComponent, {
       set: {
         template: '',

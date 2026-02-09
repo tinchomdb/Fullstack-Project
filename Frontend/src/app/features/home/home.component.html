@@ -1,18 +1,31 @@
 <section class="home-page">
-  <app-banner-carousel />
+  <app-banner-carousel
+    [slides]="carouselSlides()"
+    [loading]="carouselLoading()"
+    [error]="carouselError()"
+  />
 
   @if (featuredCategories().length > 0) {
-    <app-featured-categories [categories]="featuredCategories()" />
+    <app-featured-categories
+      [categories]="featuredCategories()"
+    />
   }
 
   @if (featuredProducts().length > 0) {
-    <app-featured-products [products]="featuredProducts()" />
+    <app-featured-products
+      [products]="featuredProducts()"
+      (addToCart)="onAddToCart($event)"
+    />
   }
 
   <app-product-list-section
     [products]="products()"
     [hasMore]="hasMore()"
     [loadingMore]="loadingMore()"
+    [currentSortValue]="currentSortValue()"
+    [sortOptions]="sortOptions"
     (loadMore)="onLoadMore()"
+    (addToCart)="onAddToCart($event)"
+    (sortChange)="onSortChange($event)"
   />
 </section>

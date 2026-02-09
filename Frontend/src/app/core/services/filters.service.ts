@@ -32,6 +32,7 @@ export class FiltersService {
   readonly minPrice = this.minPriceSignal.asReadonly();
   readonly maxPrice = this.maxPriceSignal.asReadonly();
   readonly currentSortOption = this.currentSortOptionSignal.asReadonly();
+  readonly currentSortValue = computed(() => this.currentSortOption().value);
   readonly page = this.pageSignal.asReadonly();
   readonly pageSize = this.pageSizeSignal.asReadonly();
   readonly categoryId = this.categoryIdSignal.asReadonly();
@@ -84,6 +85,13 @@ export class FiltersService {
   setSortOption(option: SortOption): void {
     this.currentSortOptionSignal.set(option);
     this.resetToFirstPage();
+  }
+
+  setSortByValue(value: string): void {
+    const option = SORT_OPTIONS.find((opt) => opt.value === value);
+    if (option) {
+      this.setSortOption(option);
+    }
   }
 
   // Increment to next page for infinite scroll

@@ -28,13 +28,25 @@ export class ProductListSectionComponent {
   loadingMore = input<boolean>(false);
   emptyMessage = input<string>('No products found');
   endMessage = input<string>("You've reached the end of the catalog");
+  currentSortValue = input<string>('');
+  sortOptions = input<{ value: string; label: string }[]>([]);
 
   loadMore = output<void>();
+  addToCart = output<Product>();
+  sortChange = output<string>();
 
   protected onLoadMore(): void {
     if (this.loadingMore() || !this.hasMore()) {
       return;
     }
     this.loadMore.emit();
+  }
+
+  protected onAddToCart(product: Product): void {
+    this.addToCart.emit(product);
+  }
+
+  protected onSortChange(value: string): void {
+    this.sortChange.emit(value);
   }
 }

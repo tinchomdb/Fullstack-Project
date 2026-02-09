@@ -1,19 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, input, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, output, computed } from '@angular/core';
 
 import { Product } from '../../../core/models/product.model';
-import { CartService } from '../../../core/services/cart.service';
-import { ProductsService } from '../../../core/services/products.service';
 import {
   ProductFeaturedCardComponent,
-  CardVariant,
-  CARD_VARIANT,
 } from './product-featured-card/product-featured-card.component';
 import {
   BreakpointService,
-  BreakpointSize,
-  BREAKPOINT,
 } from '../../../core/services/breakpoint.service';
 import { HeadingComponent } from '../heading/heading.component';
+import { getProductCardVariants, CardVariant, CARD_VARIANT } from '../../utils/card-variants.utils';
 
 const MAX_GRID_COLUMNS = 6;
 
@@ -29,14 +24,14 @@ export class FeaturedProductsComponent {
   heading = input<string>('Featured Products');
   displayHeading = input<boolean>(true);
 
+  readonly addToCart = output<Product>();
+
   private readonly breakpointService = inject(BreakpointService);
-  private readonly cartService = inject(CartService);
-  private readonly productsService = inject(ProductsService);
 
   protected readonly cardVariants = computed(() => {
     const count = this.products().length;
     const breakpoint = this.breakpointService.current();
-    return this.getCardVariants(count, breakpoint);
+    return getProductCardVariants(count, breakpoint);
   });
 
   protected readonly gridClass = computed(() => {
@@ -44,71 +39,7 @@ export class FeaturedProductsComponent {
     return `grid-${Math.min(count, MAX_GRID_COLUMNS)}`;
   });
 
-  protected buildProductLink(product: Product): string {
-    return this.productsService.buildProductUrl(product);
-  }
-
   protected onAddToCart(product: Product): void {
-    this.cartService.addToCart(product, 1);
-  }
-
-  private getCardVariants(count: number, breakpoint: BreakpointSize): CardVariant[] {
-    const variants: CardVariant[] = new Array(count).fill(CARD_VARIANT.VERTICAL);
-
-    if (breakpoint === BREAKPOINT.XS) {
-      return variants;
-    }
-
-    if (count === 1) {
-      if (
-        breakpoint === BREAKPOINT.MD ||
-        breakpoint === BREAKPOINT.LG ||
-        breakpoint === BREAKPOINT.XL
-      ) {
-        variants[0] = CARD_VARIANT.HORIZONTAL;
-      }
-    } else if (count === 2) {
-      if (breakpoint === BREAKPOINT.LG || breakpoint === BREAKPOINT.XL) {
-        variants[0] = CARD_VARIANT.HORIZONTAL;
-        variants[1] = CARD_VARIANT.HORIZONTAL;
-      }
-    } else if (count === 3) {
-      if (
-        breakpoint === BREAKPOINT.SM ||
-        breakpoint === BREAKPOINT.MD ||
-        breakpoint === BREAKPOINT.LG ||
-        breakpoint === BREAKPOINT.XL
-      ) {
-        variants[0] = CARD_VARIANT.HORIZONTAL;
-      }
-      if (breakpoint === BREAKPOINT.LG || breakpoint === BREAKPOINT.XL) {
-        variants[1] = CARD_VARIANT.HORIZONTAL;
-        variants[2] = CARD_VARIANT.HORIZONTAL;
-      }
-    } else if (count === 4) {
-      if (breakpoint === BREAKPOINT.LG || breakpoint === BREAKPOINT.XL) {
-        variants[0] = CARD_VARIANT.HORIZONTAL;
-        variants[1] = CARD_VARIANT.HORIZONTAL;
-        variants[2] = CARD_VARIANT.HORIZONTAL;
-        variants[3] = CARD_VARIANT.HORIZONTAL;
-      }
-    } else if (count === 5) {
-      if (
-        breakpoint === BREAKPOINT.MD ||
-        breakpoint === BREAKPOINT.LG ||
-        breakpoint === BREAKPOINT.XL
-      ) {
-        variants[0] = CARD_VARIANT.HORIZONTAL;
-        variants[1] = CARD_VARIANT.HORIZONTAL;
-        variants[2] = CARD_VARIANT.HORIZONTAL;
-      }
-    } else if (count >= 6) {
-      if (breakpoint === BREAKPOINT.LG || breakpoint === BREAKPOINT.XL) {
-        variants[1] = CARD_VARIANT.HORIZONTAL;
-        variants[2] = CARD_VARIANT.HORIZONTAL;
-      }
-    }
-
-    return variants;
+    this.addToCart.emit(product);
   }
 }

@@ -30,6 +30,7 @@ describe('ProductDetailComponent', () => {
     imageUrls: ['img1.jpg'],
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
+    url: '/products/test-product',
   };
 
   beforeEach(() => {

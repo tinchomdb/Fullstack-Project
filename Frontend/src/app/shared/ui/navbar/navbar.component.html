@@ -21,7 +21,7 @@
       @for (category of categories(); track category.id) {
         <li>
           <a
-            [routerLink]="getCategoryUrl(category.id)"
+            [routerLink]="category.url"
             routerLinkActive="is-active"
             [routerLinkActiveOptions]="{ exact: true }"
             [attr.aria-label]="'Browse ' + category.name"

@@ -8,4 +8,5 @@ export interface Category {
   readonly parentCategoryId?: string;
   readonly subcategoryIds: readonly string[];
   readonly type: string;
+  readonly url: string;
 }

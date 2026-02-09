@@ -1,7 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
-import { FiltersService } from '../../../core/services/filters.service';
-import { SORT_OPTIONS } from '../../../core/models/sort-option.model';
 import { DropdownComponent, DropdownOption } from '../dropdown/dropdown.component';
 
 @Component({
@@ -12,19 +10,12 @@ import { DropdownComponent, DropdownOption } from '../dropdown/dropdown.componen
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SortDropdownComponent {
-  private readonly filtersService = inject(FiltersService);
+  readonly currentValue = input<string>('');
+  readonly options = input<DropdownOption[]>([]);
 
-  protected readonly sortOptions: DropdownOption[] = SORT_OPTIONS.map((opt) => ({
-    value: opt.value,
-    label: opt.label,
-  }));
-  protected readonly currentSortOption = this.filtersService.currentSortOption;
-  protected readonly currentSortValue = computed(() => this.currentSortOption().value);
+  readonly sortChange = output<string>();
 
   onSortChange(value: string): void {
-    const selectedOption = SORT_OPTIONS.find((opt) => opt.value === value);
-    if (selectedOption) {
-      this.filtersService.setSortOption(selectedOption);
-    }
+    this.sortChange.emit(value);
   }
 }

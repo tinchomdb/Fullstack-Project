@@ -15,4 +15,5 @@ export interface Product {
   readonly featured?: boolean;
   readonly createdAt: string;
   readonly updatedAt: string;
+  readonly url: string;
 }

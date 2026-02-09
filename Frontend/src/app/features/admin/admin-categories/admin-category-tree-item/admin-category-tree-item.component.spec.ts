@@ -14,6 +14,7 @@ describe('AdminCategoryTreeItemComponent', () => {
       featured: true,
       subcategoryIds: ['cat-2'],
       type: 'Category',
+      url: '/category/electronics',
     },
     children: [
       {
@@ -24,6 +25,7 @@ describe('AdminCategoryTreeItemComponent', () => {
           parentCategoryId: 'cat-1',
           subcategoryIds: [],
           type: 'Category',
+          url: '/category/electronics/phones',
         },
         children: [],
         level: 1,

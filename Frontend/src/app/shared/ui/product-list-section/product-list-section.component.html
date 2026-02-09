@@ -4,9 +4,16 @@
       @if (showHeading()) {
         <app-heading [content]="heading()" [level]="headingLevel()" />
       }
-      <app-sort-dropdown />
+      <app-sort-dropdown
+        [currentValue]="currentSortValue()"
+        [options]="sortOptions()"
+        (sortChange)="onSortChange($event)"
+      />
     </div>
-    <app-product-grid [products]="products()" />
+    <app-product-grid
+      [products]="products()"
+      (addToCart)="onAddToCart($event)"
+    />
 
     @if (hasMore() && !loadingMore()) {
       <div

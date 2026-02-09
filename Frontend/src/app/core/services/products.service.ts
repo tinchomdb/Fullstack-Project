@@ -99,10 +99,6 @@ export class ProductsService {
       .pipe(map(mapProductFromApi));
   }
 
-  buildProductUrl(product: Product): string {
-    return `/products/${product.slug}`;
-  }
-
   private getFeaturedProducts(categoryId?: string, limit?: number): Observable<Product[]> {
     let params = new HttpParams();
 

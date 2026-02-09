@@ -17,6 +17,7 @@ describe('CategoriesService', () => {
       featured: true,
       subcategoryIds: ['c2'],
       type: 'Category',
+      url: '',
     },
     {
       id: 'c2',
@@ -25,6 +26,7 @@ describe('CategoriesService', () => {
       parentCategoryId: 'c1',
       subcategoryIds: [],
       type: 'Category',
+      url: '',
     },
     {
       id: 'c3',
@@ -33,6 +35,7 @@ describe('CategoriesService', () => {
       featured: false,
       subcategoryIds: [],
       type: 'Category',
+      url: '',
     },
   ];
 
@@ -49,31 +52,21 @@ describe('CategoriesService', () => {
     });
     service = TestBed.inject(CategoriesService);
     httpMock = TestBed.inject(HttpTestingController);
+
+    // Service self-initializes in constructor — flush the initial load
+    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
   });
 
   afterEach(() => {
     httpMock.verify();
   });
 
-  it('should start with empty categories', () => {
-    expect(service.categories()).toEqual([]);
+  it('should self-initialize with categories loaded', () => {
+    expect(service.categories().length).toBe(3);
     expect(service.loading()).toBe(false);
   });
 
-  it('should load categories', () => {
-    service.loadCategories();
-
-    const req = httpMock.expectOne((r) => r.url.includes('/api/categories'));
-    expect(req.request.method).toBe('GET');
-    req.flush(mockCategories);
-
-    expect(service.categories().length).toBe(3);
-  });
-
   it('should not reload if categories already loaded', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
-
     service.loadCategories();
     httpMock.expectNone((r) => r.url.includes('/api/categories'));
 
@@ -81,9 +74,6 @@ describe('CategoriesService', () => {
   });
 
   it('should force reload categories', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
-
     service.reloadCategories();
     const req = httpMock.expectOne((r) => r.url.includes('/api/categories'));
     req.flush(mockCategories);
@@ -92,9 +82,6 @@ describe('CategoriesService', () => {
   });
 
   it('should build category tree', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
-
     const tree = service.categoryTree();
     expect(tree.length).toBe(2); // Electronics and Books at root
     const electronics = tree.find((n) => n.category.name === 'Electronics');
@@ -103,50 +90,36 @@ describe('CategoriesService', () => {
   });
 
   it('should compute featured categories', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
-
     const featured = service.featuredCategories();
     expect(featured.length).toBe(1);
     expect(featured[0].name).toBe('Electronics');
   });
 
   it('should get category by id', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
-
     expect(service.getCategoryById('c1')?.name).toBe('Electronics');
     expect(service.getCategoryById('nonexistent')).toBeUndefined();
   });
 
   it('should get category by slug', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
-
     expect(service.getCategoryBySlug('phones')?.id).toBe('c2');
   });
 
   it('should get category path', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
-
     const path = service.getCategoryPath('c2');
     expect(path.length).toBe(2);
     expect(path[0].name).toBe('Electronics');
     expect(path[1].name).toBe('Phones');
   });
 
-  it('should build category URL', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
+  it('should enrich categories with URL', () => {
+    const phones = service.getCategoryById('c2');
+    expect(phones?.url).toBe('/category/electronics/phones');
 
-    expect(service.buildCategoryUrl('c2')).toBe('/category/electronics/phones');
+    const electronics = service.getCategoryById('c1');
+    expect(electronics?.url).toBe('/category/electronics');
   });
 
   it('should get available parent categories excluding descendants', () => {
-    service.loadCategories();
-    httpMock.expectOne((r) => r.url.includes('/api/categories')).flush(mockCategories);
-
     const available = service.getAvailableParentCategories('c1');
     expect(available.find((c) => c.id === 'c1')).toBeUndefined();
     expect(available.find((c) => c.id === 'c2')).toBeUndefined();

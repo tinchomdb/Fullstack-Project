@@ -3,7 +3,10 @@ import { signal } from '@angular/core';
 import { SearchResultsComponent } from './search-results.component';
 import { ProductListManager, PRODUCT_LIST_CONFIG } from '../../core/managers/product-list.manager';
 import { FiltersService } from '../../core/services/filters.service';
+import { CartService } from '../../core/services/cart.service';
+
 import { Product } from '../../core/models/product.model';
+import { DEFAULT_SORT_OPTION } from '../../core/models/sort-option.model';
 
 describe('SearchResultsComponent', () => {
   let component: SearchResultsComponent;
@@ -27,11 +30,20 @@ describe('SearchResultsComponent', () => {
 
     filtersService = jasmine.createSpyObj('FiltersService', ['resetToFirstPage'], {
       searchTerm: searchTermSignal,
+      currentSortOption: signal(DEFAULT_SORT_OPTION),
+      setSortOption: jasmine.createSpy('setSortOption'),
     });
 
     TestBed.configureTestingModule({
       imports: [SearchResultsComponent],
-      providers: [{ provide: FiltersService, useValue: filtersService }],
+      providers: [
+        { provide: FiltersService, useValue: filtersService },
+        {
+          provide: CartService,
+          useValue: { addToCart: jasmine.createSpy('addToCart').and.returnValue({ subscribe: () => {} }) },
+        },
+
+      ],
     }).overrideComponent(SearchResultsComponent, {
       set: {
         template: '',

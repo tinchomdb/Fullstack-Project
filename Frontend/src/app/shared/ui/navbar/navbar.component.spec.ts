@@ -2,42 +2,36 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
 import { NavbarComponent } from './navbar.component';
 import { Component } from '@angular/core';
-import { CartService } from '../../../core/services/cart.service';
-import { CategoriesService } from '../../../core/services/categories.service';
 import { AuthService } from '../../../core/auth/auth.service';
+import { CategoriesService } from '../../../core/services/categories.service';
 import { provideRouter } from '@angular/router';
+import { Category } from '../../../core/models/category.model';
+
+const mockCategories: Category[] = [
+  { id: 'cat-1', name: 'Electronics', slug: 'electronics', subcategoryIds: [], type: 'Category', url: '/category/electronics' },
+];
 
 @Component({
-  template: `<app-navbar [title]="'Test'" />`,
+  template: `<app-navbar
+    [title]="'Test'"
+    [cartItemCount]="cartItemCount"
+    [categories]="categories"
+  />`,
   imports: [NavbarComponent],
 })
-class TestHostComponent {}
+class TestHostComponent {
+  cartItemCount = 3;
+  categories: readonly Category[] = mockCategories;
+}
 
 describe('NavbarComponent', () => {
   let fixture: ComponentFixture<TestHostComponent>;
-  let categoriesSpy: jasmine.SpyObj<CategoriesService>;
 
   beforeEach(async () => {
-    categoriesSpy = jasmine.createSpyObj(
-      'CategoriesService',
-      ['loadCategories', 'buildCategoryUrl'],
-      {
-        categories: signal([]),
-        categoryTree: signal([]),
-        loading: signal(false),
-      },
-    );
-    categoriesSpy.buildCategoryUrl.and.returnValue('/category/electronics');
-
     await TestBed.configureTestingModule({
       imports: [TestHostComponent],
       providers: [
         provideRouter([]),
-        {
-          provide: CartService,
-          useValue: { itemCount: signal(3), loading: signal(false) },
-        },
-        { provide: CategoriesService, useValue: categoriesSpy },
         {
           provide: AuthService,
           useValue: {
@@ -45,6 +39,13 @@ describe('NavbarComponent', () => {
             isAdmin: signal(false),
             login: jasmine.createSpy(),
             logout: jasmine.createSpy(),
+          },
+        },
+        {
+          provide: CategoriesService,
+          useValue: {
+            categoryTree: signal([]),
+            loading: signal(false),
           },
         },
       ],
@@ -62,8 +63,12 @@ describe('NavbarComponent', () => {
     expect(getComponent()).toBeTruthy();
   });
 
-  it('should call loadCategories on construction', () => {
-    expect(categoriesSpy.loadCategories).toHaveBeenCalled();
+  it('should receive cartItemCount via input', () => {
+    expect(getComponent().cartItemCount()).toBe(3);
+  });
+
+  it('should receive categories via input', () => {
+    expect(getComponent().categories()).toEqual(mockCategories);
   });
 
   it('should toggle mobile menu', () => {
@@ -80,15 +85,5 @@ describe('NavbarComponent', () => {
     navbar.toggleMobileMenu();
     navbar.closeMobileMenu();
     expect(navbar['isMobileMenuOpen']()).toBeFalse();
-  });
-
-  it('should delegate getCategoryUrl to service', () => {
-    const url = getComponent().getCategoryUrl('cat-1');
-    expect(url).toBe('/category/electronics');
-    expect(categoriesSpy.buildCategoryUrl).toHaveBeenCalledWith('cat-1');
-  });
-
-  it('should compute empty categories when none loaded', () => {
-    expect(getComponent()['categories']()).toEqual([]);
   });
 });

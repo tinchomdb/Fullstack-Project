@@ -56,7 +56,6 @@ describe('App', () => {
             categories: signal([]),
             categoryTree: signal([]),
             loading: signal(false),
-            loadCategories: jasmine.createSpy('loadCategories'),
           },
         },
         {

@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { AdminProductsComponent } from './admin-products.component';
 import { ProductsService } from '../../../core/services/products.service';
@@ -8,6 +7,7 @@ import { AdminProductsFiltersService } from '../../../core/services/admin-produc
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Product } from '../../../core/models/product.model';
 import { Category } from '../../../core/models/category.model';
+import { AdminProductFormData } from './admin-product-form/admin-product-form.component';
 
 describe('AdminProductsComponent', () => {
   let component: AdminProductsComponent;
@@ -33,12 +33,26 @@ describe('AdminProductsComponent', () => {
     featured: false,
     createdAt: '2024-01-01',
     updatedAt: '2024-01-01',
+    url: '/products/test-product',
   };
 
   const mockCategories: Category[] = [
-    { id: 'cat-1', name: 'Electronics', slug: 'electronics', subcategoryIds: [], type: 'Category' },
-    { id: 'cat-2', name: 'Books', slug: 'books', subcategoryIds: [], type: 'Category' },
+    { id: 'cat-1', name: 'Electronics', slug: 'electronics', subcategoryIds: [], type: 'Category', url: '/category/electronics' },
+    { id: 'cat-2', name: 'Books', slug: 'books', subcategoryIds: [], type: 'Category', url: '/category/books' },
   ];
+
+  const validFormData: AdminProductFormData = {
+    name: 'New Product',
+    slug: 'new-product',
+    description: 'Description',
+    price: 19.99,
+    stock: 5,
+    currency: 'USD',
+    categoryId: 'cat-1',
+    sellerId: 'seller-1',
+    imageUrls: ['img.jpg'],
+    featured: false,
+  };
 
   beforeEach(() => {
     loadingMoreSignal.set(false);
@@ -67,6 +81,7 @@ describe('AdminProductsComponent', () => {
         sortBy: signal('name' as const),
         sortDirection: signal('asc' as const),
         apiParams: signal({ page: 1, pageSize: 20, sortBy: 'name', sortDirection: 'asc' }),
+        hasActiveFilters: signal(false),
       },
     );
 
@@ -75,7 +90,7 @@ describe('AdminProductsComponent', () => {
     });
 
     TestBed.configureTestingModule({
-      imports: [AdminProductsComponent, ReactiveFormsModule],
+      imports: [AdminProductsComponent],
       providers: [
         { provide: ProductsService, useValue: productsService },
         { provide: AdminProductsFiltersService, useValue: filtersService },
@@ -119,17 +134,12 @@ describe('AdminProductsComponent', () => {
       component.openCreateForm();
       expect(component.showForm()).toBe(true);
       expect(component.editingProduct()).toBeNull();
-      expect(component.productImages()).toEqual([]);
     });
 
     it('should open edit form with product data', () => {
       component.openEditForm(mockProduct);
       expect(component.showForm()).toBe(true);
       expect(component.editingProduct()).toEqual(mockProduct);
-      expect(component.productImages()).toEqual(['img1.jpg']);
-      expect(component.productForm.get('name')?.value).toBe('Test Product');
-      expect(component.productForm.get('slug')?.value).toBe('test-product');
-      expect(component.productForm.get('categoryId')?.value).toBe('cat-1');
     });
 
     it('should close form and reset state', () => {
@@ -138,53 +148,31 @@ describe('AdminProductsComponent', () => {
       expect(component.showForm()).toBe(false);
       expect(component.editingProduct()).toBeNull();
       expect(component.formError()).toBeNull();
-      expect(component.productImages()).toEqual([]);
     });
   });
 
   describe('saveProduct', () => {
-    it('should not save when form is invalid', () => {
+    it('should create product with form data', () => {
       component.openCreateForm();
-      component.saveProduct();
-      expect(productsService.createProduct).not.toHaveBeenCalled();
-    });
-
-    it('should create product with valid form', () => {
-      component.openCreateForm();
-      component.productForm.patchValue({
-        name: 'New Product',
-        slug: 'new-product',
-        description: 'Description',
-        price: 19.99,
-        stock: 5,
-        currency: 'USD',
-        categoryId: 'cat-1',
-        sellerId: 'seller-1',
-      });
-      component.saveProduct();
+      component.saveProduct(validFormData);
       expect(productsService.createProduct).toHaveBeenCalled();
     });
 
     it('should update product when editing', () => {
       component.openEditForm(mockProduct);
-      component.productForm.patchValue({ name: 'Updated' });
-      component.saveProduct();
+      component.saveProduct(validFormData);
       expect(productsService.updateProduct).toHaveBeenCalled();
     });
 
-    it('should close form after successful save', () => {
+    it('should close form after successful create', () => {
       component.openCreateForm();
-      component.productForm.patchValue({
-        name: 'New',
-        slug: 'new',
-        description: 'D',
-        price: 10,
-        stock: 1,
-        currency: 'USD',
-        categoryId: 'cat-1',
-        sellerId: 's1',
-      });
-      component.saveProduct();
+      component.saveProduct(validFormData);
+      expect(component.showForm()).toBe(false);
+    });
+
+    it('should close form after successful update', () => {
+      component.openEditForm(mockProduct);
+      component.saveProduct(validFormData);
       expect(component.showForm()).toBe(false);
     });
 
@@ -194,17 +182,7 @@ describe('AdminProductsComponent', () => {
         throwError(() => ({ message: 'Duplicate slug' })),
       );
       component.openCreateForm();
-      component.productForm.patchValue({
-        name: 'New',
-        slug: 'new',
-        description: 'D',
-        price: 10,
-        stock: 1,
-        currency: 'USD',
-        categoryId: 'cat-1',
-        sellerId: 's1',
-      });
-      component.saveProduct();
+      component.saveProduct(validFormData);
       expect(component.formError()).toBe('Duplicate slug');
     });
 
@@ -214,8 +192,15 @@ describe('AdminProductsComponent', () => {
         throwError(() => ({ message: 'Update failed' })),
       );
       component.openEditForm(mockProduct);
-      component.saveProduct();
+      component.saveProduct(validFormData);
       expect(component.formError()).toBe('Update failed');
+    });
+
+    it('should map categoryId to categoryIds array', () => {
+      component.openCreateForm();
+      component.saveProduct({ ...validFormData, categoryId: 'cat-2' });
+      const call = productsService.createProduct.calls.mostRecent().args[0];
+      expect(call.categoryIds).toEqual(['cat-2']);
     });
   });
 
@@ -281,21 +266,6 @@ describe('AdminProductsComponent', () => {
 
       component.onLoadMore();
       expect(filtersService.loadNextPage).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('onProductImagesChange', () => {
-    it('should update productImages signal', () => {
-      component.onProductImagesChange(['a.jpg', 'b.jpg']);
-      expect(component.productImages()).toEqual(['a.jpg', 'b.jpg']);
-    });
-  });
-
-  describe('manuallyGenerateSlug', () => {
-    it('should generate slug from name field', () => {
-      component.productForm.patchValue({ name: 'My Product Name' });
-      component.manuallyGenerateSlug();
-      expect(component.productForm.get('slug')?.value).toBe('my-product-name');
     });
   });
 });

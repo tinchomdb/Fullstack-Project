@@ -3,7 +3,7 @@
     <app-product-card
       [product]="product"
       [index]="index"
-      [productLink]="buildProductLink(product)"
+      [productLink]="product.url"
       (addToCart)="onAddToCart($event)"
     />
   }

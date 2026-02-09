@@ -4,8 +4,11 @@ import { CategoryComponent } from './category.component';
 import { ProductListManager, PRODUCT_LIST_CONFIG } from '../../core/managers/product-list.manager';
 import { CategoriesService } from '../../core/services/categories.service';
 import { FiltersService } from '../../core/services/filters.service';
+import { CartService } from '../../core/services/cart.service';
+
 import { Category } from '../../core/models/category.model';
 import { Product } from '../../core/models/product.model';
+import { DEFAULT_SORT_OPTION } from '../../core/models/sort-option.model';
 
 describe('CategoryComponent', () => {
   let component: CategoryComponent;
@@ -23,6 +26,7 @@ describe('CategoryComponent', () => {
     subcategoryIds: ['cat-2'],
     type: 'Category',
     featured: true,
+    url: '/category/electronics',
   };
 
   const childCategory: Category = {
@@ -32,6 +36,7 @@ describe('CategoryComponent', () => {
     parentCategoryId: 'cat-1',
     subcategoryIds: [],
     type: 'Category',
+    url: '/category/electronics/phones',
   };
 
   beforeEach(() => {
@@ -59,6 +64,8 @@ describe('CategoryComponent', () => {
 
     filtersService = jasmine.createSpyObj('FiltersService', ['resetToFirstPage'], {
       categoryId: categoryIdSignal,
+      currentSortOption: signal(DEFAULT_SORT_OPTION),
+      setSortOption: jasmine.createSpy('setSortOption'),
     });
 
     TestBed.configureTestingModule({
@@ -66,6 +73,11 @@ describe('CategoryComponent', () => {
       providers: [
         { provide: CategoriesService, useValue: categoriesService },
         { provide: FiltersService, useValue: filtersService },
+        {
+          provide: CartService,
+          useValue: { addToCart: jasmine.createSpy('addToCart').and.returnValue({ subscribe: () => {} }) },
+        },
+
       ],
     }).overrideComponent(CategoryComponent, {
       set: {

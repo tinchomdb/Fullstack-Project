@@ -2,17 +2,26 @@
   <app-heading [content]="pageHeading()" [level]="'h1'" />
 
   @if (subcategories().length > 0) {
-    <app-featured-categories [categories]="subcategories()" />
+    <app-featured-categories
+      [categories]="subcategories()"
+    />
   }
 
   @if (featuredProducts().length > 0) {
-    <app-featured-products [products]="featuredProducts()" />
+    <app-featured-products
+      [products]="featuredProducts()"
+      (addToCart)="onAddToCart($event)"
+    />
   }
 
   <app-product-list-section
     [products]="products()"
     [hasMore]="hasMore()"
     [loadingMore]="loadingMore()"
+    [currentSortValue]="currentSortValue()"
+    [sortOptions]="sortOptions"
     (loadMore)="onLoadMore()"
+    (addToCart)="onAddToCart($event)"
+    (sortChange)="onSortChange($event)"
   />
 </section>

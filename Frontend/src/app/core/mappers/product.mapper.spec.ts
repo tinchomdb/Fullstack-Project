@@ -134,6 +134,7 @@ describe('product.mapper', () => {
         featured: false,
         createdAt: '2025-01-01',
         updatedAt: '2025-01-02',
+        url: '/products/test',
       };
 
       const result = mapProductToApi(product);
@@ -159,6 +160,7 @@ describe('product.mapper', () => {
         featured: false,
         createdAt: '',
         updatedAt: '',
+        url: '',
       };
 
       const result = mapProductToApi(product);

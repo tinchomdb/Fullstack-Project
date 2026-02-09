@@ -19,6 +19,7 @@ export function mapProductFromApi(dto: ProductApiModel): Product {
     featured: dto.featured ?? false,
     createdAt: ensureString(dto.createdAt),
     updatedAt: ensureString(dto.updatedAt),
+    url: `/products/${ensureString(dto.slug)}`,
   };
 }
 

@@ -10,7 +10,11 @@
     [heading]="resultsCount() + (resultsCount() === 1 ? ' product found' : ' products found')"
     [headingLevel]="'h5'"
     [endMessage]="'You\'ve reached the end of search results'"
+    [currentSortValue]="currentSortValue()"
+    [sortOptions]="sortOptions"
     (loadMore)="onLoadMore()"
+    (addToCart)="onAddToCart($event)"
+    (sortChange)="onSortChange($event)"
   />
 
   @if (products().length === 0 && !loading()) {

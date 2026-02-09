@@ -28,121 +28,14 @@
       [title]="editingProduct() ? 'Edit Product' : 'Create New Product'"
       (close)="closeForm()"
     >
-      <form [formGroup]="productForm" (ngSubmit)="saveProduct()">
-        @if (formError()) {
-          <div class="form-error-banner">{{ formError() }}</div>
-        }
-
-        <app-form-field
-          [control]="control('name')"
-          [id]="'name'"
-          [label]="'Product Name'"
-          [fullWidth]="true"
-          [errorMessage]="'Product name is required (min 3 characters)'"
-        />
-
-        <div class="slug-field-wrapper">
-          <app-form-field
-            [control]="control('slug')"
-            [id]="'slug'"
-            [label]="'Slug'"
-            [fullWidth]="true"
-            [errorMessage]="'Slug is required (letters, numbers, hyphens)'"
-          />
-          <app-button
-            type="button"
-            (click)="manuallyGenerateSlug()"
-            variant="secondary"
-            shape="rounded"
-            class="slug-generate-btn"
-            title="Generate slug from name"
-          >
-            Generate
-          </app-button>
-        </div>
-
-        <app-form-field
-          [control]="control('description')"
-          [id]="'description'"
-          [label]="'Description'"
-          [type]="'textarea'"
-          [fullWidth]="true"
-          [errorMessage]="'Description is required'"
-        />
-
-        <div class="form-row">
-          <app-form-field
-            [control]="control('price')"
-            [id]="'price'"
-            [label]="'Price'"
-            [type]="'number'"
-            [errorMessage]="'Price is required'"
-          />
-
-          <app-form-field
-            [control]="control('currency')"
-            [id]="'currency'"
-            [label]="'Currency'"
-            [type]="'select'"
-            [errorMessage]="'Currency is required'"
-          >
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-          </app-form-field>
-
-          <app-form-field
-            [control]="control('stock')"
-            [id]="'stock'"
-            [label]="'Stock'"
-            [type]="'number'"
-            [errorMessage]="'Stock is required'"
-          />
-        </div>
-
-        <app-form-field
-          [control]="control('categoryId')"
-          [id]="'categoryId'"
-          [label]="'Category'"
-          [type]="'select'"
-          [fullWidth]="true"
-          [errorMessage]="'Category is required'"
-        >
-          <option value="">Select a category</option>
-          @for (category of categories(); track category.id) {
-            <option [value]="category.id">{{ category.name }}</option>
-          }
-        </app-form-field>
-
-        <app-form-field
-          [control]="control('sellerId')"
-          [id]="'sellerId'"
-          [label]="'Seller ID'"
-          [fullWidth]="true"
-          [errorMessage]="'Seller ID is required'"
-        />
-
-        <app-image-gallery-manager
-          [images]="productImages()"
-          (imagesChange)="onProductImagesChange($event)"
-        />
-
-        <app-form-checkbox
-          [control]="control('featured')"
-          [id]="'featured'"
-          [label]="'Mark as Featured'"
-          [subtitle]="'Featured products will be highlighted on the homepage'"
-        />
-
-        <div class="form-actions">
-          <app-button type="button" (click)="closeForm()" variant="secondary" shape="rounded"
-            >Cancel</app-button
-          >
-          <app-button type="submit" [disabled]="productForm.invalid || loading()" shape="rounded">
-            {{ editingProduct() ? 'Update' : 'Create' }} Product
-          </app-button>
-        </div>
-      </form>
+      <app-admin-product-form
+        [editingProduct]="editingProduct()"
+        [categories]="categories()"
+        [loading]="loading()"
+        [formError]="formError()"
+        (save)="saveProduct($event)"
+        (cancel)="closeForm()"
+      />
     </app-modal-form>
   }
 

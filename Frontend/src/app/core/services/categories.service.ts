@@ -25,22 +25,38 @@ export class CategoriesService {
     this.loadingOverlayService,
   );
 
-  readonly categories = this.categoriesResource.data;
+  private readonly rawCategories = computed(() => this.categoriesResource.data() ?? []);
   readonly loading = this.categoriesResource.loading;
   readonly error = this.categoriesResource.error;
 
-  private readonly categoriesArray = computed(() => this.categories() ?? []);
-  private readonly categoryMap = computed(() => {
+  private readonly rawCategoryMap = computed(() => {
     const map = new Map<string, Category>();
-    this.categoriesArray().forEach((category) => map.set(category.id, category));
+    this.rawCategories().forEach((category) => map.set(category.id, category));
     return map;
   });
 
-  readonly categoryTree = computed(() => this.buildCategoryTree(this.categoriesArray()));
-  readonly featuredCategories = computed(() => this.categoriesArray().filter((c) => c.featured));
+  readonly categories = computed(() =>
+    this.rawCategories().map((category) => ({
+      ...category,
+      url: `/category/${this.buildCategoryPath(category.id, this.rawCategoryMap())}`,
+    })),
+  );
+
+  private readonly categoryMap = computed(() => {
+    const map = new Map<string, Category>();
+    this.categories().forEach((category) => map.set(category.id, category));
+    return map;
+  });
+
+  readonly categoryTree = computed(() => this.buildCategoryTree(this.categories()));
+  readonly featuredCategories = computed(() => this.categories().filter((c) => c.featured));
+
+  constructor() {
+    this.loadCategories();
+  }
 
   loadCategories(): void {
-    if (this.categoriesArray().length > 0) {
+    if (this.rawCategories().length > 0) {
       return;
     }
     this.categoriesResource.load(this.getAllCategories());
@@ -70,11 +86,11 @@ export class CategoriesService {
 
   getAvailableParentCategories(excludeCategoryId?: string): Category[] {
     if (!excludeCategoryId) {
-      return [...this.categoriesArray()];
+      return [...this.categories()];
     }
 
     const descendantIds = this.collectAllDescendants(excludeCategoryId);
-    return this.categoriesArray().filter((c) => !descendantIds.has(c.id));
+    return this.categories().filter((c) => !descendantIds.has(c.id));
   }
 
   getParentCategoryName(parentId?: string): string {
@@ -83,18 +99,18 @@ export class CategoriesService {
   }
 
   getChildCategories(parentCategoryId: string): Category[] {
-    return this.categoriesArray().filter((c) => c.parentCategoryId === parentCategoryId);
+    return this.categories().filter((c) => c.parentCategoryId === parentCategoryId);
   }
 
   getCategoryPath(categoryId: string): Category[] {
     const path: Category[] = [];
-    const categoryMap = this.categoryMap();
-    let currentCategory = categoryMap.get(categoryId);
+    const map = this.categoryMap();
+    let currentCategory = map.get(categoryId);
 
     while (currentCategory) {
       path.unshift(currentCategory);
       currentCategory = currentCategory.parentCategoryId
-        ? categoryMap.get(currentCategory.parentCategoryId)
+        ? map.get(currentCategory.parentCategoryId)
         : undefined;
     }
 
@@ -106,7 +122,7 @@ export class CategoriesService {
   }
 
   getCategoryBySlug(slug: string): Category | undefined {
-    return this.categoriesArray().find((c) => c.slug === slug);
+    return this.categories().find((c) => c.slug === slug);
   }
 
   getCategoryByPath(path: string): Category | undefined {
@@ -114,22 +130,18 @@ export class CategoriesService {
     const slugs = path.split('/').filter((s) => s.length > 0);
     if (slugs.length === 0) return undefined;
     const lastCategorySlug = slugs[slugs.length - 1];
-    const categories = this.categoriesArray();
 
-    const currentCategory = categories.find((c) => c.slug === lastCategorySlug);
-    if (!currentCategory) return undefined;
-
-    return currentCategory;
+    return this.categories().find((c) => c.slug === lastCategorySlug);
   }
 
-  buildCategoryPath(categoryId: string): string {
-    const path = this.getCategoryPath(categoryId);
+  private buildCategoryPath(categoryId: string, map: Map<string, Category>): string {
+    const path: Category[] = [];
+    let current = map.get(categoryId);
+    while (current) {
+      path.unshift(current);
+      current = current.parentCategoryId ? map.get(current.parentCategoryId) : undefined;
+    }
     return path.map((c) => c.slug).join('/');
-  }
-
-  buildCategoryUrl(categoryId: string): string {
-    const path = this.buildCategoryPath(categoryId);
-    return `/category/${path}`;
   }
 
   private getAllCategories(): Observable<readonly Category[]> {
@@ -138,10 +150,10 @@ export class CategoriesService {
 
   private collectAllDescendants(categoryId: string): Set<string> {
     const descendantIds = new Set<string>([categoryId]);
-    const categories = this.categoriesArray();
+    const allCategories = this.categories();
 
     const addDescendants = (parentId: string): void => {
-      categories
+      allCategories
         .filter((c) => c.parentCategoryId === parentId)
         .forEach((child) => {
           descendantIds.add(child.id);

@@ -8,37 +8,33 @@ import {
   effect,
   untracked,
 } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ProductsService } from '../../../core/services/products.service';
 import { AdminProductsFiltersService } from '../../../core/services/admin-products-filters.service';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Product } from '../../../core/models/product.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
-import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.component';
-import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-checkbox.component';
 import { AdminItemCardComponent } from '../../../shared/ui/admin-item-card/admin-item-card.component';
 import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.component';
 import { DropdownComponent } from '../../../shared/ui/dropdown/dropdown.component';
 import { SearchComponent } from '../../../shared/ui/search/search.component';
 import { LoadingIndicatorComponent } from '../../../shared/ui/loading-indicator/loading-indicator.component';
-import { ImageGalleryManagerComponent } from '../../../shared/ui/image-gallery-manager/image-gallery-manager.component';
-import { generateSlug } from '../../../shared/utils/form.utils';
 import { IntersectionObserverDirective } from '../../../shared/ui/intersection-observer.directive';
+import {
+  AdminProductFormComponent,
+  AdminProductFormData,
+} from './admin-product-form/admin-product-form.component';
 
 @Component({
   selector: 'app-admin-products',
   imports: [
-    ReactiveFormsModule,
     ButtonComponent,
-    FormFieldComponent,
-    FormCheckboxComponent,
     AdminItemCardComponent,
     ModalFormComponent,
     DropdownComponent,
     SearchComponent,
     LoadingIndicatorComponent,
-    ImageGalleryManagerComponent,
     IntersectionObserverDirective,
+    AdminProductFormComponent,
   ],
   templateUrl: './admin-products.component.html',
   styleUrl: './admin-products.component.scss',
@@ -48,7 +44,6 @@ export class AdminProductsComponent implements OnInit {
   private readonly productsService = inject(ProductsService);
   private readonly filtersService = inject(AdminProductsFiltersService);
   private readonly categoriesService = inject(CategoriesService);
-  private readonly fb = inject(FormBuilder);
 
   // Expose filters service for template
   protected readonly filters = this.filtersService;
@@ -63,7 +58,6 @@ export class AdminProductsComponent implements OnInit {
   readonly showForm = signal(false);
   readonly editingProduct = signal<Product | null>(null);
   readonly formError = signal<string | null>(null);
-  readonly productImages = signal<string[]>([]);
 
   readonly categoryOptions = computed(() =>
     this.categories().map((cat) => ({ value: cat.id, label: cat.name })),
@@ -73,30 +67,6 @@ export class AdminProductsComponent implements OnInit {
     { value: '', label: 'All Categories' },
     ...this.categoryOptions(),
   ]);
-
-  readonly productForm = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(3)]],
-    slug: ['', [Validators.required, Validators.minLength(3), Validators.pattern(/^[a-z0-9-]+$/i)]],
-    description: ['', [Validators.required]],
-    price: [0, [Validators.required, Validators.min(0)]],
-    stock: [0, [Validators.required, Validators.min(0)]],
-    currency: ['USD', [Validators.required]],
-    categoryId: ['', [Validators.required]],
-    imageUrls: [''],
-    featured: [false],
-    sellerId: ['', [Validators.required]],
-  });
-
-  // Computed validation helpers
-  protected readonly isFieldInvalid = (fieldName: string) =>
-    computed(() => {
-      const field = this.productForm.get(fieldName);
-      return field ? field.invalid && field.touched : false;
-    });
-
-  protected control(name: string): FormControl {
-    return this.productForm.get(name) as FormControl;
-  }
 
   constructor() {
     let isFirstRun = true;
@@ -117,56 +87,19 @@ export class AdminProductsComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInitialProducts();
-    this.initFormSubscriptions();
   }
 
   private loadInitialProducts(): void {
     this.productsService.loadProducts(this.filtersService.apiParams());
   }
 
-  private initFormSubscriptions(): void {
-    // Auto-generate slug from name when creating new product
-    this.productForm.get('name')?.valueChanges.subscribe((name) => {
-      if (!this.editingProduct()) {
-        const slug = generateSlug(name || '');
-        this.productForm.patchValue({ slug });
-      }
-    });
-  }
-
   openCreateForm(): void {
     this.editingProduct.set(null);
-    this.productImages.set([]);
-    this.productForm.reset({
-      name: '',
-      slug: '',
-      description: '',
-      currency: 'USD',
-      stock: 0,
-      price: 0,
-      categoryId: '',
-      imageUrls: '',
-      featured: false,
-      sellerId: '',
-    });
     this.showForm.set(true);
   }
 
   openEditForm(product: Product): void {
     this.editingProduct.set(product);
-    this.productImages.set([...product.imageUrls]);
-    this.productForm.patchValue({
-      name: product.name,
-      slug: product.slug,
-      description: product.description,
-      price: product.price,
-      stock: product.stock ?? 0,
-      currency: product.currency,
-      categoryId: product.categoryIds.length > 0 ? product.categoryIds[0] : '',
-      imageUrls: product.imageUrls.join(', '),
-      featured: product.featured ?? false,
-      sellerId: product.sellerId,
-    });
     this.showForm.set(true);
   }
 
@@ -174,12 +107,6 @@ export class AdminProductsComponent implements OnInit {
     this.showForm.set(false);
     this.editingProduct.set(null);
     this.formError.set(null);
-    this.productImages.set([]);
-    this.productForm.reset({
-      currency: 'USD',
-      stock: 0,
-      price: 0,
-    });
   }
 
   onSearchChange(term: string): void {
@@ -208,30 +135,20 @@ export class AdminProductsComponent implements OnInit {
     this.loadInitialProducts();
   }
 
-  saveProduct(): void {
-    if (this.productForm.invalid) {
-      return;
-    }
-
-    const formValue = this.productForm.value;
-    const imageUrls = this.productImages();
-
-    const sellerId = formValue.sellerId ?? '';
-    const slug = (formValue.slug ?? '').trim().toLowerCase();
-
+  saveProduct(formData: AdminProductFormData): void {
     const productData: Partial<Product> = {
-      name: formValue.name,
-      slug,
-      description: formValue.description,
-      price: formValue.price,
-      stock: formValue.stock,
-      currency: formValue.currency,
-      categoryIds: formValue.categoryId ? [formValue.categoryId] : [],
-      sellerId,
-      imageUrls,
-      featured: formValue.featured ?? false,
+      name: formData.name,
+      slug: formData.slug,
+      description: formData.description,
+      price: formData.price,
+      stock: formData.stock,
+      currency: formData.currency,
+      categoryIds: formData.categoryId ? [formData.categoryId] : [],
+      sellerId: formData.sellerId,
+      imageUrls: formData.imageUrls,
+      featured: formData.featured,
       seller: {
-        id: sellerId,
+        id: formData.sellerId,
         displayName: '',
         email: '',
         companyName: null,
@@ -295,13 +212,4 @@ export class AdminProductsComponent implements OnInit {
     });
   }
 
-  onProductImagesChange(images: string[]): void {
-    this.productImages.set(images);
-  }
-
-  manuallyGenerateSlug(): void {
-    const name = this.productForm.get('name')?.value || '';
-    const slug = generateSlug(name);
-    this.productForm.patchValue({ slug });
-  }
 }

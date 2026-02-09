@@ -1,9 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, input, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
 
 import { Category } from '../../../../core/models/category.model';
-import { CategoriesService } from '../../../../core/services/categories.service';
 import { BadgeComponent } from '../../badge/badge.component';
 
 export type CardVariant = 'horizontal' | 'vertical';
@@ -24,11 +23,5 @@ export class CategoryCardComponent {
   category = input.required<Category>();
   variant = input<CardVariant>(CARD_VARIANT.VERTICAL);
   index = input<number>(0);
-
-  private readonly categoriesService = inject(CategoriesService);
-
-  protected readonly categoryUrl = computed(() => {
-    const cat = this.category();
-    return this.categoriesService.buildCategoryUrl(cat.id);
-  });
+  categoryUrl = input.required<string>();
 }

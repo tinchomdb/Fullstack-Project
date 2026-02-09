@@ -1,0 +1,76 @@
+<form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+  <app-form-field
+    [control]="control('name')"
+    [id]="'name'"
+    [label]="'Category Name'"
+    [fullWidth]="true"
+    [errorMessage]="'Category name is required (min 2 characters)'"
+  />
+
+  <div class="slug-field-wrapper">
+    <app-form-field
+      [control]="control('slug')"
+      [id]="'slug'"
+      [label]="'Slug'"
+      [fullWidth]="true"
+      [errorMessage]="'Slug is required (lowercase letters, numbers, and hyphens only)'"
+    />
+    <app-button
+      type="button"
+      (click)="manuallyGenerateSlug()"
+      variant="secondary"
+      shape="rounded"
+      class="slug-generate-btn"
+      title="Generate slug from name"
+    >
+      Generate
+    </app-button>
+  </div>
+
+  <app-form-field
+    [control]="control('description')"
+    [id]="'description'"
+    [label]="'Description'"
+    [type]="'textarea'"
+    [fullWidth]="true"
+    [errorMessage]="''"
+  />
+
+  <app-form-field
+    [control]="control('image')"
+    [id]="'image'"
+    [label]="'Image URL'"
+    [fullWidth]="true"
+    [errorMessage]="''"
+  />
+
+  <app-form-checkbox
+    [control]="control('featured')"
+    [id]="'featured'"
+    [label]="'Mark as Featured'"
+    [subtitle]="'Featured categories will be highlighted on the homepage'"
+  />
+
+  <app-form-field
+    [control]="control('parentCategoryId')"
+    [id]="'parentCategoryId'"
+    [label]="'Parent Category'"
+    [type]="'select'"
+    [fullWidth]="true"
+    [errorMessage]="''"
+  >
+    <option value="">None (Top-level category)</option>
+    @for (category of availableParentCategories(); track category.id) {
+      <option [value]="category.id">{{ category.name }}</option>
+    }
+  </app-form-field>
+
+  <div class="form-actions">
+    <app-button type="button" (click)="onCancel()" variant="secondary" shape="rounded">
+      Cancel
+    </app-button>
+    <app-button type="submit" [disabled]="categoryForm.invalid || loading()" shape="rounded">
+      {{ editingCategory() ? 'Update' : 'Create' }} Category
+    </app-button>
+  </div>
+</form>

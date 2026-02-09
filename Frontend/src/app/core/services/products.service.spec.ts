@@ -135,10 +135,4 @@ describe('ProductsService', () => {
     reloadReq.flush({ items: [], totalCount: 0, page: 1, pageSize: 20, totalPages: 0 });
   });
 
-  it('should build product URL', () => {
-    const product = {
-      slug: 'my-product',
-    } as any;
-    expect(service.buildProductUrl(product)).toBe('/products/my-product');
-  });
 });

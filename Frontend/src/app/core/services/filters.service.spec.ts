@@ -144,4 +144,20 @@ describe('FiltersService', () => {
     service.setAllFilters({ page: -1 });
     expect(service.page()).toBe(1);
   });
+
+  it('should compute currentSortValue from current sort option', () => {
+    expect(service.currentSortValue()).toBe(DEFAULT_SORT_OPTION.value);
+  });
+
+  it('should set sort by value', () => {
+    const target = SORT_OPTIONS[1];
+    service.setSortByValue(target.value);
+    expect(service.currentSortOption()).toEqual(target);
+    expect(service.currentSortValue()).toBe(target.value);
+  });
+
+  it('should not change sort when value is invalid', () => {
+    service.setSortByValue('nonexistent-value');
+    expect(service.currentSortOption()).toEqual(DEFAULT_SORT_OPTION);
+  });
 });

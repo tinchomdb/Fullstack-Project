@@ -6,7 +6,12 @@
   <div class="categories-grid" [class]="gridClass()">
     @for (category of categories(); track category.id; let i = $index) {
       <div class="grid-item">
-        <app-category-card [category]="category" [variant]="cardVariants()[i]" [index]="i" />
+        <app-category-card
+          [category]="category"
+          [variant]="cardVariants()[i]"
+          [index]="i"
+          [categoryUrl]="category.url"
+        />
       </div>
     }
   </div>

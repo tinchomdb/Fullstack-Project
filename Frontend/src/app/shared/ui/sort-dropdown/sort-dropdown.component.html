@@ -1,6 +1,6 @@
 <app-dropdown
-  [options]="sortOptions"
-  [selectedValue]="currentSortValue()"
+  [options]="options()"
+  [selectedValue]="currentValue()"
   placeholder="Sort by: "
   (selectionChange)="onSortChange($event)"
   class="sort-dropdown"

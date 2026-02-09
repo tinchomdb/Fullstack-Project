@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
 import { AdminCategoriesComponent } from './admin-categories.component';
 import { CategoriesService, CategoryTreeNode } from '../../../core/services/categories.service';
 import { Category } from '../../../core/models/category.model';
+import { AdminCategoryFormData } from './admin-category-form/admin-category-form.component';
 
 describe('AdminCategoriesComponent', () => {
   let component: AdminCategoriesComponent;
@@ -20,10 +20,20 @@ describe('AdminCategoriesComponent', () => {
       featured: true,
       subcategoryIds: [],
       type: 'Category',
+      url: '/category/electronics',
     },
   ];
 
   const mockTree: CategoryTreeNode[] = [{ category: mockCategories[0], children: [], level: 0 }];
+
+  const validFormData: AdminCategoryFormData = {
+    name: 'Books',
+    slug: 'books',
+    description: '',
+    image: '',
+    featured: false,
+    parentCategoryId: '',
+  };
 
   beforeEach(() => {
     categoriesService = jasmine.createSpyObj(
@@ -50,7 +60,7 @@ describe('AdminCategoriesComponent', () => {
     categoriesService.getParentCategoryName.and.returnValue('None');
 
     TestBed.configureTestingModule({
-      imports: [AdminCategoriesComponent, ReactiveFormsModule],
+      imports: [AdminCategoriesComponent],
       providers: [{ provide: CategoriesService, useValue: categoriesService }],
     }).overrideComponent(AdminCategoriesComponent, {
       set: { template: '' },
@@ -65,12 +75,6 @@ describe('AdminCategoriesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should initialize form on init', () => {
-    expect(component.categoryForm).toBeDefined();
-    expect(component.categoryForm.get('name')).toBeTruthy();
-    expect(component.categoryForm.get('slug')).toBeTruthy();
-  });
-
   describe('openCreateForm', () => {
     it('should show form and reset editing', () => {
       component.openCreateForm();
@@ -80,12 +84,10 @@ describe('AdminCategoriesComponent', () => {
   });
 
   describe('openEditForm', () => {
-    it('should populate form with category data', () => {
+    it('should set editing category and show form', () => {
       component.openEditForm(mockCategories[0]);
       expect(component.showForm()).toBe(true);
       expect(component.editingCategory()).toEqual(mockCategories[0]);
-      expect(component.categoryForm.get('name')?.value).toBe('Electronics');
-      expect(component.categoryForm.get('slug')?.value).toBe('electronics');
     });
   });
 
@@ -99,33 +101,21 @@ describe('AdminCategoriesComponent', () => {
   });
 
   describe('saveCategory', () => {
-    it('should not save when form is invalid', () => {
+    it('should create new category with form data', () => {
       component.openCreateForm();
-      component.saveCategory();
-      expect(categoriesService.createCategory).not.toHaveBeenCalled();
-    });
-
-    it('should create new category with valid form', () => {
-      component.openCreateForm();
-      component.categoryForm.patchValue({
-        name: 'Books',
-        slug: 'books',
-      });
-      component.saveCategory();
+      component.saveCategory(validFormData);
       expect(categoriesService.createCategory).toHaveBeenCalled();
     });
 
     it('should update existing category', () => {
       component.openEditForm(mockCategories[0]);
-      component.categoryForm.patchValue({ name: 'Updated' });
-      component.saveCategory();
+      component.saveCategory({ ...validFormData, name: 'Updated' });
       expect(categoriesService.updateCategory).toHaveBeenCalled();
     });
 
     it('should close form after successful create', () => {
       component.openCreateForm();
-      component.categoryForm.patchValue({ name: 'Books', slug: 'books' });
-      component.saveCategory();
+      component.saveCategory(validFormData);
       expect(component.showForm()).toBe(false);
     });
 
@@ -133,8 +123,7 @@ describe('AdminCategoriesComponent', () => {
       spyOn(console, 'error');
       categoriesService.createCategory.and.returnValue(throwError(() => new Error('fail')));
       component.openCreateForm();
-      component.categoryForm.patchValue({ name: 'Books', slug: 'books' });
-      component.saveCategory();
+      component.saveCategory(validFormData);
       expect(console.error).toHaveBeenCalled();
     });
   });
@@ -150,14 +139,6 @@ describe('AdminCategoriesComponent', () => {
       spyOn(window, 'confirm').and.returnValue(false);
       component.deleteCategory(mockCategories[0]);
       expect(categoriesService.deleteCategory).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('manuallyGenerateSlug', () => {
-    it('should generate slug from name', () => {
-      component.categoryForm.patchValue({ name: 'My Category' });
-      component.manuallyGenerateSlug();
-      expect(component.categoryForm.get('slug')?.value).toBe('my-category');
     });
   });
 
