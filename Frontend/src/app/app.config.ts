@@ -6,7 +6,12 @@ import {
   inject,
 } from '@angular/core';
 import { IMAGE_CONFIG } from '@angular/common';
-import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+  withInterceptors,
+  HTTP_INTERCEPTORS,
+} from '@angular/common/http';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 
 import { routes } from './app.routes';
@@ -22,13 +27,13 @@ import {
 } from '@azure/msal-angular';
 import { PublicClientApplication, InteractionType } from '@azure/msal-browser';
 import { msalConfig, loginRequest, protectedResourceMap } from './core/auth/auth-config';
-import { GuestAuthInterceptor } from './core/auth/guest-auth.interceptor';
+import { guestAuthInterceptor } from './core/auth/guest-auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withInterceptorsFromDi(), withInterceptors([guestAuthInterceptor])),
     provideRouter(routes, withComponentInputBinding()),
     {
       provide: IMAGE_CONFIG,
@@ -41,11 +46,6 @@ export const appConfig: ApplicationConfig = {
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MsalInterceptor,
-      multi: true,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: GuestAuthInterceptor,
       multi: true,
     },
     {

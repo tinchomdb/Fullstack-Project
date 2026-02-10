@@ -1,6 +1,8 @@
 using Api.DTOs;
+using Api.Extensions;
 using Api.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Api.Controllers;
 
@@ -19,7 +21,9 @@ public sealed class GuestAuthController(
     /// </summary>
     /// <returns>A short-lived JWT token for guest access.</returns>
     [HttpPost("guest-token")]
+    [EnableRateLimiting(RateLimitingExtensions.GuestTokenPolicy)]
     [ProducesResponseType(typeof(GuestTokenResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     public ActionResult<GuestTokenResponse> GetGuestToken()
     {
         var token = _jwtTokenService.GenerateGuestToken();

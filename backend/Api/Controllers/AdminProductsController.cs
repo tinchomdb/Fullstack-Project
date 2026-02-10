@@ -1,3 +1,4 @@
+using Api.Authentication;
 using Api.DTOs;
 using Application.Repositories;
 using Domain.Entities;
@@ -8,7 +9,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/admin/products")]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = AuthConstants.AdminRole)]
 public sealed class AdminProductsController(IProductsRepository repository) : ControllerBase
 {
     private readonly IProductsRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));

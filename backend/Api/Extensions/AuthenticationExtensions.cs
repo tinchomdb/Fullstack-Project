@@ -59,7 +59,7 @@ public static class AuthenticationExtensions
         });
 
         // Add support for guest JWT tokens
-        authBuilder.AddJwtBearer("GuestScheme", options =>
+        authBuilder.AddJwtBearer(AuthConstants.GuestScheme, options =>
         {
             options.TokenValidationParameters = new TokenValidationParameters
             {
@@ -100,19 +100,10 @@ public static class AuthenticationExtensions
         // Configure authorization policies
         services.AddAuthorization(options =>
         {
-            // Policy for endpoints that accept both authenticated users and guests
-            options.AddPolicy("GuestOrAuthenticated", policy =>
-            {
-                policy.AddAuthenticationSchemes(
-                    JwtBearerDefaults.AuthenticationScheme,
-                    "GuestScheme");
-                policy.RequireAuthenticatedUser();
-            });
-
             // Policy for guest-only endpoints
-            options.AddPolicy("GuestOnly", policy =>
+            options.AddPolicy(AuthConstants.GuestOnlyPolicy, policy =>
             {
-                policy.AddAuthenticationSchemes("GuestScheme");
+                policy.AddAuthenticationSchemes(AuthConstants.GuestScheme);
                 policy.RequireAuthenticatedUser();
                 policy.AddRequirements(new GuestOnlyRequirement());
             });

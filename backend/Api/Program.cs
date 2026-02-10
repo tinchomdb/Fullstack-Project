@@ -9,6 +9,7 @@ builder.Services.AddCaching(builder.Configuration);
 builder.Services.DecorateRepositoriesWithCaching();
 builder.Services.AddJwtTokenService(builder.Configuration);
 builder.Services.AddAuthenticationAndAuthorization(builder.Configuration);
+builder.Services.AddRateLimiting();
 builder.Services.AddCorsPolicy(builder.Configuration);
 builder.Services.AddSwagger();
 builder.Services.AddControllersWithOptions();

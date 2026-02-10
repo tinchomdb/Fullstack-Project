@@ -1,3 +1,4 @@
+using Api.Authentication;
 using Api.Extensions;
 using Application.DTOs;
 using Application.Exceptions;
@@ -27,7 +28,7 @@ public sealed class CartsController(
     }
 
     [HttpGet("guest-cart")]
-    [Authorize(Policy = "GuestOnly")]
+    [Authorize(Policy = AuthConstants.GuestOnlyPolicy)]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<CartResponse>> GetGuestCart(CancellationToken cancellationToken)
@@ -149,7 +150,7 @@ public sealed class CartsController(
     // ============= GUEST USER ENDPOINTS (MODIFIED) =============
 
     [HttpPost("guest-cart/items")]
-    [Authorize(Policy = "GuestOnly")]
+    [Authorize(Policy = AuthConstants.GuestOnlyPolicy)]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -182,7 +183,7 @@ public sealed class CartsController(
     }
 
     [HttpPatch("guest-cart/items/{productId}")]
-    [Authorize(Policy = "GuestOnly")]
+    [Authorize(Policy = AuthConstants.GuestOnlyPolicy)]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -222,7 +223,7 @@ public sealed class CartsController(
     }
 
     [HttpDelete("guest-cart/items/{productId}")]
-    [Authorize(Policy = "GuestOnly")]
+    [Authorize(Policy = AuthConstants.GuestOnlyPolicy)]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -245,7 +246,7 @@ public sealed class CartsController(
     }
 
     [HttpDelete("guest-cart")]
-    [Authorize(Policy = "GuestOnly")]
+    [Authorize(Policy = AuthConstants.GuestOnlyPolicy)]
     [ProducesResponseType(typeof(CartResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<CartResponse>> ClearGuestCart(CancellationToken cancellationToken)

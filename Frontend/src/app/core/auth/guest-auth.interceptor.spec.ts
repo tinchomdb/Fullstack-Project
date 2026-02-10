@@ -1,16 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import {
-  HTTP_INTERCEPTORS,
-  provideHttpClient,
-  withInterceptorsFromDi,
-  HttpClient,
-} from '@angular/common/http';
-import { of, throwError } from 'rxjs';
-import { GuestAuthInterceptor } from './guest-auth.interceptor';
+import { provideHttpClient, withInterceptors, HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
+import { guestAuthInterceptor } from './guest-auth.interceptor';
 import { GuestAuthService } from './guest-auth.service';
 
-describe('GuestAuthInterceptor', () => {
+describe('guestAuthInterceptor', () => {
   let httpMock: HttpTestingController;
   let httpClient: HttpClient;
   let guestAuthSpy: jasmine.SpyObj<GuestAuthService>;
@@ -21,10 +16,9 @@ describe('GuestAuthInterceptor', () => {
 
     TestBed.configureTestingModule({
       providers: [
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withInterceptors([guestAuthInterceptor])),
         provideHttpClientTesting(),
         { provide: GuestAuthService, useValue: guestAuthSpy },
-        { provide: HTTP_INTERCEPTORS, useClass: GuestAuthInterceptor, multi: true },
       ],
     });
 
@@ -65,8 +59,8 @@ describe('GuestAuthInterceptor', () => {
     retryReq.flush({});
   });
 
-  it('should propagate non-401 errors', () => {
-    spyOn(console, 'error');
+  it('should propagate non-401 errors without logging auth error', () => {
+    const consoleSpy = spyOn(console, 'error');
     httpClient.get('/api/carts/guest-cart').subscribe({
       error: (err) => {
         expect(err.status).toBe(500);
@@ -75,5 +69,22 @@ describe('GuestAuthInterceptor', () => {
 
     const req = httpMock.expectOne('/api/carts/guest-cart');
     req.flush('Server Error', { status: 500, statusText: 'Internal Server Error' });
+    expect(consoleSpy).not.toHaveBeenCalled();
+  });
+
+  it('should propagate 409 conflict errors without logging auth error', () => {
+    const consoleSpy = spyOn(console, 'error');
+    httpClient.post('/api/carts/guest-cart/items', {}).subscribe({
+      error: (err) => {
+        expect(err.status).toBe(409);
+      },
+    });
+
+    const req = httpMock.expectOne('/api/carts/guest-cart/items');
+    req.flush(
+      { error: 'Insufficient stock', requestedQuantity: 29, availableStock: 28 },
+      { status: 409, statusText: 'Conflict' },
+    );
+    expect(consoleSpy).not.toHaveBeenCalled();
   });
 });

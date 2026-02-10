@@ -1,3 +1,4 @@
+using Api.Authentication;
 using Api.DTOs;
 using Application.Repositories;
 using Domain.Entities;
@@ -8,7 +9,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/admin/slides")]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = AuthConstants.AdminRole)]
 public sealed class AdminCarouselSlidesController(ICarouselSlidesRepository repository) : ControllerBase
 {
     private readonly ICarouselSlidesRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));

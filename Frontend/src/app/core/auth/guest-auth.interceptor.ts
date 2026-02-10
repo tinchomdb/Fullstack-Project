@@ -1,62 +1,42 @@
-import { Injectable, inject } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor,
-  HttpErrorResponse,
-} from '@angular/common/http';
+import { inject } from '@angular/core';
+import { HttpRequest, HttpHandlerFn, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { Observable, switchMap, catchError, throwError } from 'rxjs';
 import { GuestAuthService } from './guest-auth.service';
 
-@Injectable()
-export class GuestAuthInterceptor implements HttpInterceptor {
-  private readonly guestAuthService = inject(GuestAuthService);
-
-  intercept(req: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    if (!this.isGuestCartRequest(req)) {
-      return next.handle(req);
-    }
-
-    return this.guestAuthService.ensureGuestToken().pipe(
-      switchMap((token) => this.handleRequest(req, token, next)),
-      catchError((error) => {
-        console.error('Guest auth token request failed:', error);
-        return throwError(() => error);
-      }),
-    );
+export function guestAuthInterceptor(
+  req: HttpRequest<unknown>,
+  next: HttpHandlerFn,
+): Observable<HttpEvent<unknown>> {
+  if (!req.url.includes('/api/carts/guest-cart')) {
+    return next(req);
   }
 
-  private handleRequest(
-    req: HttpRequest<unknown>,
-    token: string,
-    next: HttpHandler,
-  ): Observable<HttpEvent<unknown>> {
-    const authReq = this.addAuthHeader(req, token);
-    return next.handle(authReq).pipe(
-      catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
-          return this.guestAuthService.getNewToken().pipe(
-            switchMap((newToken) => {
-              const retryReq = this.addAuthHeader(req, newToken);
-              return next.handle(retryReq);
-            }),
-          );
-        }
-        return throwError(() => error);
-      }),
-    );
-  }
+  const guestAuthService = inject(GuestAuthService);
 
-  private addAuthHeader(req: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
-    return req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-  }
-
-  private isGuestCartRequest(req: HttpRequest<unknown>): boolean {
-    return req.url.includes('/api/carts/guest-cart');
-  }
+  return guestAuthService.ensureGuestToken().pipe(
+    catchError((error) => {
+      console.error('Guest auth token request failed:', error);
+      return throwError(() => error);
+    }),
+    switchMap((token) => {
+      const authReq = req.clone({
+        setHeaders: { Authorization: `Bearer ${token}` },
+      });
+      return next(authReq).pipe(
+        catchError((error: HttpErrorResponse) => {
+          if (error.status === 401) {
+            return guestAuthService.getNewToken().pipe(
+              switchMap((newToken) => {
+                const retryReq = req.clone({
+                  setHeaders: { Authorization: `Bearer ${newToken}` },
+                });
+                return next(retryReq);
+              }),
+            );
+          }
+          return throwError(() => error);
+        }),
+      );
+    }),
+  );
 }

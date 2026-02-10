@@ -1,3 +1,4 @@
+using Api.Authentication;
 using Api.DTOs;
 using Application.Repositories;
 using Domain.Entities;
@@ -8,7 +9,7 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/admin/categories")]
-[Authorize(Roles = "admin")]
+[Authorize(Roles = AuthConstants.AdminRole)]
 public sealed class AdminCategoriesController(ICategoriesRepository repository) : ControllerBase
 {
     private readonly ICategoriesRepository _repository = repository ?? throw new ArgumentNullException(nameof(repository));

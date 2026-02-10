@@ -18,6 +18,9 @@ public static class MiddlewareExtensions
         // CORS
         app.UseCorsPolicy();
 
+        // Security headers
+        app.UseSecurityHeaders();
+
         // Forwarded headers
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
@@ -34,6 +37,9 @@ public static class MiddlewareExtensions
         // Authentication must come before Authorization
         app.UseAuthentication();
         app.UseAuthorization();
+
+        // Rate limiting
+        app.UseApiRateLimiting();
 
         // Map controllers
         app.MapControllers();
