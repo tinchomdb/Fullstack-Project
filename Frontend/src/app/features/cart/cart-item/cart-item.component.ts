@@ -18,11 +18,16 @@ export class CartItemComponent {
   item = input.required<CartItem>();
   currency = input.required<string>();
 
-  quantityChange = output<number>();
+  increase = output<void>();
+  decrease = output<void>();
   remove = output<void>();
 
-  onQuantityChange(newQuantity: number): void {
-    this.quantityChange.emit(newQuantity);
+  onIncrease(): void {
+    this.increase.emit();
+  }
+
+  onDecrease(): void {
+    this.decrease.emit();
   }
 
   onRemove(): void {

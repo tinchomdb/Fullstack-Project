@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Api.Controllers;
 using Api.Tests.Helpers;
 using Application.DTOs;
+using Application.Exceptions;
 using Application.Services;
 using Domain.Entities;
 using Microsoft.AspNetCore.Http;
@@ -135,6 +136,23 @@ public class CartsControllerTests
         Assert.IsType<BadRequestObjectResult>(result.Result);
     }
 
+    [Fact]
+    public async Task AddItemToMyCart_WhenInsufficientStock_ReturnsConflict()
+    {
+        // Arrange
+        SetupAuthenticatedUser("user-1");
+        var request = new AddToCartRequest { ProductId = "p1", SellerId = "s1", Quantity = 10 };
+        _mockCartService
+            .Setup(s => s.AddItemToCartAsync("user-1", request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InsufficientStockException(10, 5));
+
+        // Act
+        var result = await _controller.AddItemToMyCart(request, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<ConflictObjectResult>(result.Result);
+    }
+
     // ===== UpdateMyCartItem =====
 
     [Fact]
@@ -185,6 +203,23 @@ public class CartsControllerTests
 
         // Assert
         Assert.IsType<NotFoundObjectResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task UpdateMyCartItem_WhenInsufficientStock_ReturnsConflict()
+    {
+        // Arrange
+        SetupAuthenticatedUser("user-1");
+        var request = new UpdateCartItemRequest { ProductId = "p1", SellerId = "s1", Quantity = 20 };
+        _mockCartService
+            .Setup(s => s.UpdateCartItemAsync("user-1", request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InsufficientStockException(20, 10));
+
+        // Act
+        var result = await _controller.UpdateMyCartItem("p1", request, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<ConflictObjectResult>(result.Result);
     }
 
     // ===== RemoveItemFromMyCart =====
@@ -282,6 +317,23 @@ public class CartsControllerTests
     }
 
     [Fact]
+    public async Task AddItemToGuestCart_WhenInsufficientStock_ReturnsConflict()
+    {
+        // Arrange
+        SetupGuestUser("guest-1");
+        var request = new AddToCartRequest { ProductId = "p1", SellerId = "s1", Quantity = 10 };
+        _mockCartService
+            .Setup(s => s.AddItemToCartAsync("guest-1", request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InsufficientStockException(10, 5));
+
+        // Act
+        var result = await _controller.AddItemToGuestCart(request, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<ConflictObjectResult>(result.Result);
+    }
+
+    [Fact]
     public async Task UpdateGuestCartItem_WithMismatchedProductId_ReturnsBadRequest()
     {
         // Arrange
@@ -293,6 +345,23 @@ public class CartsControllerTests
 
         // Assert
         Assert.IsType<BadRequestObjectResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task UpdateGuestCartItem_WhenInsufficientStock_ReturnsConflict()
+    {
+        // Arrange
+        SetupGuestUser("guest-1");
+        var request = new UpdateCartItemRequest { ProductId = "p1", SellerId = "s1", Quantity = 20 };
+        _mockCartService
+            .Setup(s => s.UpdateCartItemAsync("guest-1", request, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new InsufficientStockException(20, 10));
+
+        // Act
+        var result = await _controller.UpdateGuestCartItem("p1", request, CancellationToken.None);
+
+        // Assert
+        Assert.IsType<ConflictObjectResult>(result.Result);
     }
 
     [Fact]

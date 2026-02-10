@@ -38,8 +38,12 @@ export class ProductDetailComponent {
     });
   }
 
-  protected onQuantityChange(newQuantity: number): void {
-    this.quantity.set(newQuantity);
+  protected increaseQuantity(): void {
+    this.quantity.update((q) => q + 1);
+  }
+
+  protected decreaseQuantity(): void {
+    this.quantity.update((q) => (q > 1 ? q - 1 : q));
   }
 
   protected addToCart(): void {

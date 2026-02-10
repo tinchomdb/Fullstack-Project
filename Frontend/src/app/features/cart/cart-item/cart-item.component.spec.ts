@@ -41,10 +41,16 @@ describe('CartItemComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should emit quantityChange', () => {
-    spyOn(component.quantityChange, 'emit');
-    component.onQuantityChange(4);
-    expect(component.quantityChange.emit).toHaveBeenCalledWith(4);
+  it('should emit increase', () => {
+    spyOn(component.increase, 'emit');
+    component.onIncrease();
+    expect(component.increase.emit).toHaveBeenCalled();
+  });
+
+  it('should emit decrease', () => {
+    spyOn(component.decrease, 'emit');
+    component.onDecrease();
+    expect(component.decrease.emit).toHaveBeenCalled();
   });
 
   it('should emit remove', () => {

@@ -48,8 +48,16 @@ export class CartComponent {
     this.router.navigate(['/products']);
   }
 
-  updateQuantity(productId: string, quantity: number): void {
-    this.cartService.updateQuantity(productId, quantity);
+  increaseQuantity(productId: string): void {
+    const item = this.cart()?.items.find((i) => i.productId === productId);
+    if (!item) return;
+    this.cartService.updateQuantity(productId, item.quantity + 1);
+  }
+
+  decreaseQuantity(productId: string): void {
+    const item = this.cart()?.items.find((i) => i.productId === productId);
+    if (!item || item.quantity <= 1) return;
+    this.cartService.updateQuantity(productId, item.quantity - 1);
   }
 
   removeItem(productId: string): void {

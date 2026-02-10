@@ -11,7 +11,8 @@
         [product]="prod"
         [quantity]="quantity()"
         [addingToCart]="addingToCart()"
-        (quantityChange)="onQuantityChange($event)"
+        (quantityIncrease)="increaseQuantity()"
+        (quantityDecrease)="decreaseQuantity()"
         (addToCart)="addToCart()"
         (buyNow)="buyNow()"
       />

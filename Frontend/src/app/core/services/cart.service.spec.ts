@@ -1,10 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
 import { signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CartService } from './cart.service';
 import { AuthService } from '../auth/auth.service';
 import { GuestAuthService } from '../auth/guest-auth.service';
 import { LoadingOverlayService } from './loading-overlay.service';
+import { AlertService } from './alert.service';
 import { CartApiService } from './cart-api.service';
 import { OrderStateService } from './order-state.service';
 import { Cart } from '../models/cart.model';
@@ -15,6 +17,7 @@ describe('CartService', () => {
   let service: CartService;
   let cartApiSpy: jasmine.SpyObj<CartApiService>;
   let orderStateSpy: jasmine.SpyObj<OrderStateService>;
+  let alertServiceSpy: jasmine.SpyObj<AlertService>;
   let authIsLoggedIn: ReturnType<typeof signal<boolean>>;
   let authInitialized: ReturnType<typeof signal<boolean>>;
   let guestHasToken: ReturnType<typeof signal<boolean>>;
@@ -62,6 +65,7 @@ describe('CartService', () => {
     cartApiSpy.migrateGuestCart.and.returnValue(of({ message: 'ok' }));
 
     orderStateSpy = jasmine.createSpyObj('OrderStateService', ['setLastOrder']);
+    alertServiceSpy = jasmine.createSpyObj('AlertService', ['show']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -84,6 +88,7 @@ describe('CartService', () => {
         },
         { provide: CartApiService, useValue: cartApiSpy },
         { provide: OrderStateService, useValue: orderStateSpy },
+        { provide: AlertService, useValue: alertServiceSpy },
         {
           provide: LoadingOverlayService,
           useValue: { show: jasmine.createSpy(), hide: jasmine.createSpy() },
@@ -150,5 +155,48 @@ describe('CartService', () => {
   it('should set cartReady to true after loadCart succeeds', () => {
     service.loadCart();
     expect(service.cartReady()).toBeTrue();
+  });
+
+  it('should show alert when addToCart gets 409 insufficient stock', () => {
+    const errorResponse = new HttpErrorResponse({
+      status: 409,
+      error: { error: 'Insufficient stock', requestedQuantity: 10, availableStock: 5 },
+    });
+    cartApiSpy.addToCart.and.returnValue(throwError(() => errorResponse));
+    const product = { id: 'p1', seller: { id: 's1' } } as Product;
+
+    service.addToCart(product, 10);
+
+    expect(alertServiceSpy.show).toHaveBeenCalledWith(
+      'Not enough stock available. Only 5 item(s) in stock.',
+    );
+  });
+
+  it('should show alert when updateQuantity gets 409 insufficient stock', () => {
+    // First load a cart so updateQuantity can find the item
+    cartApiSpy.getActiveCart.and.returnValue(of(mockCart));
+    service.loadCart();
+
+    const errorResponse = new HttpErrorResponse({
+      status: 409,
+      error: { error: 'Insufficient stock', requestedQuantity: 10, availableStock: 2 },
+    });
+    cartApiSpy.updateQuantity.and.returnValue(throwError(() => errorResponse));
+
+    service.updateQuantity('p1', 10);
+
+    expect(alertServiceSpy.show).toHaveBeenCalledWith(
+      'Not enough stock available. Only 2 item(s) in stock.',
+    );
+  });
+
+  it('should not show alert for non-409 errors', () => {
+    const errorResponse = new HttpErrorResponse({ status: 500 });
+    cartApiSpy.addToCart.and.returnValue(throwError(() => errorResponse));
+    const product = { id: 'p1', seller: { id: 's1' } } as Product;
+
+    service.addToCart(product, 1);
+
+    expect(alertServiceSpy.show).not.toHaveBeenCalled();
   });
 });

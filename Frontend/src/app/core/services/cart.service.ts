@@ -1,5 +1,6 @@
 import { inject, Injectable, computed, effect, untracked, signal } from '@angular/core';
-import { map, Observable, tap, finalize } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, map, Observable, tap, throwError, finalize } from 'rxjs';
 
 import { Cart } from '../models/cart.model';
 import { Order } from '../models/order.model';
@@ -8,6 +9,7 @@ import { Product } from '../models/product.model';
 import { AuthService } from '../auth/auth.service';
 import { GuestAuthService } from '../auth/guest-auth.service';
 import { LoadingOverlayService } from './loading-overlay.service';
+import { AlertService } from './alert.service';
 import { CartApiService, type ValidateCheckoutResponse } from './cart-api.service';
 import { OrderStateService } from './order-state.service';
 
@@ -19,6 +21,7 @@ export class CartService {
   private readonly authService = inject(AuthService);
   private readonly guestAuthService = inject(GuestAuthService);
   private readonly loadingOverlayService = inject(LoadingOverlayService);
+  private readonly alertService = inject(AlertService);
   private readonly cartApi = inject(CartApiService);
   private readonly orderState = inject(OrderStateService);
 
@@ -77,11 +80,13 @@ export class CartService {
 
   addToCart(product: Product, quantity: number = 1): void {
     this.cartResource.load(
-      this.cartApi.addToCart({
-        productId: product.id,
-        sellerId: product.seller.id,
-        quantity,
-      }),
+      this.cartApi
+        .addToCart({
+          productId: product.id,
+          sellerId: product.seller.id,
+          quantity,
+        })
+        .pipe(catchError((error) => this.handleStockError(error))),
       false,
     );
   }
@@ -95,11 +100,13 @@ export class CartService {
     if (!item) return;
 
     this.cartResource.load(
-      this.cartApi.updateQuantity({
-        productId,
-        sellerId: item.sellerId,
-        quantity,
-      }),
+      this.cartApi
+        .updateQuantity({
+          productId,
+          sellerId: item.sellerId,
+          quantity,
+        })
+        .pipe(catchError((error) => this.handleStockError(error))),
       false,
     );
   }
@@ -137,5 +144,19 @@ export class CartService {
         }),
       )
       .subscribe();
+  }
+
+  private handleStockError(error: unknown): Observable<never> {
+    if (error instanceof HttpErrorResponse && error.status === 409) {
+      const availableStock = error.error?.availableStock;
+      const message =
+        availableStock !== undefined
+          ? `Not enough stock available. Only ${availableStock} item(s) in stock.`
+          : 'This product is currently out of stock.';
+
+      this.alertService.show(message);
+    }
+
+    return throwError(() => error);
   }
 }

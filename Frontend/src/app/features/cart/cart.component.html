@@ -10,7 +10,8 @@
               <app-cart-item
                 [item]="item"
                 [currency]="cartData.currency"
-                (quantityChange)="updateQuantity(item.productId, $event)"
+                (increase)="increaseQuantity(item.productId)"
+                (decrease)="decreaseQuantity(item.productId)"
                 (remove)="removeItem(item.productId)"
                 data-testid="cart-item"
               />

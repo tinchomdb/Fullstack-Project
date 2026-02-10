@@ -17,7 +17,8 @@ export class ProductBuyBoxComponent {
   readonly quantity = input.required<number>();
   readonly addingToCart = input(false);
 
-  readonly quantityChange = output<number>();
+  readonly quantityIncrease = output<void>();
+  readonly quantityDecrease = output<void>();
   readonly addToCart = output<void>();
   readonly buyNow = output<void>();
 
@@ -42,8 +43,12 @@ export class ProductBuyBoxComponent {
     }).format(prod.price);
   });
 
-  protected onQuantityChange(newQuantity: number): void {
-    this.quantityChange.emit(newQuantity);
+  protected onQuantityIncrease(): void {
+    this.quantityIncrease.emit();
+  }
+
+  protected onQuantityDecrease(): void {
+    this.quantityDecrease.emit();
   }
 
   protected onAddToCart(): void {

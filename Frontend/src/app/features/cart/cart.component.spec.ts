@@ -101,9 +101,14 @@ describe('CartComponent', () => {
     expect(router.navigate).toHaveBeenCalledWith(['/products']);
   });
 
-  it('should update quantity via service', () => {
-    component.updateQuantity('p1', 5);
-    expect(cartService.updateQuantity).toHaveBeenCalledWith('p1', 5);
+  it('should increase quantity via service', () => {
+    component.increaseQuantity('p1');
+    expect(cartService.updateQuantity).toHaveBeenCalledWith('p1', 3);
+  });
+
+  it('should decrease quantity via service', () => {
+    component.decreaseQuantity('p1');
+    expect(cartService.updateQuantity).toHaveBeenCalledWith('p1', 1);
   });
 
   it('should remove item via service', () => {

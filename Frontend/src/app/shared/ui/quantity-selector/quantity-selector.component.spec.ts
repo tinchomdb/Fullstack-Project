@@ -6,16 +6,21 @@ import { QuantitySelectorComponent } from './quantity-selector.component';
   template: `<app-quantity-selector
     [quantity]="qty()"
     [maxStock]="maxStock"
-    (quantityChange)="onQtyChange($event)"
+    (increaseClick)="onIncrease()"
+    (decreaseClick)="onDecrease()"
   />`,
   imports: [QuantitySelectorComponent],
 })
 class TestHostComponent {
   qty = signal(3);
   maxStock: number | undefined = undefined;
-  lastQty = 0;
-  onQtyChange(q: number): void {
-    this.lastQty = q;
+  increased = false;
+  decreased = false;
+  onIncrease(): void {
+    this.increased = true;
+  }
+  onDecrease(): void {
+    this.decreased = true;
   }
 }
 
@@ -41,50 +46,42 @@ describe('QuantitySelectorComponent', () => {
     expect(getSelector()).toBeTruthy();
   });
 
-  it('should sync currentQuantity from input via effect', () => {
-    TestBed.flushEffects();
-    expect(getSelector()['currentQuantity']()).toBe(3);
+  it('should display quantity from input', () => {
+    expect(getSelector().quantity()).toBe(3);
   });
 
-  it('should increase quantity', () => {
-    TestBed.flushEffects();
+  it('should emit increaseClick when increase is called', () => {
     getSelector()['increase']();
-    expect(getSelector()['currentQuantity']()).toBe(4);
-    expect(host.lastQty).toBe(4);
+    expect(host.increased).toBeTrue();
   });
 
-  it('should decrease quantity', () => {
-    TestBed.flushEffects();
+  it('should emit decreaseClick when decrease is called', () => {
     getSelector()['decrease']();
-    expect(getSelector()['currentQuantity']()).toBe(2);
-    expect(host.lastQty).toBe(2);
+    expect(host.decreased).toBeTrue();
   });
 
-  it('should not decrease below 1', () => {
+  it('should not emit decreaseClick when quantity is 1', () => {
     host.qty.set(1);
     fixture.detectChanges();
-    TestBed.flushEffects();
 
     getSelector()['decrease']();
-    expect(getSelector()['currentQuantity']()).toBe(1);
+    expect(host.decreased).toBeFalse();
   });
 
-  it('should not increase beyond maxStock', () => {
+  it('should not emit increaseClick when at maxStock', () => {
     host.maxStock = 3;
     host.qty.set(3);
     fixture.detectChanges();
-    TestBed.flushEffects();
 
     getSelector()['increase']();
-    expect(getSelector()['currentQuantity']()).toBe(3);
+    expect(host.increased).toBeFalse();
   });
 
-  it('should allow increase when maxStock is undefined', () => {
+  it('should emit increaseClick when maxStock is undefined', () => {
     host.qty.set(100);
     fixture.detectChanges();
-    TestBed.flushEffects();
 
     getSelector()['increase']();
-    expect(getSelector()['currentQuantity']()).toBe(101);
+    expect(host.increased).toBeTrue();
   });
 });

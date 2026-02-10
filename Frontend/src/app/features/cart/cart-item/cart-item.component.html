@@ -11,7 +11,8 @@
     <div class="item-actions">
       <app-quantity-selector
         [quantity]="item().quantity"
-        (quantityChange)="onQuantityChange($event)"
+        (increaseClick)="onIncrease()"
+        (decreaseClick)="onDecrease()"
         data-testid="quantity-selector"
       />
       <app-button

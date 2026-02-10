@@ -100,10 +100,16 @@ describe('ProductBuyBoxComponent', () => {
   });
 
   describe('outputs', () => {
-    it('should emit quantityChange', () => {
-      spyOn(component.quantityChange, 'emit');
-      (component as any).onQuantityChange(3);
-      expect(component.quantityChange.emit).toHaveBeenCalledWith(3);
+    it('should emit quantityIncrease', () => {
+      spyOn(component.quantityIncrease, 'emit');
+      (component as any).onQuantityIncrease();
+      expect(component.quantityIncrease.emit).toHaveBeenCalled();
+    });
+
+    it('should emit quantityDecrease', () => {
+      spyOn(component.quantityDecrease, 'emit');
+      (component as any).onQuantityDecrease();
+      expect(component.quantityDecrease.emit).toHaveBeenCalled();
     });
 
     it('should emit addToCart', () => {

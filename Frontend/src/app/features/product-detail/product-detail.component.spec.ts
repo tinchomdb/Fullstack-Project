@@ -91,9 +91,21 @@ describe('ProductDetailComponent', () => {
     expect((component as any).loading()).toBe(false);
   });
 
-  it('should update quantity', () => {
-    (component as any).onQuantityChange(5);
-    expect((component as any).quantity()).toBe(5);
+  it('should increase quantity', () => {
+    (component as any).increaseQuantity();
+    expect((component as any).quantity()).toBe(2);
+  });
+
+  it('should decrease quantity', () => {
+    (component as any).quantity.set(3);
+    (component as any).decreaseQuantity();
+    expect((component as any).quantity()).toBe(2);
+  });
+
+  it('should not decrease quantity below 1', () => {
+    (component as any).quantity.set(1);
+    (component as any).decreaseQuantity();
+    expect((component as any).quantity()).toBe(1);
   });
 
   it('should add product to cart', fakeAsync(() => {

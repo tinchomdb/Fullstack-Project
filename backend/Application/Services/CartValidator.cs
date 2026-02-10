@@ -1,4 +1,5 @@
 using Application.DTOs;
+using Application.Exceptions;
 using Domain.Entities;
 
 namespace Application.Services;
@@ -48,8 +49,7 @@ public sealed class CartValidator
     {
         if (requestedQuantity > product.Stock)
         {
-            throw new InvalidOperationException(
-                $"Insufficient stock. Requested: {requestedQuantity}, Available: {product.Stock}");
+            throw new InsufficientStockException(requestedQuantity, product.Stock);
         }
     }
 

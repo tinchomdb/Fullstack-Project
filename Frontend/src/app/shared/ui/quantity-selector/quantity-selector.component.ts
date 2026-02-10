@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-quantity-selector',
@@ -11,30 +11,21 @@ export class QuantitySelectorComponent {
   readonly maxStock = input<number | undefined>(undefined);
   readonly disabled = input(false);
 
-  readonly quantityChange = output<number>();
-
-  protected readonly currentQuantity = signal(1);
-
-  constructor() {
-    effect(() => {
-      this.currentQuantity.set(this.quantity());
-    });
-  }
+  readonly increaseClick = output<void>();
+  readonly decreaseClick = output<void>();
 
   protected increase(): void {
     const max = this.maxStock();
-    const current = this.currentQuantity();
+    const current = this.quantity();
 
     if (max === undefined || current < max) {
-      this.currentQuantity.update((q) => q + 1);
-      this.quantityChange.emit(this.currentQuantity());
+      this.increaseClick.emit();
     }
   }
 
   protected decrease(): void {
-    if (this.currentQuantity() > 1) {
-      this.currentQuantity.update((q) => q - 1);
-      this.quantityChange.emit(this.currentQuantity());
+    if (this.quantity() > 1) {
+      this.decreaseClick.emit();
     }
   }
 }

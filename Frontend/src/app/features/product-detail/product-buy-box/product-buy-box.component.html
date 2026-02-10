@@ -21,7 +21,8 @@
       [quantity]="quantity()"
       [maxStock]="product().stock"
       [disabled]="addingToCart()"
-      (quantityChange)="onQuantityChange($event)"
+      (increaseClick)="onQuantityIncrease()"
+      (decreaseClick)="onQuantityDecrease()"
     />
 
     <app-button

@@ -1,5 +1,6 @@
 using Api.Extensions;
 using Application.DTOs;
+using Application.Exceptions;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,6 +56,11 @@ public sealed class CartsController(
             _logger.LogWarning(ex, "Invalid argument adding item to cart");
             return BadRequest(new { error = "Invalid cart item request" });
         }
+        catch (InsufficientStockException ex)
+        {
+            _logger.LogInformation(ex, "Insufficient stock adding item to cart");
+            return Conflict(new { error = ex.Message, requestedQuantity = ex.RequestedQuantity, availableStock = ex.AvailableStock });
+        }
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Invalid operation adding item to cart");
@@ -90,6 +96,11 @@ public sealed class CartsController(
         {
             _logger.LogWarning(ex, "Invalid argument updating cart item {ProductId}", productId);
             return BadRequest(new { error = "Invalid cart update request" });
+        }
+        catch (InsufficientStockException ex)
+        {
+            _logger.LogInformation(ex, "Insufficient stock updating cart item {ProductId}", productId);
+            return Conflict(new { error = ex.Message, requestedQuantity = ex.RequestedQuantity, availableStock = ex.AvailableStock });
         }
         catch (InvalidOperationException ex)
         {
@@ -158,6 +169,11 @@ public sealed class CartsController(
             _logger.LogWarning(ex, "Invalid argument adding item to guest cart");
             return BadRequest(new { error = "Invalid cart item request" });
         }
+        catch (InsufficientStockException ex)
+        {
+            _logger.LogInformation(ex, "Insufficient stock adding item to guest cart");
+            return Conflict(new { error = ex.Message, requestedQuantity = ex.RequestedQuantity, availableStock = ex.AvailableStock });
+        }
         catch (InvalidOperationException ex)
         {
             _logger.LogWarning(ex, "Invalid operation adding item to guest cart");
@@ -192,6 +208,11 @@ public sealed class CartsController(
         {
             _logger.LogWarning(ex, "Invalid argument updating guest cart item {ProductId}", productId);
             return BadRequest(new { error = "Invalid cart update request" });
+        }
+        catch (InsufficientStockException ex)
+        {
+            _logger.LogInformation(ex, "Insufficient stock updating guest cart item {ProductId}", productId);
+            return Conflict(new { error = ex.Message, requestedQuantity = ex.RequestedQuantity, availableStock = ex.AvailableStock });
         }
         catch (InvalidOperationException ex)
         {

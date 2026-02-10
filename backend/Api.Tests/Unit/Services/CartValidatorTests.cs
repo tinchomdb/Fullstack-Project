@@ -1,5 +1,6 @@
 using Api.Tests.Helpers;
 using Application.DTOs;
+using Application.Exceptions;
 using Application.Services;
 using Domain.Entities;
 
@@ -170,10 +171,12 @@ public class CartValidatorTests
     }
 
     [Fact]
-    public void ValidateStock_ExceedsStock_ThrowsInvalidOperationException()
+    public void ValidateStock_ExceedsStock_ThrowsInsufficientStockException()
     {
         var product = TestDataBuilder.CreateProduct(stock: 5);
-        Assert.Throws<InvalidOperationException>(() => _validator.ValidateStock(product, 6));
+        var ex = Assert.Throws<InsufficientStockException>(() => _validator.ValidateStock(product, 6));
+        Assert.Equal(6, ex.RequestedQuantity);
+        Assert.Equal(5, ex.AvailableStock);
     }
 
     // --- ValidateCheckout ---
