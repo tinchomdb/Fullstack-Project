@@ -46,4 +46,26 @@ public sealed class OrdersController(IOrderService orderService) : ControllerBas
 
         return Ok(order);
     }
+
+    /// <summary>
+    /// Get an order by payment intent ID for the authenticated user.
+    /// Returns 404 if the order has not been created yet (webhook pending).
+    /// </summary>
+    [HttpGet("by-payment-intent/{paymentIntentId}")]
+    [ProducesResponseType(typeof(Order), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<Order>> GetOrderByPaymentIntent(
+        string paymentIntentId,
+        CancellationToken cancellationToken)
+    {
+        var userId = User.GetUserId();
+        var order = await _orderService.GetOrderByPaymentIntentIdAsync(paymentIntentId, cancellationToken);
+
+        if (order is null || order.UserId != userId)
+        {
+            return NotFound();
+        }
+
+        return Ok(order);
+    }
 }

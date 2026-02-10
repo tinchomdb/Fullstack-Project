@@ -49,4 +49,12 @@ public sealed class OrderService(
         _logger.LogInformation("Order updated successfully: {OrderId}", updatedOrder.Id);
         return updatedOrder;
     }
+
+    public async Task<Order?> GetOrderByPaymentIntentIdAsync(
+        string paymentIntentId,
+        CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Retrieving order by payment intent: {PaymentIntentId}", paymentIntentId);
+        return await _ordersRepository.GetOrderByPaymentIntentIdAsync(paymentIntentId, cancellationToken);
+    }
 }

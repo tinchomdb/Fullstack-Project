@@ -142,4 +142,38 @@ public class OrderServiceTests
         Assert.Equal(OrderStatus.Processing, result.Status);
         _mockRepository.Verify(r => r.UpdateOrderAsync(order, It.IsAny<CancellationToken>()), Times.Once);
     }
+
+    // ===== GetOrderByPaymentIntentIdAsync =====
+
+    [Fact]
+    public async Task GetOrderByPaymentIntentIdAsync_WithExistingOrder_ReturnsOrder()
+    {
+        // Arrange
+        var order = TestDataBuilder.CreateOrder(id: "o1", userId: "user-1");
+        _mockRepository
+            .Setup(r => r.GetOrderByPaymentIntentIdAsync("pi_123", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(order);
+
+        // Act
+        var result = await _service.GetOrderByPaymentIntentIdAsync("pi_123");
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal("o1", result.Id);
+    }
+
+    [Fact]
+    public async Task GetOrderByPaymentIntentIdAsync_WithNonexistentOrder_ReturnsNull()
+    {
+        // Arrange
+        _mockRepository
+            .Setup(r => r.GetOrderByPaymentIntentIdAsync("pi_missing", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Order?)null);
+
+        // Act
+        var result = await _service.GetOrderByPaymentIntentIdAsync("pi_missing");
+
+        // Assert
+        Assert.Null(result);
+    }
 }

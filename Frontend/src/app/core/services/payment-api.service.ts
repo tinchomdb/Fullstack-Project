@@ -17,37 +17,14 @@ export interface CreatePaymentIntentResponse {
   paymentIntentId?: string;
 }
 
-export interface TestCompletePaymentRequest {
-  paymentIntentId: string;
-  cartId: string;
-  email: string;
-  amount: number;
-}
-
-export interface TestCompletePaymentResponse {
-  success: boolean;
-  message: string;
-  orderId?: string;
-}
-
 @Injectable({ providedIn: 'root' })
 export class PaymentApiService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiBase}/api/payments`;
-  private readonly testPaymentUrl = `${environment.apiBase}/api/testpayment`;
 
   createPaymentIntent(
     request: CreatePaymentIntentRequest,
   ): Observable<CreatePaymentIntentResponse> {
     return this.http.post<CreatePaymentIntentResponse>(`${this.apiUrl}/create-intent`, request);
-  }
-
-  testCompletePayment(
-    request: TestCompletePaymentRequest,
-  ): Observable<TestCompletePaymentResponse> {
-    return this.http.post<TestCompletePaymentResponse>(
-      `${this.testPaymentUrl}/test/complete-payment`,
-      request,
-    );
   }
 }

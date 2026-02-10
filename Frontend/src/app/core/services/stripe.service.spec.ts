@@ -1,20 +1,31 @@
 import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
+import { HttpErrorResponse } from '@angular/common/http';
 import { StripeService } from './stripe.service';
 import { PaymentApiService } from './payment-api.service';
+import { OrderApiService } from './order-api.service';
+import { OrderStatus } from '../models/order-status.model';
 
 describe('StripeService', () => {
   let service: StripeService;
   let paymentApiSpy: jasmine.SpyObj<PaymentApiService>;
+  let orderApiSpy: jasmine.SpyObj<OrderApiService>;
 
   beforeEach(() => {
-    paymentApiSpy = jasmine.createSpyObj('PaymentApiService', [
-      'createPaymentIntent',
-      'testCompletePayment',
+    paymentApiSpy = jasmine.createSpyObj('PaymentApiService', ['createPaymentIntent']);
+
+    orderApiSpy = jasmine.createSpyObj('OrderApiService', [
+      'getOrder',
+      'getOrderByPaymentIntent',
+      'getMyOrders',
     ]);
 
     TestBed.configureTestingModule({
-      providers: [StripeService, { provide: PaymentApiService, useValue: paymentApiSpy }],
+      providers: [
+        StripeService,
+        { provide: PaymentApiService, useValue: paymentApiSpy },
+        { provide: OrderApiService, useValue: orderApiSpy },
+      ],
     });
 
     service = TestBed.inject(StripeService);
@@ -44,7 +55,7 @@ describe('StripeService', () => {
   });
 
   it('should return error when completing without payment intent', () => {
-    service.completePayment('cart-1', 'test@test.com', 5000).subscribe({
+    service.completePayment().subscribe({
       error: (err) => {
         expect(err.message).toBe('Payment intent ID not available');
       },
@@ -84,44 +95,59 @@ describe('StripeService', () => {
     });
   });
 
-  it('should call testCompletePayment when completePayment is invoked', () => {
+  it('should poll orderApi and return orderId on completePayment', (done) => {
     (service as any)._paymentIntentId.set('pi_123');
-    paymentApiSpy.testCompletePayment.and.returnValue(
-      of({ success: true, message: 'OK', orderId: 'order-abc' }),
-    );
 
-    service.completePayment('cart-1', 'test@test.com', 5000).subscribe();
+    const mockOrder = {
+      id: 'order-from-webhook',
+      userId: 'user-1',
+      orderDate: '2026-02-09T12:00:00Z',
+      status: OrderStatus.Processing,
+      items: [],
+      subtotal: 100,
+      shippingCost: 5.99,
+      total: 105.99,
+      currency: 'USD',
+    };
 
-    expect(paymentApiSpy.testCompletePayment).toHaveBeenCalledWith({
-      paymentIntentId: 'pi_123',
-      cartId: 'cart-1',
-      email: 'test@test.com',
-      amount: 5000,
+    orderApiSpy.getOrderByPaymentIntent.and.returnValue(of(mockOrder));
+
+    service.completePayment().subscribe((orderId) => {
+      expect(orderId).toBe('order-from-webhook');
+      expect(orderApiSpy.getOrderByPaymentIntent).toHaveBeenCalledWith('pi_123');
+      done();
     });
   });
 
-  it('should return orderId from completePayment', () => {
+  it('should retry polling on 404 and succeed when order appears', (done) => {
     (service as any)._paymentIntentId.set('pi_123');
-    paymentApiSpy.testCompletePayment.and.returnValue(
-      of({ success: true, message: 'OK', orderId: 'order-xyz' }),
-    );
 
-    let result: string | undefined;
-    service.completePayment('cart-1', 'test@test.com', 5000).subscribe((id) => {
-      result = id;
+    const notFoundError = new HttpErrorResponse({ status: 404, statusText: 'Not Found' });
+    const mockOrder = {
+      id: 'order-delayed',
+      userId: 'user-1',
+      orderDate: '2026-02-09T12:00:00Z',
+      status: OrderStatus.Processing,
+      items: [],
+      subtotal: 100,
+      shippingCost: 5.99,
+      total: 105.99,
+      currency: 'USD',
+    };
+
+    let callCount = 0;
+    orderApiSpy.getOrderByPaymentIntent.and.callFake(() => {
+      callCount++;
+      if (callCount < 3) {
+        return throwError(() => notFoundError);
+      }
+      return of(mockOrder);
     });
 
-    expect(result).toBe('order-xyz');
-  });
-
-  it('should throw error when orderId is missing from response', () => {
-    (service as any)._paymentIntentId.set('pi_123');
-    paymentApiSpy.testCompletePayment.and.returnValue(of({ success: true, message: 'OK' }));
-
-    service.completePayment('cart-1', 'test@test.com', 5000).subscribe({
-      error: (err) => {
-        expect(err.message).toBe('Order ID not returned from payment');
-      },
+    service.completePayment().subscribe((orderId) => {
+      expect(orderId).toBe('order-delayed');
+      expect(callCount).toBe(3);
+      done();
     });
   });
 });

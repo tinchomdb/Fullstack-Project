@@ -200,13 +200,7 @@ export class CheckoutService {
     }
 
     return from(this.stripeService.confirmPayment(returnUrl)).pipe(
-      switchMap(() =>
-        this.stripeService.completePayment(
-          cart.id,
-          email,
-          Math.round(this.totalWithShipping() * 100),
-        ),
-      ),
+      switchMap(() => this.stripeService.completePayment()),
       tap(() => {
         this.cartService.loadCart();
       }),

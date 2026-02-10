@@ -20,4 +20,8 @@ public interface IOrderService
     Task<Order> UpdateOrderAsync(
         Order order,
         CancellationToken cancellationToken = default);
+
+    Task<Order?> GetOrderByPaymentIntentIdAsync(
+        string paymentIntentId,
+        CancellationToken cancellationToken = default);
 }

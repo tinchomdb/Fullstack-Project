@@ -1,13 +1,15 @@
 import { Injectable, signal, inject } from '@angular/core';
 import { loadStripe, Stripe, StripeElements, StripePaymentElement } from '@stripe/stripe-js';
-import { Observable, from, switchMap, catchError, throwError, map } from 'rxjs';
+import { Observable, from, switchMap, catchError, throwError, map, timer } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
 import { PaymentApiService } from './payment-api.service';
+import { OrderApiService } from './order-api.service';
 
 @Injectable({ providedIn: 'root' })
 export class StripeService {
   private readonly paymentApi = inject(PaymentApiService);
+  private readonly orderApi = inject(OrderApiService);
 
   private stripe: Stripe | null = null;
   private elements: StripeElements | null = null;
@@ -79,35 +81,50 @@ export class StripeService {
 
   /**
    * Completes payment after Stripe confirmation.
-   * In development, calls the test endpoint to simulate the webhook.
-   * TODO: In production, the real Stripe webhook will handle order creation.
+   * Polls for the order created by the Stripe webhook.
    */
-  completePayment(cartId: string, email: string, amount: number): Observable<string> {
+  completePayment(): Observable<string> {
     const paymentIntentId = this.paymentIntentId();
 
     if (!paymentIntentId) {
       return throwError(() => new Error('Payment intent ID not available'));
     }
 
-    return this.paymentApi
-      .testCompletePayment({
-        paymentIntentId,
-        cartId,
-        email,
-        amount,
-      })
-      .pipe(
-        map((response) => {
-          if (!response.orderId) {
-            throw new Error('Order ID not returned from payment');
-          }
-          return response.orderId;
-        }),
-        catchError((error) => {
-          console.error('Test payment endpoint failed:', error);
-          return throwError(() => error);
-        }),
+    return this.pollForOrder(paymentIntentId);
+  }
+
+  private pollForOrder(
+    paymentIntentId: string,
+    maxAttempts = 15,
+    intervalMs = 1500,
+    attempt = 0,
+  ): Observable<string> {
+    if (attempt >= maxAttempts) {
+      return throwError(
+        () =>
+          new Error(
+            'Order confirmation timed out. Your payment was successful \u2014 your order will appear in your order history shortly.',
+          ),
       );
+    }
+
+    const delay = attempt === 0 ? 0 : intervalMs;
+
+    return timer(delay).pipe(
+      switchMap(() => this.orderApi.getOrderByPaymentIntent(paymentIntentId)),
+      map((order) => {
+        if (!order.id) {
+          throw new Error('Order ID not returned');
+        }
+        return order.id;
+      }),
+      catchError((error) => {
+        if (error.status === 404) {
+          return this.pollForOrder(paymentIntentId, maxAttempts, intervalMs, attempt + 1);
+        }
+        return throwError(() => error);
+      }),
+    );
   }
 
   unmountPaymentElement(): void {

@@ -14,6 +14,10 @@ export class OrderApiService {
     return this.http.get<Order>(`${this.apiUrl}/${orderId}`);
   }
 
+  getOrderByPaymentIntent(paymentIntentId: string): Observable<Order> {
+    return this.http.get<Order>(`${this.apiUrl}/by-payment-intent/${paymentIntentId}`);
+  }
+
   getMyOrders(): Observable<Order[]> {
     return this.http.get<Order[]>(`${this.apiUrl}/my-orders`);
   }

@@ -36,21 +36,4 @@ describe('PaymentApiService', () => {
     expect(req.request.method).toBe('POST');
     req.flush({ clientSecret: 'cs_test_123', amount: 1000 });
   });
-
-  it('should call test complete payment', () => {
-    service
-      .testCompletePayment({
-        paymentIntentId: 'pi_123',
-        cartId: 'cart-1',
-        email: 'test@example.com',
-        amount: 1000,
-      })
-      .subscribe((response) => {
-        expect(response.success).toBe(true);
-      });
-
-    const req = httpMock.expectOne((r) => r.url.includes('/test/complete-payment'));
-    expect(req.request.method).toBe('POST');
-    req.flush({ success: true, message: 'OK' });
-  });
 });

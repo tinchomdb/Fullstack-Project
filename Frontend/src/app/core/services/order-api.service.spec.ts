@@ -79,4 +79,28 @@ describe('OrderApiService', () => {
     const req = httpMock.expectOne((r) => r.url.includes('/api/orders/non-existent'));
     req.flush('Not Found', { status: 404, statusText: 'Not Found' });
   });
+
+  it('should fetch an order by payment intent ID', () => {
+    service.getOrderByPaymentIntent('pi_123').subscribe((order) => {
+      expect(order.id).toBe('order-abc-123');
+      expect(order.status).toBe(OrderStatus.Processing);
+    });
+
+    const req = httpMock.expectOne((r) => r.url.includes('/api/orders/by-payment-intent/pi_123'));
+    expect(req.request.method).toBe('GET');
+    req.flush(mockOrder);
+  });
+
+  it('should handle 404 when order not found by payment intent', () => {
+    service.getOrderByPaymentIntent('pi_missing').subscribe({
+      error: (error) => {
+        expect(error.status).toBe(404);
+      },
+    });
+
+    const req = httpMock.expectOne((r) =>
+      r.url.includes('/api/orders/by-payment-intent/pi_missing'),
+    );
+    req.flush('Not Found', { status: 404, statusText: 'Not Found' });
+  });
 });

@@ -103,6 +103,57 @@ public class OrdersControllerTests
         Assert.IsType<NotFoundResult>(result.Result);
     }
 
+    // ===== GetOrderByPaymentIntent =====
+
+    [Fact]
+    public async Task GetOrderByPaymentIntent_WithExistingOrder_ReturnsOk()
+    {
+        // Arrange
+        var order = TestDataBuilder.CreateOrder(id: "o1", userId: "user-1");
+        _mockOrderService
+            .Setup(s => s.GetOrderByPaymentIntentIdAsync("pi_123", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(order);
+
+        // Act
+        var result = await _controller.GetOrderByPaymentIntent("pi_123", CancellationToken.None);
+
+        // Assert
+        var okResult = Assert.IsType<OkObjectResult>(result.Result);
+        var returnedOrder = Assert.IsType<Order>(okResult.Value);
+        Assert.Equal("o1", returnedOrder.Id);
+    }
+
+    [Fact]
+    public async Task GetOrderByPaymentIntent_WithNoOrder_ReturnsNotFound()
+    {
+        // Arrange
+        _mockOrderService
+            .Setup(s => s.GetOrderByPaymentIntentIdAsync("pi_missing", It.IsAny<CancellationToken>()))
+            .ReturnsAsync((Order?)null);
+
+        // Act
+        var result = await _controller.GetOrderByPaymentIntent("pi_missing", CancellationToken.None);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result.Result);
+    }
+
+    [Fact]
+    public async Task GetOrderByPaymentIntent_WithDifferentUser_ReturnsNotFound()
+    {
+        // Arrange
+        var order = TestDataBuilder.CreateOrder(id: "o1", userId: "other-user");
+        _mockOrderService
+            .Setup(s => s.GetOrderByPaymentIntentIdAsync("pi_123", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(order);
+
+        // Act
+        var result = await _controller.GetOrderByPaymentIntent("pi_123", CancellationToken.None);
+
+        // Assert
+        Assert.IsType<NotFoundResult>(result.Result);
+    }
+
     // ===== Helper =====
 
     private void SetupAuthenticatedUser(string userId)
