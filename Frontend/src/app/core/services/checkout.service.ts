@@ -96,14 +96,16 @@ export class CheckoutService {
   );
 
   constructor() {
-    // Auto-initialize payment when email becomes valid
+    // Auto-initialize payment when email becomes valid and cart is loaded
     // clientSecret is tracked so the effect re-fires after reset() clears it
+    // cart is tracked so the effect re-fires once the cart loads
     effect(() => {
       const email = this.emailValue();
       const emailControl = this.shippingForm.get('email');
       const hasSecret = this.stripeService.clientSecret();
+      const cart = this.cart();
 
-      if (email && emailControl?.valid && !hasSecret) {
+      if (email && emailControl?.valid && !hasSecret && cart?.id) {
         untracked(() => {
           const total = this.totalWithShipping();
           const isInitializing = this.stripeService.isInitializing();

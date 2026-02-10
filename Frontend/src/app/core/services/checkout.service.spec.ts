@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { of, throwError } from 'rxjs';
-import { signal } from '@angular/core';
+import { signal, WritableSignal } from '@angular/core';
 import { CheckoutService } from './checkout.service';
 import { CartService } from './cart.service';
 import { StripeService } from './stripe.service';
@@ -9,6 +9,7 @@ import { OrderStateService } from './order-state.service';
 import { OrderApiService } from './order-api.service';
 import { AuthService } from '../auth/auth.service';
 import { OrderStatus } from '../models/order-status.model';
+import { Cart } from '../models/cart.model';
 
 describe('CheckoutService', () => {
   let service: CheckoutService;
@@ -218,5 +219,76 @@ describe('CheckoutService', () => {
       expect(orderStateSpy.setLastOrder).toHaveBeenCalledWith(mockRealOrder);
       expect(orderApiSpy.getOrder).toHaveBeenCalledWith('real-order-id');
     });
+  });
+
+  describe('auto-initialize payment effect', () => {
+    it('should not initialize payment when cart is null even if email is valid', fakeAsync(() => {
+      const cartSignal = signal(null) as WritableSignal<Cart | null>;
+      const clientSecretSignal = signal(null) as WritableSignal<string | null>;
+
+      const localCartServiceSpy = jasmine.createSpyObj(
+        'CartService',
+        ['validateCheckout', 'loadCart'],
+        {
+          cart: cartSignal,
+          isEmpty: signal(true),
+          cartUserId: signal('user-1'),
+        },
+      );
+
+      const localStripeServiceSpy = jasmine.createSpyObj(
+        'StripeService',
+        ['initializePayment', 'confirmPayment', 'completePayment', 'reset'],
+        {
+          isReady: signal(true),
+          isFormComplete: signal(true),
+          isInitializing: signal(false),
+          clientSecret: clientSecretSignal,
+          paymentIntentId: signal(null),
+        },
+      );
+
+      localStripeServiceSpy.initializePayment.and.returnValue(of(void 0));
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [ReactiveFormsModule],
+        providers: [
+          CheckoutService,
+          { provide: CartService, useValue: localCartServiceSpy },
+          { provide: StripeService, useValue: localStripeServiceSpy },
+          { provide: OrderStateService, useValue: orderStateSpy },
+          { provide: OrderApiService, useValue: orderApiSpy },
+          { provide: AuthService, useValue: { userId: signal('user-1') } },
+        ],
+      });
+
+      const localService = TestBed.inject(CheckoutService);
+
+      // Set a valid email while cart is still null
+      localService.shippingForm.patchValue({ email: 'test@example.com' });
+      tick();
+
+      expect(localStripeServiceSpy.initializePayment).not.toHaveBeenCalled();
+
+      // Now load the cart
+      cartSignal.set({
+        id: 'cart-1',
+        userId: 'user-1',
+        items: [],
+        subtotal: 100,
+        total: 100,
+        currency: 'USD',
+        status: 'active' as any,
+        createdAt: '',
+        lastUpdatedAt: '',
+      });
+      tick();
+
+      expect(localStripeServiceSpy.initializePayment).toHaveBeenCalled();
+      const callArgs = localStripeServiceSpy.initializePayment.calls.mostRecent().args;
+      expect(callArgs[2]).toBe('cart-1'); // cartId should be the real cart id
+      expect(callArgs[0]).toBeGreaterThan(599); // amount should include cart total, not just shipping
+    }));
   });
 });
