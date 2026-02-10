@@ -129,7 +129,7 @@ export class StripeService {
 
   unmountPaymentElement(): void {
     if (this.paymentElement) {
-      this.paymentElement.unmount();
+      this.paymentElement.destroy();
       this.paymentElement = null;
       this._isFormComplete.set(false);
       this._isMounted.set(false);

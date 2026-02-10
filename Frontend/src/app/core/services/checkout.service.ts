@@ -97,17 +97,18 @@ export class CheckoutService {
 
   constructor() {
     // Auto-initialize payment when email becomes valid
+    // clientSecret is tracked so the effect re-fires after reset() clears it
     effect(() => {
       const email = this.emailValue();
       const emailControl = this.shippingForm.get('email');
+      const hasSecret = this.stripeService.clientSecret();
 
-      if (email && emailControl?.valid) {
+      if (email && emailControl?.valid && !hasSecret) {
         untracked(() => {
           const total = this.totalWithShipping();
-          const hasSecret = this.stripeService.clientSecret();
           const isInitializing = this.stripeService.isInitializing();
 
-          if (total > 0 && !hasSecret && !isInitializing) {
+          if (total > 0 && !isInitializing) {
             this.initializePayment().subscribe({
               error: (err) => console.error('Payment initialization failed:', err),
             });
@@ -237,6 +238,12 @@ export class CheckoutService {
       zipCode: ['', [Validators.required, Validators.pattern(ZIP_PATTERN)]],
       country: [DEFAULT_COUNTRY, [Validators.required]],
     });
+  }
+
+  reset(): void {
+    this._isProcessing.set(false);
+    this._error.set(null);
+    this.stripeService.reset();
   }
 
   private createShippingOptionForm(): FormGroup {

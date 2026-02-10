@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { CheckoutService } from '../../core/services/checkout.service';
@@ -23,10 +23,14 @@ import { PaymentMethodComponent } from './payment-method/payment-method.componen
   styleUrl: './checkout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnDestroy {
   private readonly router = inject(Router);
 
   protected readonly checkout = inject(CheckoutService);
+
+  ngOnDestroy(): void {
+    this.checkout.reset();
+  }
 
   processCheckout(): void {
     // Return URL is used by Stripe only when redirect is required (e.g., 3D Secure)

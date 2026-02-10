@@ -25,7 +25,7 @@ describe('CheckoutComponent', () => {
   };
 
   beforeEach(() => {
-    checkoutService = jasmine.createSpyObj('CheckoutService', ['submitCheckout']);
+    checkoutService = jasmine.createSpyObj('CheckoutService', ['submitCheckout', 'reset']);
     checkoutService.submitCheckout.and.returnValue(of(mockOrder));
 
     router = jasmine.createSpyObj('Router', ['navigate']);
@@ -72,5 +72,10 @@ describe('CheckoutComponent', () => {
   it('should navigate to cart on goBackToCart', () => {
     component.goBackToCart();
     expect(router.navigate).toHaveBeenCalledWith(['/cart']);
+  });
+
+  it('should call checkout.reset on destroy', () => {
+    component.ngOnDestroy();
+    expect(checkoutService.reset).toHaveBeenCalled();
   });
 });

@@ -36,7 +36,7 @@ describe('CheckoutService', () => {
 
     stripeServiceSpy = jasmine.createSpyObj(
       'StripeService',
-      ['initializePayment', 'confirmPayment', 'completePayment'],
+      ['initializePayment', 'confirmPayment', 'completePayment', 'reset'],
       {
         isReady: signal(true),
         isFormComplete: signal(true),
@@ -157,6 +157,19 @@ describe('CheckoutService', () => {
         expect(err.message).toBe('Form validation failed');
       },
     });
+  });
+
+  it('should reset state on reset', () => {
+    service.shippingForm.patchValue({ firstName: 'John', email: 'john@example.com' });
+
+    service.reset();
+
+    expect(service.isProcessing()).toBeFalse();
+    expect(service.error()).toBeNull();
+    expect(stripeServiceSpy.reset).toHaveBeenCalled();
+    // Forms should be preserved
+    expect(service.shippingForm.get('firstName')?.value).toBe('John');
+    expect(service.shippingForm.get('email')?.value).toBe('john@example.com');
   });
 
   it('should fetch real order and store it on successful submitCheckout', () => {

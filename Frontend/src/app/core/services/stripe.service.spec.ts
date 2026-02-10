@@ -77,6 +77,21 @@ describe('StripeService', () => {
     expect(service.isFormComplete()).toBeFalse();
   });
 
+  it('should destroy payment element on unmount', () => {
+    const mockPaymentElement = {
+      destroy: jasmine.createSpy('destroy'),
+      on: jasmine.createSpy('on'),
+    };
+    (service as any).paymentElement = mockPaymentElement;
+    (service as any)._isMounted.set(true);
+
+    service.unmountPaymentElement();
+
+    expect(mockPaymentElement.destroy).toHaveBeenCalled();
+    expect(service.isMounted()).toBeFalse();
+    expect(service.isFormComplete()).toBeFalse();
+  });
+
   it('should call createPaymentIntent on initializePayment', () => {
     paymentApiSpy.createPaymentIntent.and.returnValue(
       of({ clientSecret: 'cs_test', paymentIntentId: 'pi_test', amount: 5000 }),
