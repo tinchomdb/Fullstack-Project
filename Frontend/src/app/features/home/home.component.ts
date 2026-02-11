@@ -56,10 +56,6 @@ export class HomeComponent {
     label: opt.label,
   }));
 
-  constructor() {
-    this.carouselService.loadActiveSlides();
-  }
-
   protected onLoadMore(): void {
     this.listManager.loadMore();
   }

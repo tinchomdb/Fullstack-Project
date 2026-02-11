@@ -76,7 +76,6 @@ describe('HomeComponent', () => {
             activeSlides: signal([]),
             activeSlidesLoading: signal(false),
             activeSlidesError: signal(null),
-            loadActiveSlides: jasmine.createSpy('loadActiveSlides'),
           },
         },
         {

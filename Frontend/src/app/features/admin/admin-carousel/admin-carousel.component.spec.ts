@@ -20,14 +20,7 @@ describe('AdminCarouselComponent', () => {
   beforeEach(() => {
     carouselService = jasmine.createSpyObj(
       'CarouselService',
-      [
-        'loadActiveSlides',
-        'createSlide',
-        'updateSlide',
-        'deleteSlide',
-        'reorderSlides',
-        'toggleSlideActive',
-      ],
+      ['createSlide', 'updateSlide', 'deleteSlide', 'reorderSlides', 'toggleSlideActive'],
       {
         allSlides: signal<CarouselSlide[]>(mockSlides),
         allSlidesLoading: signal(false),
@@ -55,10 +48,6 @@ describe('AdminCarouselComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should load slides on init', () => {
-    expect(carouselService.loadActiveSlides).toHaveBeenCalled();
   });
 
   describe('addSlide', () => {

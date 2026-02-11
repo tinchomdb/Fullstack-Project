@@ -58,14 +58,12 @@ describe('CarouselService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should have empty initial state', () => {
+  it('should have empty allSlides and loaded activeSlides after construction', () => {
     expect(service.allSlides()).toEqual([]);
-    expect(service.activeSlides()).toEqual([]);
+    expect(service.activeSlides()).toEqual(mockSlides);
   });
 
-  it('should load active slides only once if already loaded', () => {
-    service.loadActiveSlides();
-    service.loadActiveSlides();
+  it('should load active slides automatically on construction', () => {
     expect(apiSpy.getActiveSlides).toHaveBeenCalledTimes(1);
   });
 

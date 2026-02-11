@@ -5,7 +5,6 @@ import {
   inject,
   signal,
   computed,
-  OnInit,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -22,7 +21,7 @@ import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-che
   styleUrl: './admin-carousel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminCarouselComponent implements OnInit {
+export class AdminCarouselComponent {
   private readonly carouselService = inject(CarouselService);
   private readonly fb = inject(FormBuilder);
   private readonly destroyRef = inject(DestroyRef);
@@ -55,10 +54,6 @@ export class AdminCarouselComponent implements OnInit {
       const currentSlides = this.slides() ?? [];
       return index < currentSlides.length - 1;
     });
-
-  ngOnInit(): void {
-    this.carouselService.loadActiveSlides();
-  }
 
   /**
    * Generic error handler for all operations

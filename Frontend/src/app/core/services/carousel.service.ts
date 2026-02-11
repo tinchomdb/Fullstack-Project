@@ -38,7 +38,11 @@ export class CarouselService {
   readonly activeSlidesLoading = this.activeSlidesResource.loading;
   readonly activeSlidesError = this.activeSlidesResource.error;
 
-  loadActiveSlides(): void {
+  constructor() {
+    this.loadActiveSlides();
+  }
+
+  private loadActiveSlides(): void {
     if (this.activeSlides() && this.activeSlides()!.length > 0) {
       return;
     }

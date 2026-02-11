@@ -77,7 +77,7 @@ export class CartService {
     );
   }
 
-  addToCart(product: Product, quantity: number = 1): void {
+  addToCart(product: Product, quantity = 1): void {
     this.cartResource.load(
       this.cartApi
         .addToCart({
@@ -114,7 +114,7 @@ export class CartService {
     this.cartResource.load(this.cartApi.clearCart(), false);
   }
 
-  checkout(shippingCost: number = 0): Observable<Order> {
+  checkout(shippingCost = 0): Observable<Order> {
     const currentCart = this.cart();
     if (!currentCart) throw new Error('No active cart to checkout');
 

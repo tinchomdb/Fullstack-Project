@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category } from '../../../core/models/category.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -21,7 +21,7 @@ import {
   styleUrl: './admin-categories.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdminCategoriesComponent implements OnInit {
+export class AdminCategoriesComponent {
   private readonly categoriesService = inject(CategoriesService);
 
   readonly categories = this.categoriesService.categories;
@@ -31,10 +31,6 @@ export class AdminCategoriesComponent implements OnInit {
 
   readonly showForm = signal(false);
   readonly editingCategory = signal<Category | null>(null);
-
-  ngOnInit(): void {
-    // Categories are loaded by the service
-  }
 
   openCreateForm(): void {
     this.editingCategory.set(null);
