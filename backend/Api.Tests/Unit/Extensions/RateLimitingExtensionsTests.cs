@@ -28,6 +28,18 @@ public class RateLimitingExtensionsTests
     }
 
     [Fact]
+    public void PaymentCreatePolicy_HasExpectedValue()
+    {
+        Assert.Equal("payment-create", RateLimitingExtensions.PaymentCreatePolicy);
+    }
+
+    [Fact]
+    public void GlobalPolicy_HasExpectedValue()
+    {
+        Assert.Equal("global-default", RateLimitingExtensions.GlobalPolicy);
+    }
+
+    [Fact]
     public async Task RateLimiting_AllowsRequestsWithinLimit()
     {
         using var host = await CreateHostWithRateLimiting();

@@ -3,6 +3,7 @@ using Application.DTOs;
 using Application.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Stripe;
 
 namespace Api.Controllers;
@@ -18,9 +19,11 @@ public sealed class PaymentsController(
 
     [Authorize]
     [HttpPost("create-intent")]
+    [EnableRateLimiting(RateLimitingExtensions.PaymentCreatePolicy)]
     [ProducesResponseType(typeof(CreatePaymentIntentResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<CreatePaymentIntentResponse>> CreatePaymentIntent(
         [FromBody] CreatePaymentIntentRequest request,
