@@ -1,32 +1,32 @@
-@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
 
 .search-results-page {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
-  padding-block: var(--spacing-xl);
+  gap: var(--space-responsive-lg);
+  padding-block: var(--space-responsive-lg);
 }
 
 .search-header {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-sm);
+  gap: var(--space-2);
 }
 
 .results-count {
   margin: 0;
-  color: var(--text-secondary);
+  color: var(--color-text-secondary);
   font-size: var(--font-size-sm);
 }
 
 .no-results {
   text-align: center;
-  padding: var(--spacing-2xl);
-  color: var(--text-secondary);
+  padding: var(--space-12);
+  color: var(--color-text-secondary);
 
   p {
     margin: 0;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: var(--space-2);
   }
 
   .suggestion {

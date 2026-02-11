@@ -15,11 +15,11 @@
   text-align: center;
   background: var(--color-surface-primary);
   border-radius: var(--radius-lg);
-  padding: var(--space-12);
+  padding: var(--space-6);
   box-shadow: var(--shadow-md);
 
   @include media-md {
-    padding: var(--space-6);
+    padding: var(--space-12);
   }
 }
 
@@ -69,20 +69,14 @@
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .title {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-2xl);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   margin: 0 0 var(--space-4);
 
   @include media-md {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-3xl);
   }
 
   &.error {
@@ -98,7 +92,7 @@
 }
 
 .details {
-  background: var(--color-surface-secondary);
+  background: var(--color-surface-muted);
   border-radius: var(--radius-md);
   padding: var(--space-6);
   margin-bottom: var(--space-6);
@@ -112,7 +106,7 @@
   padding: var(--space-3) 0;
 
   &:not(:last-child) {
-    border-bottom: 1px solid var(--color-border-secondary);
+    border-bottom: 1px solid var(--color-border-subtle);
   }
 
   .label {
@@ -122,7 +116,7 @@
   }
 
   .value {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-base);
     color: var(--color-text-primary);
     font-weight: var(--font-weight-semibold);
   }
@@ -150,12 +144,17 @@
   display: flex;
   justify-content: center;
   gap: var(--space-3);
+  flex-direction: column;
+
+  app-button {
+    width: 100%;
+  }
 
   @include media-md {
-    flex-direction: column;
+    flex-direction: row;
 
     app-button {
-      width: 100%;
+      width: auto;
     }
   }
 }

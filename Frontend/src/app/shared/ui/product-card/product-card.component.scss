@@ -8,7 +8,7 @@
   overflow: hidden;
   background: var(--color-surface-muted);
   border: var(--border-subtle);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
   transition:
     transform 0.3s,
     box-shadow 0.3s;
@@ -16,7 +16,7 @@
   @include stagger-animation;
 
   &:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-hover);
     transform: translateY(-2px);
     border-color: var(--color-accent-interactive);
     img {
@@ -104,11 +104,11 @@
     border: var(--border-width-thick) solid transparent;
     border-top: var(--border-width-thick) solid currentColor;
     border-radius: var(--radius-pill);
-    animation: spin 1s linear infinite;
+    animation: spin-centered 1s linear infinite;
   }
 }
 
-@keyframes spin {
+@keyframes spin-centered {
   to {
     transform: translateY(-50%) rotate(360deg);
   }

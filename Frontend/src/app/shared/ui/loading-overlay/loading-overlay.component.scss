@@ -19,8 +19,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
-    padding: 2rem;
+    gap: var(--space-4);
+    padding: var(--space-8);
     background-color: var(--color-surface-primary);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
@@ -38,8 +38,8 @@
 
   .message {
     margin: 0;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-secondary);
     text-align: center;
     white-space: pre-line;
@@ -63,11 +63,5 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
   }
 }

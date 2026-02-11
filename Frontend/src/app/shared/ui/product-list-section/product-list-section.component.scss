@@ -4,14 +4,14 @@
 .products-section {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--space-6);
 }
 
 .products-controls {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--space-4);
   flex-wrap: wrap;
 }
 
@@ -25,8 +25,8 @@
 .end-message {
   text-align: center;
   margin-top: var(--space-12);
-  padding: var(--spacing-xl);
-  color: var(--text-secondary);
+  padding: var(--space-8);
+  color: var(--color-text-secondary);
 
   p {
     margin: 0;

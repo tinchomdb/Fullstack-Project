@@ -1,8 +1,8 @@
-@use '../../../styles/tokens' as *;
+@use '../../../styles/mixins' as *;
 
 .home-page {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xl);
-  padding-block: var(--spacing-xl);
+  gap: var(--space-responsive-lg);
+  padding-block: var(--space-responsive-lg);
 }
