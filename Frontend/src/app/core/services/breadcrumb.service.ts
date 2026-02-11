@@ -9,8 +9,7 @@ import { CategoriesService } from './categories.service';
 export class BreadcrumbService {
   private readonly router = inject(Router);
   private readonly categoryService = inject(CategoriesService);
-  private readonly breadcrumbsState = signal<BreadcrumbItem[]>([]);
-  readonly breadcrumbs = this.breadcrumbsState.asReadonly();
+  readonly breadcrumbs = signal<BreadcrumbItem[]>([]);
 
   constructor() {
     this.updateBreadcrumbsFromCurrentRoute();
@@ -24,14 +23,14 @@ export class BreadcrumbService {
     const categorySegments = categoryPath.map((c) => c.slug);
     const breadcrumbs = this.buildBreadcrumbs(['category', ...categorySegments]);
     breadcrumbs.push({ label: productName });
-    this.breadcrumbsState.set(breadcrumbs);
+    this.breadcrumbs.set(breadcrumbs);
   }
 
   private updateBreadcrumbsFromCurrentRoute(): void {
     const url = this.router.url;
     const urlTree = this.router.parseUrl(url);
     const segments = urlTree.root.children['primary']?.segments || [];
-    this.breadcrumbsState.set(this.buildBreadcrumbs(segments.map((s) => s.path)));
+    this.breadcrumbs.set(this.buildBreadcrumbs(segments.map((s) => s.path)));
   }
 
   private buildBreadcrumbs(segments: string[]): BreadcrumbItem[] {

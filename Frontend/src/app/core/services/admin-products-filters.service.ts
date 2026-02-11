@@ -14,24 +14,14 @@ const SEARCH_DEBOUNCE_MS = 300;
 export class AdminProductsFiltersService {
   private readonly destroyRef = inject(DestroyRef);
 
-  // Signal-based state
-  private readonly pageSignal = signal(1);
-  private readonly pageSizeSignal = signal(DEFAULT_PAGE_SIZE);
-  private readonly categoryIdSignal = signal<string | null>(null);
-  private readonly searchTermSignal = signal<string | null>(null);
-  private readonly sortBySignal = signal<ProductSortField>('name');
-  private readonly sortDirectionSignal = signal<SortDirection>('asc');
+  readonly page = signal(1);
+  readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly categoryId = signal<string | null>(null);
+  readonly searchTerm = signal<string | null>(null);
+  readonly sortBy = signal<ProductSortField>('name');
+  readonly sortDirection = signal<SortDirection>('asc');
 
-  // Debounced search input
   private readonly searchSubject = new Subject<string | null>();
-
-  // Public readonly signals
-  readonly page = this.pageSignal.asReadonly();
-  readonly pageSize = this.pageSizeSignal.asReadonly();
-  readonly categoryId = this.categoryIdSignal.asReadonly();
-  readonly searchTerm = this.searchTermSignal.asReadonly();
-  readonly sortBy = this.sortBySignal.asReadonly();
-  readonly sortDirection = this.sortDirectionSignal.asReadonly();
 
   readonly hasActiveFilters = computed(
     () =>
@@ -61,29 +51,29 @@ export class AdminProductsFiltersService {
   }
 
   setCategoryId(categoryId: string | null): void {
-    this.categoryIdSignal.set(categoryId);
+    this.categoryId.set(categoryId);
     this.resetToFirstPage();
   }
 
   setSortBy(sortBy: ProductSortField, sortDirection: SortDirection = 'desc'): void {
-    this.sortBySignal.set(sortBy);
-    this.sortDirectionSignal.set(sortDirection);
+    this.sortBy.set(sortBy);
+    this.sortDirection.set(sortDirection);
     this.resetToFirstPage();
   }
 
   loadNextPage(): void {
-    this.pageSignal.update((page) => page + 1);
+    this.page.update((page) => page + 1);
   }
 
   resetToFirstPage(): void {
-    this.pageSignal.set(1);
+    this.page.set(1);
   }
 
   clearFilters(): void {
-    this.searchTermSignal.set(null);
-    this.categoryIdSignal.set(null);
-    this.sortBySignal.set('name');
-    this.sortDirectionSignal.set('asc');
+    this.searchTerm.set(null);
+    this.categoryId.set(null);
+    this.sortBy.set('name');
+    this.sortDirection.set('asc');
     this.resetToFirstPage();
   }
 
@@ -97,7 +87,7 @@ export class AdminProductsFiltersService {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((term) => {
-        this.searchTermSignal.set(term);
+        this.searchTerm.set(term);
         this.resetToFirstPage();
       });
   }

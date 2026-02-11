@@ -10,5 +10,5 @@ import { LoadingOverlayService } from '../../../core/services/loading-overlay.se
 export class LoadingOverlayComponent {
   private loadingService = inject(LoadingOverlayService);
 
-  protected state = this.loadingService.visible;
+  protected state = this.loadingService.state;
 }

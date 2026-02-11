@@ -1,26 +1,18 @@
-import { Signal, WritableSignal, computed, signal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LoadingOverlayService } from '../../core/services/loading-overlay.service';
 import { PaginatedResponse } from '../../core/models/paginated-response.model';
 
 export class InfiniteScrollResource<T> {
-  private readonly accumulatedItemsSignal: WritableSignal<T[]> = signal([]);
-  private readonly totalCountSignal: WritableSignal<number> = signal(0);
-  private readonly totalPagesSignal: WritableSignal<number> = signal(0);
-  private readonly currentPageSignal: WritableSignal<number> = signal(0);
-  private readonly loadingSignal = signal(false);
-  private readonly loadingMoreSignal = signal(false);
-  private readonly errorSignal = signal<string | null>(null);
-
-  readonly items: Signal<T[]> = this.accumulatedItemsSignal.asReadonly();
-  readonly totalCount: Signal<number> = this.totalCountSignal.asReadonly();
-  readonly totalPages: Signal<number> = this.totalPagesSignal.asReadonly();
-  readonly currentPage: Signal<number> = this.currentPageSignal.asReadonly();
-  readonly loading: Signal<boolean> = this.loadingSignal.asReadonly();
-  readonly loadingMore: Signal<boolean> = this.loadingMoreSignal.asReadonly();
-  readonly error: Signal<string | null> = this.errorSignal.asReadonly();
-  readonly hasData: Signal<boolean> = computed(() => this.items().length > 0);
-  readonly hasMore: Signal<boolean> = computed(
+  readonly items = signal<T[]>([]);
+  readonly totalCount = signal(0);
+  readonly totalPages = signal(0);
+  readonly currentPage = signal(0);
+  readonly loading = signal(false);
+  readonly loadingMore = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly hasData = computed(() => this.items().length > 0);
+  readonly hasMore = computed(
     () => this.currentPage() < this.totalPages() && this.totalPages() > 0,
   );
 
@@ -31,30 +23,29 @@ export class InfiniteScrollResource<T> {
 
   /**
    * Load initial data or reset and reload (e.g., when filters change)
-   * Immediately clears accumulated items to prevent flashing old data
+   * Keeps previous items visible until new data arrives to prevent layout shifts
    */
   load(source$: Observable<PaginatedResponse<T>>): void {
-    if (this.loadingSignal()) {
+    if (this.loading()) {
       return;
     }
 
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
+    this.loading.set(true);
+    this.error.set(null);
     this.loadingOverlayService?.show(this.loadingMessage);
 
     source$.subscribe({
       next: (response) => {
-        // Reset accumulated items and load fresh
-        this.accumulatedItemsSignal.set(response.items);
-        this.totalCountSignal.set(response.totalCount);
-        this.totalPagesSignal.set(response.totalPages);
-        this.currentPageSignal.set(response.page);
-        this.loadingSignal.set(false);
+        this.items.set(response.items);
+        this.totalCount.set(response.totalCount);
+        this.totalPages.set(response.totalPages);
+        this.currentPage.set(response.page);
+        this.loading.set(false);
         this.loadingOverlayService?.hide();
       },
       error: (err) => {
-        this.errorSignal.set(err?.message ?? 'An unexpected error occurred.');
-        this.loadingSignal.set(false);
+        this.error.set(err?.message ?? 'An unexpected error occurred.');
+        this.loading.set(false);
         this.loadingOverlayService?.hide();
       },
     });
@@ -64,37 +55,36 @@ export class InfiniteScrollResource<T> {
    * Append more items to existing list (for infinite scroll)
    */
   loadMore(source$: Observable<PaginatedResponse<T>>): void {
-    // Guards to prevent duplicate requests
-    if (this.loadingMoreSignal() || this.loadingSignal() || !this.hasMore()) {
+    if (this.loadingMore() || this.loading() || !this.hasMore()) {
       return;
     }
 
-    this.loadingMoreSignal.set(true);
-    this.errorSignal.set(null);
+    this.loadingMore.set(true);
+    this.error.set(null);
 
     source$.subscribe({
       next: (response) => {
-        const currentItems = this.accumulatedItemsSignal();
-        this.accumulatedItemsSignal.set([...currentItems, ...response.items]);
-        this.totalCountSignal.set(response.totalCount);
-        this.totalPagesSignal.set(response.totalPages);
-        this.currentPageSignal.set(response.page);
-        this.loadingMoreSignal.set(false);
+        const currentItems = this.items();
+        this.items.set([...currentItems, ...response.items]);
+        this.totalCount.set(response.totalCount);
+        this.totalPages.set(response.totalPages);
+        this.currentPage.set(response.page);
+        this.loadingMore.set(false);
       },
       error: (err) => {
-        this.errorSignal.set(err?.message ?? 'An unexpected error occurred.');
-        this.loadingMoreSignal.set(false);
+        this.error.set(err?.message ?? 'An unexpected error occurred.');
+        this.loadingMore.set(false);
       },
     });
   }
 
   reset(): void {
-    this.accumulatedItemsSignal.set([]);
-    this.totalCountSignal.set(0);
-    this.totalPagesSignal.set(0);
-    this.currentPageSignal.set(0);
-    this.loadingSignal.set(false);
-    this.loadingMoreSignal.set(false);
-    this.errorSignal.set(null);
+    this.items.set([]);
+    this.totalCount.set(0);
+    this.totalPages.set(0);
+    this.currentPage.set(0);
+    this.loading.set(false);
+    this.loadingMore.set(false);
+    this.error.set(null);
   }
 }

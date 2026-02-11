@@ -20,12 +20,10 @@ export class LoadingOverlayService {
   private readonly MIN_DISPLAY_MS = 500;
   private readonly EXTENDED_MESSAGE_DELAY_MS = 3000;
 
-  private state = signal<LoadingState>({
+  readonly state = signal<LoadingState>({
     visible: false,
     message: '',
   });
-
-  readonly visible = this.state.asReadonly();
 
   show(message = 'Loading...'): void {
     this.refCount++;

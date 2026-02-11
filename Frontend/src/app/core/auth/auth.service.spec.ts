@@ -108,10 +108,9 @@ describe('AuthService', () => {
     expect(service.isLoggedIn()).toBeFalse();
   });
 
-  it('should expose readonly signals that cannot be set externally', () => {
-    // ReadonlySignal from .asReadonly() should not have a working .set method
-    expect((service.isLoggedIn as any).set).not.toBeDefined();
-    expect((service.isAdmin as any).set).not.toBeDefined();
-    expect((service.authInitialized as any).set).not.toBeDefined();
+  it('should expose signals as public properties', () => {
+    expect(service.isLoggedIn).toBeDefined();
+    expect(service.isAdmin).toBeDefined();
+    expect(service.authInitialized).toBeDefined();
   });
 });

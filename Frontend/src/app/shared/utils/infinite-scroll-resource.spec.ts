@@ -91,13 +91,18 @@ describe('InfiniteScrollResource', () => {
     expect(resource.loadingMore()).toBe(false);
   });
 
-  it('should clear items when load is called', () => {
+  it('should keep previous items visible while loading new data', () => {
     resource.load(of({ items: ['old'], totalCount: 1, page: 1, pageSize: 10, totalPages: 1 }));
     expect(resource.items()).toEqual(['old']);
 
     const subject = new Subject<PaginatedResponse<string>>();
     resource.load(subject.asObservable());
-    expect(resource.items()).toEqual([]);
+    expect(resource.items()).toEqual(['old']);
+    expect(resource.loading()).toBe(true);
+
+    subject.next({ items: ['new'], totalCount: 1, page: 1, pageSize: 10, totalPages: 1 });
+    expect(resource.items()).toEqual(['new']);
+    expect(resource.loading()).toBe(false);
   });
 
   it('should reset to initial state', () => {
@@ -121,6 +126,6 @@ describe('InfiniteScrollResource', () => {
     // Second load should be ignored
     resource.load(of({ items: ['x'], totalCount: 1, page: 1, pageSize: 10, totalPages: 1 }));
     expect(resource.loading()).toBe(true);
-    expect(resource.items()).toEqual([]);
+    expect(resource.items()).toEqual([]);  // Still empty since first load hasn't resolved
   });
 });

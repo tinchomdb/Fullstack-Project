@@ -15,19 +15,12 @@ export class StripeService {
   private elements: StripeElements | null = null;
   private paymentElement: StripePaymentElement | null = null;
 
-  private readonly _isReady = signal(false);
-  private readonly _isFormComplete = signal(false);
-  private readonly _isInitializing = signal(false);
-  private readonly _isMounted = signal(false);
-  private readonly _clientSecret = signal<string | null>(null);
-  private readonly _paymentIntentId = signal<string | null>(null);
-
-  readonly isReady = this._isReady.asReadonly();
-  readonly isFormComplete = this._isFormComplete.asReadonly();
-  readonly isInitializing = this._isInitializing.asReadonly();
-  readonly isMounted = this._isMounted.asReadonly();
-  readonly clientSecret = this._clientSecret.asReadonly();
-  readonly paymentIntentId = this._paymentIntentId.asReadonly();
+  readonly isReady = signal(false);
+  readonly isFormComplete = signal(false);
+  readonly isInitializing = signal(false);
+  readonly isMounted = signal(false);
+  readonly clientSecret = signal<string | null>(null);
+  readonly paymentIntentId = signal<string | null>(null);
 
   private readonly elementId = 'payment-element';
 
@@ -40,7 +33,7 @@ export class StripeService {
     return this.paymentApi.createPaymentIntent({ amount, email, cartId, shippingCost }).pipe(
       switchMap((response) => {
         if (response.paymentIntentId) {
-          this._paymentIntentId.set(response.paymentIntentId);
+          this.paymentIntentId.set(response.paymentIntentId);
         }
         return from(this.initialize(response.clientSecret));
       }),
@@ -54,10 +47,10 @@ export class StripeService {
 
     this.paymentElement = this.elements.create('payment');
     this.paymentElement.mount(`#${this.elementId}`);
-    this._isMounted.set(true);
+    this.isMounted.set(true);
 
     this.paymentElement.on('change', (event) => {
-      this._isFormComplete.set(event.complete);
+      this.isFormComplete.set(event.complete);
     });
   }
 
@@ -131,18 +124,18 @@ export class StripeService {
     if (this.paymentElement) {
       this.paymentElement.destroy();
       this.paymentElement = null;
-      this._isFormComplete.set(false);
-      this._isMounted.set(false);
+      this.isFormComplete.set(false);
+      this.isMounted.set(false);
     }
   }
 
   reset(): void {
     this.unmountPaymentElement();
     this.elements = null;
-    this._clientSecret.set(null);
-    this._paymentIntentId.set(null);
-    this._isReady.set(false);
-    this._isInitializing.set(false);
+    this.clientSecret.set(null);
+    this.paymentIntentId.set(null);
+    this.isReady.set(false);
+    this.isInitializing.set(false);
   }
 
   private async initialize(clientSecret: string): Promise<void> {
@@ -150,10 +143,10 @@ export class StripeService {
       throw new Error('Stripe already initializing');
     }
 
-    this._isInitializing.set(true);
+    this.isInitializing.set(true);
 
     try {
-      this._clientSecret.set(clientSecret);
+      this.clientSecret.set(clientSecret);
 
       if (!this.stripe) {
         this.stripe = await loadStripe(environment.stripePublishableKey, {
@@ -170,9 +163,9 @@ export class StripeService {
       }
 
       this.elements = this.stripe.elements({ clientSecret });
-      this._isReady.set(true);
+      this.isReady.set(true);
     } finally {
-      this._isInitializing.set(false);
+      this.isInitializing.set(false);
     }
   }
 }

@@ -19,26 +19,16 @@ export class FiltersService {
   private readonly router = inject(Router);
   private readonly categoriesService = inject(CategoriesService);
 
-  // Signal-based state
-  private readonly minPriceSignal = signal<number | null>(null);
-  private readonly maxPriceSignal = signal<number | null>(null);
-  private readonly currentSortOptionSignal = signal<SortOption>(DEFAULT_SORT_OPTION);
-  private readonly pageSignal = signal(1);
-  private readonly pageSizeSignal = signal(DEFAULT_PAGE_SIZE);
-  private readonly categoryIdSignal = signal<string | null>(null);
-  private readonly searchTermSignal = signal<string | null>(null);
+  readonly minPrice = signal<number | null>(null);
+  readonly maxPrice = signal<number | null>(null);
+  readonly currentSortOption = signal<SortOption>(DEFAULT_SORT_OPTION);
+  readonly page = signal(1);
+  readonly pageSize = signal(DEFAULT_PAGE_SIZE);
+  readonly categoryId = signal<string | null>(null);
+  readonly searchTerm = signal<string | null>(null);
 
-  // Public readonly signals
-  readonly minPrice = this.minPriceSignal.asReadonly();
-  readonly maxPrice = this.maxPriceSignal.asReadonly();
-  readonly currentSortOption = this.currentSortOptionSignal.asReadonly();
   readonly currentSortValue = computed(() => this.currentSortOption().value);
-  readonly page = this.pageSignal.asReadonly();
-  readonly pageSize = this.pageSizeSignal.asReadonly();
-  readonly categoryId = this.categoryIdSignal.asReadonly();
-  readonly searchTerm = this.searchTermSignal.asReadonly();
 
-  // Computed signals derived from sort option
   readonly sortBy = computed(() => this.currentSortOption().sortBy);
   readonly sortDirection = computed(() => this.currentSortOption().sortDirection);
 
@@ -83,7 +73,7 @@ export class FiltersService {
   }
 
   setSortOption(option: SortOption): void {
-    this.currentSortOptionSignal.set(option);
+    this.currentSortOption.set(option);
     this.resetToFirstPage();
   }
 
@@ -100,28 +90,28 @@ export class FiltersService {
         (opt) => opt.sortBy === filters.sortBy && opt.sortDirection === filters.sortDirection,
       );
       if (sortOption) {
-        this.currentSortOptionSignal.set(sortOption);
+        this.currentSortOption.set(sortOption);
       }
     }
 
     if (filters.page !== undefined && filters.page >= 1) {
-      this.pageSignal.set(filters.page);
+      this.page.set(filters.page);
     }
     if (filters.pageSize !== undefined) {
-      this.pageSizeSignal.set(filters.pageSize);
+      this.pageSize.set(filters.pageSize);
     }
 
-    this.categoryIdSignal.set(filters.categoryId ?? null);
+    this.categoryId.set(filters.categoryId ?? null);
 
-    this.searchTermSignal.set(filters.searchTerm?.trim() || null);
+    this.searchTerm.set(filters.searchTerm?.trim() || null);
   }
 
   loadNextPage(): void {
-    this.pageSignal.update((current) => current + 1);
+    this.page.update((current) => current + 1);
   }
 
   resetToFirstPage(): void {
-    this.pageSignal.set(1);
+    this.page.set(1);
   }
 
   private setupRouterSync(): void {

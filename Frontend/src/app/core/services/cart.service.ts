@@ -36,8 +36,7 @@ export class CartService {
   readonly loading = this.cartResource.loading;
   readonly error = this.cartResource.error;
   readonly cartUserId = computed(() => this.cart()?.userId ?? null);
-  private readonly _cartReady = signal(false);
-  readonly cartReady = this._cartReady.asReadonly();
+  readonly cartReady = signal(false);
 
   // Computed properties
   readonly itemCount = computed(
@@ -71,8 +70,8 @@ export class CartService {
     this.cartResource.load(
       this.cartApi.getActiveCart().pipe(
         tap({
-          next: () => this._cartReady.set(true),
-          error: () => this._cartReady.set(true),
+          next: () => this.cartReady.set(true),
+          error: () => this.cartReady.set(true),
         }),
       ),
     );

@@ -1,30 +1,23 @@
-import { Signal, WritableSignal, computed, signal } from '@angular/core';
+import { computed, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LoadingOverlayService } from '../../core/services/loading-overlay.service';
 import { PaginatedResponse } from '../../core/models/paginated-response.model';
 
 export class PaginatedResource<T> {
-  private readonly responseSignal: WritableSignal<PaginatedResponse<T> | null>;
-  private readonly loadingSignal = signal(false);
-  private readonly errorSignal = signal<string | null>(null);
-
-  readonly response: Signal<PaginatedResponse<T> | null>;
-  readonly items: Signal<T[]>;
-  readonly totalCount: Signal<number>;
-  readonly totalPages: Signal<number>;
-  readonly currentPage: Signal<number>;
-  readonly loading: Signal<boolean>;
-  readonly error: Signal<string | null>;
-  readonly hasData: Signal<boolean>;
+  readonly response;
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+  readonly items;
+  readonly totalCount;
+  readonly totalPages;
+  readonly currentPage;
+  readonly hasData;
 
   constructor(
     private readonly loadingMessage = 'Loading...',
     private readonly loadingOverlayService?: LoadingOverlayService,
   ) {
-    this.responseSignal = signal(null);
-    this.response = this.responseSignal.asReadonly();
-    this.loading = this.loadingSignal.asReadonly();
-    this.error = this.errorSignal.asReadonly();
+    this.response = signal<PaginatedResponse<T> | null>(null);
 
     this.items = computed(() => this.response()?.items ?? []);
     this.totalCount = computed(() => this.response()?.totalCount ?? 0);
@@ -34,31 +27,31 @@ export class PaginatedResource<T> {
   }
 
   load(source$: Observable<PaginatedResponse<T>>): void {
-    if (this.loadingSignal()) {
+    if (this.loading()) {
       return;
     }
 
-    this.loadingSignal.set(true);
-    this.errorSignal.set(null);
+    this.loading.set(true);
+    this.error.set(null);
     this.loadingOverlayService?.show(this.loadingMessage);
 
     source$.subscribe({
       next: (value) => {
-        this.responseSignal.set(value);
-        this.loadingSignal.set(false);
+        this.response.set(value);
+        this.loading.set(false);
         this.loadingOverlayService?.hide();
       },
       error: (err) => {
-        this.errorSignal.set(err?.message ?? 'An unexpected error occurred.');
-        this.loadingSignal.set(false);
+        this.error.set(err?.message ?? 'An unexpected error occurred.');
+        this.loading.set(false);
         this.loadingOverlayService?.hide();
       },
     });
   }
 
   reset(): void {
-    this.responseSignal.set(null);
-    this.loadingSignal.set(false);
-    this.errorSignal.set(null);
+    this.response.set(null);
+    this.loading.set(false);
+    this.error.set(null);
   }
 }

@@ -19,16 +19,12 @@ export class AuthService {
   private readonly msalBroadcastService = inject(MsalBroadcastService);
   private readonly destroyRef = inject(DestroyRef);
 
-  private readonly _isLoggedIn = signal(false);
-  private readonly _isAdmin = signal(false);
-  private readonly _authInitialized = signal(false);
-
-  readonly isLoggedIn = this._isLoggedIn.asReadonly();
-  readonly isAdmin = this._isAdmin.asReadonly();
-  readonly authInitialized = this._authInitialized.asReadonly();
+  readonly isLoggedIn = signal(false);
+  readonly isAdmin = signal(false);
+  readonly authInitialized = signal(false);
 
   readonly userId = computed(() => {
-    this._isLoggedIn();
+    this.isLoggedIn();
     const account = this.getActiveAccount();
     return account?.localAccountId;
   });
@@ -113,9 +109,9 @@ export class AuthService {
     if (account) {
       this.refreshTokenClaims(account);
     } else {
-      this._isLoggedIn.set(false);
-      this._isAdmin.set(false);
-      this._authInitialized.set(true);
+      this.isLoggedIn.set(false);
+      this.isAdmin.set(false);
+      this.authInitialized.set(true);
     }
   }
 
@@ -142,9 +138,9 @@ export class AuthService {
           if (result.account) {
             this.msalService.instance.setActiveAccount(result.account);
             this.updateAdminStatus(result.account);
-            this._isLoggedIn.set(true);
+            this.isLoggedIn.set(true);
           }
-          this._authInitialized.set(true);
+          this.authInitialized.set(true);
         },
         error: (error: unknown) => {
           if (error instanceof Error && error.name === 'InteractionRequiredAuthError') {
@@ -152,13 +148,13 @@ export class AuthService {
             // Downgrade to guest state to avoid immediate redirect loop
             console.info('Session expired. Downgrading to guest state.');
             this.msalService.instance.setActiveAccount(null);
-            this._isLoggedIn.set(false);
-            this._isAdmin.set(false);
+            this.isLoggedIn.set(false);
+            this.isAdmin.set(false);
           } else {
             console.error('Error refreshing token claims:', error);
-            this._isLoggedIn.set(false);
+            this.isLoggedIn.set(false);
           }
-          this._authInitialized.set(true);
+          this.authInitialized.set(true);
         },
       });
   }
@@ -166,6 +162,6 @@ export class AuthService {
   private updateAdminStatus(account: AccountInfo): void {
     const claims = account.idTokenClaims as Record<string, unknown> | undefined;
     const roles = (claims?.['roles'] as string[]) || [];
-    this._isAdmin.set(roles.includes('admin'));
+    this.isAdmin.set(roles.includes('admin'));
   }
 }

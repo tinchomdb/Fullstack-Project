@@ -63,9 +63,9 @@ describe('StripeService', () => {
   });
 
   it('should reset all state', () => {
-    (service as any)._clientSecret.set('secret_123');
-    (service as any)._paymentIntentId.set('pi_123');
-    (service as any)._isReady.set(true);
+    service.clientSecret.set('secret_123');
+    service.paymentIntentId.set('pi_123');
+    service.isReady.set(true);
 
     service.reset();
 
@@ -83,7 +83,7 @@ describe('StripeService', () => {
       on: jasmine.createSpy('on'),
     };
     (service as any).paymentElement = mockPaymentElement;
-    (service as any)._isMounted.set(true);
+    service.isMounted.set(true);
 
     service.unmountPaymentElement();
 
@@ -111,7 +111,7 @@ describe('StripeService', () => {
   });
 
   it('should poll orderApi and return orderId on completePayment', (done) => {
-    (service as any)._paymentIntentId.set('pi_123');
+    service.paymentIntentId.set('pi_123');
 
     const mockOrder = {
       id: 'order-from-webhook',
@@ -135,7 +135,7 @@ describe('StripeService', () => {
   });
 
   it('should retry polling on 404 and succeed when order appears', (done) => {
-    (service as any)._paymentIntentId.set('pi_123');
+    service.paymentIntentId.set('pi_123');
 
     const notFoundError = new HttpErrorResponse({ status: 404, statusText: 'Not Found' });
     const mockOrder = {

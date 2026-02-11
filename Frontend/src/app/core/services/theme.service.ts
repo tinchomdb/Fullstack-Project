@@ -9,12 +9,11 @@ export type Theme = 'light' | 'dark' | 'auto';
 export class ThemeService {
   private readonly platformId = inject(PLATFORM_ID);
 
-  private readonly theme = signal<Theme>('auto');
+  readonly currentTheme = signal<Theme>('auto');
   private readonly systemTheme = signal<'light' | 'dark'>('light');
 
-  readonly currentTheme = this.theme.asReadonly();
   readonly effectiveTheme = computed((): 'light' | 'dark' =>
-    this.theme() === 'auto' ? this.systemTheme() : (this.theme() as 'light' | 'dark'),
+    this.currentTheme() === 'auto' ? this.systemTheme() : (this.currentTheme() as 'light' | 'dark'),
   );
 
   constructor() {
@@ -30,7 +29,7 @@ export class ThemeService {
   }
 
   setTheme(theme: Theme): void {
-    this.theme.set(theme);
+    this.currentTheme.set(theme);
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('theme', theme);
     }
@@ -49,7 +48,7 @@ export class ThemeService {
   private initializeTheme(): void {
     const saved = localStorage.getItem('theme') as Theme;
     if (saved && ['light', 'dark', 'auto'].includes(saved)) {
-      this.theme.set(saved);
+      this.currentTheme.set(saved);
     }
 
     this.updateSystemTheme();
