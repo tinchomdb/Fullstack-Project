@@ -38,7 +38,6 @@ export class InfiniteScrollResource<T> {
       return;
     }
 
-    this.accumulatedItemsSignal.set([]);
     this.loadingSignal.set(true);
     this.errorSignal.set(null);
     this.loadingOverlayService?.show(this.loadingMessage);

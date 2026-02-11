@@ -58,7 +58,7 @@ export class ProductsService {
   }
 
   loadFeaturedProducts(categoryId?: string, limit?: number): void {
-    this.featuredProductsResource.load(this.getFeaturedProducts(categoryId, limit));
+    this.featuredProductsResource.load(this.getFeaturedProducts(categoryId, limit), false);
   }
 
   createProduct(product: Partial<Product>): Observable<Product> {

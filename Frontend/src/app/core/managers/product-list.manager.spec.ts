@@ -154,4 +154,38 @@ describe('ProductListManager with featured enabled', () => {
     TestBed.flushEffects();
     expect(productsServiceSpy.loadFeaturedProducts).toHaveBeenCalledWith(undefined, 4);
   });
+
+  it('should not reload featured products when sort changes', () => {
+    TestBed.flushEffects();
+    productsServiceSpy.loadFeaturedProducts.calls.reset();
+    productsServiceSpy.loadProducts.calls.reset();
+
+    (filtersServiceSpy.sortBy as unknown as ReturnType<typeof signal>).set('price');
+    TestBed.flushEffects();
+
+    expect(productsServiceSpy.loadProducts).toHaveBeenCalled();
+    expect(productsServiceSpy.loadFeaturedProducts).not.toHaveBeenCalled();
+  });
+
+  it('should not reload featured products when sort direction changes', () => {
+    TestBed.flushEffects();
+    productsServiceSpy.loadFeaturedProducts.calls.reset();
+    productsServiceSpy.loadProducts.calls.reset();
+
+    (filtersServiceSpy.sortDirection as unknown as ReturnType<typeof signal>).set('asc');
+    TestBed.flushEffects();
+
+    expect(productsServiceSpy.loadProducts).toHaveBeenCalled();
+    expect(productsServiceSpy.loadFeaturedProducts).not.toHaveBeenCalled();
+  });
+
+  it('should reload featured products when category changes', () => {
+    TestBed.flushEffects();
+    productsServiceSpy.loadFeaturedProducts.calls.reset();
+
+    (filtersServiceSpy.categoryId as unknown as ReturnType<typeof signal>).set('cat-123');
+    TestBed.flushEffects();
+
+    expect(productsServiceSpy.loadFeaturedProducts).toHaveBeenCalledWith('cat-123', 4);
+  });
 });

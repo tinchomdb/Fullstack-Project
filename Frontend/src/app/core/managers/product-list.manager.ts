@@ -45,9 +45,19 @@ export class ProductListManager {
 
       untracked(() => {
         this.filtersService.resetToFirstPage();
-        this.loadProducts();
+        this.loadProductList();
       });
     });
+
+    if (this.config.loadFeatured) {
+      effect(() => {
+        const categoryId = this.filtersService.categoryId() ?? undefined;
+
+        untracked(() => {
+          this.productsService.loadFeaturedProducts(categoryId, this.config.featuredLimit);
+        });
+      });
+    }
   }
 
   loadMore(): void {
@@ -55,12 +65,7 @@ export class ProductListManager {
     this.productsService.loadMoreProducts(this.filtersService.apiParams());
   }
 
-  private loadProducts(): void {
+  private loadProductList(): void {
     this.productsService.loadProducts(this.filtersService.apiParams());
-
-    if (this.config.loadFeatured) {
-      const categoryId = this.filtersService.categoryId() ?? undefined;
-      this.productsService.loadFeaturedProducts(categoryId, this.config.featuredLimit);
-    }
   }
 }
