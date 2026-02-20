@@ -42,6 +42,7 @@ When generating code, follow these best practices:
 - Use the `inject()` function instead of constructor injection
 - Avoid BEM-style class names. Use simple, flat class names instead
 - Use tokens for styling
+- Never use ::ng-deep. Use better component design to avoid the need for deep styling.
 
 
 C# and .NET Best Practices:

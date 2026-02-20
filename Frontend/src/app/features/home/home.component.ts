@@ -10,6 +10,7 @@ import { FeaturedProductsComponent } from '../../shared/ui/featured-products/fea
 import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories/featured-categories.component';
 import { BannerCarouselComponent } from '../../shared/ui/banner-carousel/banner-carousel.component';
 import { ProductListSectionComponent } from '../../shared/ui/product-list-section/product-list-section.component';
+import { SectionBlockComponent } from '../../shared/ui/section-block/section-block.component';
 import { CarouselService } from '../../core/services/carousel.service';
 
 @Component({
@@ -19,6 +20,7 @@ import { CarouselService } from '../../core/services/carousel.service';
     FeaturedCategoriesComponent,
     BannerCarouselComponent,
     ProductListSectionComponent,
+    SectionBlockComponent,
   ],
   providers: [
     ProductListManager,

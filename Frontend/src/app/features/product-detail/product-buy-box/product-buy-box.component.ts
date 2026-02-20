@@ -4,10 +4,19 @@ import { QuantitySelectorComponent } from '../../../shared/ui/quantity-selector/
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { SellerInfoComponent } from '../../../shared/ui/seller-info/seller-info.component';
 import { ProductPriceComponent } from '../../../shared/ui/product-price/product-price.component';
+import { DeliveryIconComponent } from '../../../shared/ui/icons/delivery-icon.component';
+import { CheckCircleIconComponent } from '../../../shared/ui/icons/check-circle-icon.component';
 
 @Component({
   selector: 'app-product-buy-box',
-  imports: [QuantitySelectorComponent, ButtonComponent, SellerInfoComponent, ProductPriceComponent],
+  imports: [
+    QuantitySelectorComponent,
+    ButtonComponent,
+    SellerInfoComponent,
+    ProductPriceComponent,
+    DeliveryIconComponent,
+    CheckCircleIconComponent,
+  ],
   templateUrl: './product-buy-box.component.html',
   styleUrl: './product-buy-box.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

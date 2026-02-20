@@ -7,10 +7,11 @@ import { SORT_OPTIONS } from '../../core/models/sort-option.model';
 import { Product } from '../../core/models/product.model';
 import { HeadingComponent } from '../../shared/ui/heading/heading.component';
 import { ProductListSectionComponent } from '../../shared/ui/product-list-section/product-list-section.component';
+import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-search-results',
-  imports: [HeadingComponent, ProductListSectionComponent],
+  imports: [HeadingComponent, ProductListSectionComponent, EmptyStateComponent],
   providers: [
     ProductListManager,
     { provide: PRODUCT_LIST_CONFIG, useValue: { loadFeatured: false } },

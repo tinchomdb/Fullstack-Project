@@ -2,11 +2,8 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background: linear-gradient(
-    180deg,
-    var(--color-surface-primary) 0%,
-    var(--color-surface-gradient-end) 100%
-  );
+  overflow-x: clip;
+  background: var(--color-surface-primary);
   color: var(--color-text-primary);
 }
 
@@ -24,13 +21,4 @@
     display: block;
     margin-bottom: var(--space-md);
   }
-}
-
-/* Use this on elements that must stretch full width (e.g. hero, background strips) */
-.full-bleed {
-  width: 100vw;
-  margin-left: 50%;
-  transform: translateX(-50%);
-  max-width: none;
-  box-sizing: border-box;
 }

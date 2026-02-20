@@ -13,10 +13,17 @@ import { CarouselSlide } from '../../../core/models/carousel-slide.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
 import { FormFieldComponent } from '../../../shared/ui/form-field/form-field.component';
 import { FormCheckboxComponent } from '../../../shared/ui/form-checkbox/form-checkbox.component';
+import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-admin-carousel',
-  imports: [ReactiveFormsModule, ButtonComponent, FormFieldComponent, FormCheckboxComponent],
+  imports: [
+    ReactiveFormsModule,
+    ButtonComponent,
+    FormFieldComponent,
+    FormCheckboxComponent,
+    EmptyStateComponent,
+  ],
   templateUrl: './admin-carousel.component.html',
   styleUrl: './admin-carousel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

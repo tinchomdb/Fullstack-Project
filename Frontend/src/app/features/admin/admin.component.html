@@ -8,8 +8,10 @@
     <app-button
       class="tab-button"
       [class.active]="activeTab() === 'products'"
+      [active]="activeTab() === 'products'"
       (click)="setActiveTab('products')"
       routerLink="products"
+      variant="ghost"
       shape="rounded"
     >
       Products
@@ -17,8 +19,10 @@
     <app-button
       class="tab-button"
       [class.active]="activeTab() === 'categories'"
+      [active]="activeTab() === 'categories'"
       (click)="setActiveTab('categories')"
       routerLink="categories"
+      variant="ghost"
       shape="rounded"
     >
       Categories
@@ -26,8 +30,10 @@
     <app-button
       class="tab-button"
       [class.active]="activeTab() === 'carousel'"
+      [active]="activeTab() === 'carousel'"
       (click)="setActiveTab('carousel')"
       routerLink="carousel"
+      variant="ghost"
       shape="rounded"
     >
       Carousel

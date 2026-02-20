@@ -18,9 +18,10 @@
   />
 
   @if (products().length === 0 && !loading()) {
-    <div class="no-results">
-      <p>No products found matching your search.</p>
-      <p class="suggestion">Try different keywords or browse our categories.</p>
-    </div>
+    <app-empty-state
+      icon="search"
+      [heading]="'No products found'"
+      [description]="'No products found matching your search. Try different keywords or browse our categories.'"
+    />
   }
 </section>

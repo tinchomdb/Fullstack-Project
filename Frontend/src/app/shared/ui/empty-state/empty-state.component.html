@@ -1,0 +1,31 @@
+<div class="empty-state">
+  <div class="empty-icon">
+    @switch (icon()) {
+      @case ('search') {
+        <app-search-icon [size]="48" [strokeWidth]="1.5" />
+      }
+      @case ('package') {
+        <app-package-icon [size]="48" />
+      }
+      @case ('image') {
+        <app-image-icon [size]="48" />
+      }
+      @case ('folder') {
+        <app-folder-icon [size]="48" />
+      }
+      @default {
+        <app-search-icon [size]="48" [strokeWidth]="1.5" />
+      }
+    }
+  </div>
+
+  <h3 class="empty-heading">{{ heading() }}</h3>
+
+  @if (description()) {
+    <p class="empty-description">{{ description() }}</p>
+  }
+
+  @if (ctaLabel()) {
+    <app-button (click)="onCtaClick()">{{ ctaLabel() }}</app-button>
+  }
+</div>

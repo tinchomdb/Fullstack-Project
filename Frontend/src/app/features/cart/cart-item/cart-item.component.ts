@@ -1,5 +1,6 @@
 import { Component, input, output, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { CurrencyPipe } from '@angular/common';
 
 import { CartItem } from '../../../core/models/cart-item.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
@@ -8,7 +9,7 @@ import { TrashIconComponent } from '../../../shared/ui/icons/trash-icon.componen
 
 @Component({
   selector: 'app-cart-item',
-  imports: [ButtonComponent, QuantitySelectorComponent, TrashIconComponent],
+  imports: [ButtonComponent, QuantitySelectorComponent, TrashIconComponent, CurrencyPipe],
   templateUrl: './cart-item.component.html',
   styleUrl: './cart-item.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

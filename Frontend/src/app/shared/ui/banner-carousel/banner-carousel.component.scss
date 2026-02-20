@@ -1,19 +1,18 @@
 @use '../../../../styles/mixins' as *;
 
-$carousel-height: 600px;
+$carousel-height-mobile: 320px;
+$carousel-height-desktop: 600px;
 
 .carousel-container {
   position: relative;
   width: calc(100% + (2 * var(--space-responsive-md)));
-  height: $carousel-height;
+  height: clamp(#{$carousel-height-mobile}, 50vw, #{$carousel-height-desktop});
   overflow: visible;
   margin-top: calc(var(--space-responsive-sm) * -1);
   margin-right: calc(var(--space-responsive-md) * -1);
   margin-left: calc(var(--space-responsive-md) * -1);
-  margin-bottom: calc(
-    $carousel-height / -2
-  ); // Pull up content by 50% of height so bottom half goes behind
-  z-index: 0; // Lower z-index so content can appear on top
+  margin-bottom: calc(clamp(#{$carousel-height-mobile}, 50vw, #{$carousel-height-desktop}) / -2);
+  z-index: 0;
 }
 
 .carousel-wrapper {
@@ -82,5 +81,43 @@ $carousel-height: 600px;
 
   @include media-md {
     right: var(--space-6);
+  }
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 40%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: var(--space-2);
+  z-index: 3;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+
+  @include media-md {
+    bottom: 45%;
+  }
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-base);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.8);
+  }
+
+  &.active {
+    background: var(--color-accent-primary);
+    transform: scale(1.2);
   }
 }

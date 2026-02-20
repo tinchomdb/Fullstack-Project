@@ -27,3 +27,12 @@ body {
     transform: rotate(360deg);
   }
 }
+
+/* Use this on elements that must stretch full width (e.g. hero, background strips) */
+.full-bleed {
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  max-width: none;
+  box-sizing: border-box;
+}

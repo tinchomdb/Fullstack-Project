@@ -71,15 +71,34 @@ button:disabled {
 :host([data-variant='secondary']) button {
   background: var(--color-surface-muted);
   color: var(--color-text-primary);
-  border: var(--border-subtle);
+  border: 1px solid var(--color-border-default);
   box-shadow: none;
 }
 
 :host([data-variant='secondary']) button:hover {
   background: var(--color-surface-primary);
+  border-color: var(--color-accent-interactive);
 }
 
 :host([data-variant='danger']) button {
   background: var(--color-border-critical);
   color: var(--color-button-text);
+}
+
+:host([data-variant='ghost']) button {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: none;
+  box-shadow: none;
+}
+
+:host([data-variant='ghost']) button:hover {
+  background: var(--color-surface-muted);
+  transform: none;
+  box-shadow: none;
+}
+
+:host([data-variant='ghost'][data-active]) button {
+  color: var(--color-accent-interactive);
+  font-weight: var(--font-weight-semibold);
 }

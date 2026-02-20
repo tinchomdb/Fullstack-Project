@@ -41,9 +41,11 @@
     <h3>Current Slides ({{ slides().length }})</h3>
 
     @if (slides().length === 0) {
-      <div class="empty-state">
-        <p>No slides yet. Add your first slide above.</p>
-      </div>
+      <app-empty-state
+        icon="image"
+        heading="No slides yet"
+        description="Add your first carousel slide using the form above."
+      />
     }
 
     <div class="slides-list">

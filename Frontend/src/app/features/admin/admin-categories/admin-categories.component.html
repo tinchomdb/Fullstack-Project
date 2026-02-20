@@ -22,7 +22,13 @@
 
   <div class="categories-tree">
     @if (categories().length === 0 && !loading()) {
-      <p class="no-categories">No categories found. Create your first category!</p>
+      <app-empty-state
+        icon="folder"
+        heading="No categories found"
+        description="Create your first category to organize products."
+        ctaLabel="Add Category"
+        [ctaAction]="openCreateForm.bind(this)"
+      />
     }
 
     @for (node of categoryTree(); track node.category.id) {

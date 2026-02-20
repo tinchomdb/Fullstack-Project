@@ -3,11 +3,19 @@ import { Router } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 
 import { ButtonComponent } from '../../shared/ui/button/button.component';
+import { SuccessIconComponent } from '../../shared/ui/icons/success-icon.component';
+import { AlertCircleIconComponent } from '../../shared/ui/icons/alert-circle-icon.component';
 import { OrderStateService } from '../../core/services/order-state.service';
 
 @Component({
   selector: 'app-order-success',
-  imports: [CurrencyPipe, DatePipe, ButtonComponent],
+  imports: [
+    CurrencyPipe,
+    DatePipe,
+    ButtonComponent,
+    SuccessIconComponent,
+    AlertCircleIconComponent,
+  ],
   templateUrl: './order-success.component.html',
   styleUrl: './order-success.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

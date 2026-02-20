@@ -1,7 +1,6 @@
 @use '../../../../styles/mixins' as *;
 
 .featured-products {
-  margin-bottom: var(--space-responsive-lg);
   --row-height-sm: 200px;
   --row-height-md: 250px;
   --row-height-lg: 300px;

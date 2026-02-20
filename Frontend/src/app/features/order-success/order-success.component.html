@@ -2,18 +2,7 @@
   <div class="container">
     @if (hasOrder()) {
       <div class="icon success">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-          <polyline points="22 4 12 14.01 9 11.01"></polyline>
-        </svg>
+        <app-success-icon [size]="48" />
       </div>
 
       <h1 class="title">Order Placed Successfully!</h1>
@@ -52,6 +41,23 @@
       <div class="actions">
         <app-button variant="primary" size="md" (click)="continueShopping()">
           Continue Shopping
+        </app-button>
+      </div>
+    } @else {
+      <div class="icon error">
+        <app-alert-circle-icon [size]="48" />
+      </div>
+
+      <h1 class="title error">No Order Found</h1>
+
+      <p class="message">
+        We couldn't find an order to display. You may have refreshed the page or arrived here by
+        mistake.
+      </p>
+
+      <div class="actions">
+        <app-button variant="primary" size="md" (click)="continueShopping()">
+          Go to Shop
         </app-button>
       </div>
     }

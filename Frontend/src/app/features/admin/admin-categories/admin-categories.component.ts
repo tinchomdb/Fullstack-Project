@@ -2,6 +2,7 @@ import { Component, inject, signal, ChangeDetectionStrategy } from '@angular/cor
 import { CategoriesService } from '../../../core/services/categories.service';
 import { Category } from '../../../core/models/category.model';
 import { ButtonComponent } from '../../../shared/ui/button/button.component';
+import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { AdminCategoryTreeItemComponent } from './admin-category-tree-item/admin-category-tree-item.component';
 import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.component';
 import {
@@ -13,6 +14,7 @@ import {
   selector: 'app-admin-categories',
   imports: [
     ButtonComponent,
+    EmptyStateComponent,
     AdminCategoryTreeItemComponent,
     ModalFormComponent,
     AdminCategoryFormComponent,

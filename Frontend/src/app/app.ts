@@ -6,6 +6,7 @@ import { NavbarComponent } from './shared/ui/navbar/navbar.component';
 import { FooterComponent } from './shared/ui/footer/footer.component';
 import { LoadingOverlayComponent } from './shared/ui/loading-overlay/loading-overlay.component';
 import { BreadcrumbComponent } from './shared/ui/breadcrumb/breadcrumb.component';
+import { ToastContainerComponent } from './shared/ui/toast-container/toast-container.component';
 import { CartService } from './core/services/cart.service';
 import { CategoriesService } from './core/services/categories.service';
 
@@ -17,6 +18,7 @@ import { CategoriesService } from './core/services/categories.service';
     FooterComponent,
     LoadingOverlayComponent,
     BreadcrumbComponent,
+    ToastContainerComponent,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',

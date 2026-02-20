@@ -12,6 +12,7 @@ import { LoadingOverlayService } from './loading-overlay.service';
 import { AlertService } from './alert.service';
 import { CartApiService, type ValidateCheckoutResponse } from './cart-api.service';
 import { OrderStateService } from './order-state.service';
+import { ToastService } from './toast.service';
 
 export type { CheckoutRequest } from './cart-api.service';
 export type { ValidateCheckoutResponse } from './cart-api.service';
@@ -24,6 +25,7 @@ export class CartService {
   private readonly alertService = inject(AlertService);
   private readonly cartApi = inject(CartApiService);
   private readonly orderState = inject(OrderStateService);
+  private readonly toastService = inject(ToastService);
 
   private readonly cartResource = new Resource<Cart | null>(
     null,
@@ -85,13 +87,21 @@ export class CartService {
           sellerId: product.seller.id,
           quantity,
         })
-        .pipe(catchError((error) => this.handleStockError(error))),
+        .pipe(
+          tap(() => this.toastService.success(`${product.name} added to cart`)),
+          catchError((error) => this.handleStockError(error)),
+        ),
       false,
     );
   }
 
   removeFromCart(productId: string): void {
-    this.cartResource.load(this.cartApi.removeFromCart(productId), false);
+    this.cartResource.load(
+      this.cartApi
+        .removeFromCart(productId)
+        .pipe(tap(() => this.toastService.info('Item removed from cart'))),
+      false,
+    );
   }
 
   updateQuantity(productId: string, quantity: number): void {
@@ -111,7 +121,10 @@ export class CartService {
   }
 
   clearCart(): void {
-    this.cartResource.load(this.cartApi.clearCart(), false);
+    this.cartResource.load(
+      this.cartApi.clearCart().pipe(tap(() => this.toastService.info('Cart cleared'))),
+      false,
+    );
   }
 
   checkout(shippingCost = 0): Observable<Order> {
@@ -154,6 +167,7 @@ export class CartService {
           : 'This product is currently out of stock.';
 
       this.alertService.show(message);
+      this.toastService.error(message);
     }
 
     return throwError(() => error);

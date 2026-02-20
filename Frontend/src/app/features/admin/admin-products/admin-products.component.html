@@ -44,7 +44,13 @@
   }
 
   @if (!loading() && products().length === 0) {
-    <p class="no-products">No products found. Create your first product!</p>
+    <app-empty-state
+      icon="package"
+      heading="No products found"
+      description="Create your first product to get started."
+      ctaLabel="Add Product"
+      [ctaAction]="openCreateForm.bind(this)"
+    />
   }
 
   @if (products().length > 0) {

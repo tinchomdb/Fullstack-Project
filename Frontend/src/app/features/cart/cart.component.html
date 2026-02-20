@@ -3,7 +3,7 @@
 
   @if (cart(); as cartData) {
     @if (!isEmpty()) {
-      <app-sidebar-layout>
+      <app-sidebar-layout sidebarMobilePosition="bottom">
         <div main class="cart-content">
           <div class="cart-items">
             @for (item of cartData.items; track item.productId) {

@@ -55,6 +55,17 @@ export class BannerCarouselComponent implements OnDestroy {
     () => this.slides().length > 1 && !this.isTransitioning(),
   );
 
+  protected readonly activeSlideIndex = computed(() => {
+    const slides = this.slides();
+    if (slides.length <= 1) return 0;
+    const pos = this.currentPosition();
+    // Position 0 is the cloned last slide, 1..N are real slides, N+1 is cloned first
+    const index = pos - 1;
+    if (index < 0) return slides.length - 1;
+    if (index >= slides.length) return 0;
+    return index;
+  });
+
   protected readonly trackShouldDisableTransition = computed(() => this.disableTransition());
 
   constructor() {
@@ -111,6 +122,22 @@ export class BannerCarouselComponent implements OnDestroy {
 
     this.isTransitioning.set(true);
     this.currentPosition.update((position) => position - 1);
+    this.resetAutoRotate();
+  }
+
+  protected goToSlide(index: number): void {
+    if (!this.canNavigate()) {
+      return;
+    }
+
+    // Position in renderedSlides is index + 1 (because of the cloned last slide at position 0)
+    const targetPosition = index + 1;
+    if (targetPosition === this.currentPosition()) {
+      return;
+    }
+
+    this.isTransitioning.set(true);
+    this.currentPosition.set(targetPosition);
     this.resetAutoRotate();
   }
 

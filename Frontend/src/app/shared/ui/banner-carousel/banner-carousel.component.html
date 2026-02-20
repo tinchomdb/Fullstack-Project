@@ -13,20 +13,34 @@
       }
     </div>
 
-    <app-navigation-arrow
-      class="carousel-arrow carousel-arrow--left"
-      direction="left"
-      ariaLabel="Previous slide"
-      [disabled]="!canNavigate()"
-      (clicked)="goToPrevious()"
-    />
+    @if (slides().length > 1) {
+      <app-navigation-arrow
+        class="carousel-arrow carousel-arrow--left"
+        direction="left"
+        ariaLabel="Previous slide"
+        [disabled]="!canNavigate()"
+        (clicked)="goToPrevious()"
+      />
 
-    <app-navigation-arrow
-      class="carousel-arrow carousel-arrow--right"
-      direction="right"
-      ariaLabel="Next slide"
-      [disabled]="!canNavigate()"
-      (clicked)="goToNext()"
-    />
+      <app-navigation-arrow
+        class="carousel-arrow carousel-arrow--right"
+        direction="right"
+        ariaLabel="Next slide"
+        [disabled]="!canNavigate()"
+        (clicked)="goToNext()"
+      />
+      <div class="carousel-dots" role="tablist" aria-label="Slide navigation">
+        @for (slide of slides(); track slide.id; let i = $index) {
+          <button
+            class="carousel-dot"
+            [class.active]="activeSlideIndex() === i"
+            (click)="goToSlide(i)"
+            role="tab"
+            [attr.aria-selected]="activeSlideIndex() === i"
+            [attr.aria-label]="'Go to slide ' + (i + 1)"
+          ></button>
+        }
+      </div>
+    }
   </div>
 </div>

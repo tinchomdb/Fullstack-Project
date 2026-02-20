@@ -1,16 +1,17 @@
 :root {
-  --color-surface-primary: #ffffff;
-  --color-surface-muted: #f8fafc;
+  --color-surface-primary: #eef2f7;
+  --color-surface-muted: #dfe5ef;
+  --color-surface-card: #ffffff;
   --color-surface-inverse: #0f172a;
   --color-surface-placeholder: #1f2937;
   --color-surface-placeholder-alt: #111827;
-  --color-surface-gradient-end: #eef2ff;
+  --color-surface-gradient-end: #d4dced;
   --color-surface-critical: rgba(248, 113, 113, 0.12);
   --color-surface-success: rgba(6, 125, 98, 0.12);
   --color-surface-warning: #fef3c7;
   --color-surface-overlay: rgba(15, 23, 42, 0.04);
-  --color-surface-secondary: var(--color-surface-muted);
-  --color-border-subtle: #e2e8f0;
+  --color-surface-secondary: var(--color-surface-primary);
+  --color-border-subtle: #cbd5e1;
   --color-border-critical: #f87171;
   --color-border-success: #10b981;
   --color-border-warning: #f59e0b;
@@ -25,6 +26,7 @@
   --color-text-muted: #64748b;
   --color-text-tertiary: var(--color-text-muted);
   --color-text-inverse: #f8fafc;
+  --color-overlay-backdrop: rgba(15, 23, 42, 0.5);
   --color-text-critical: #b91c1c;
   --color-text-success: #065f46;
   --color-text-warning: #78350f;
@@ -42,10 +44,6 @@
   --color-bg-surface-active: var(--color-surface-overlay);
   --color-bg-base: var(--color-surface-primary);
   --color-button-text: #0f1111;
-  --color-button-primary-bg: #ffd814;
-  --color-button-primary-hover: #f7ca00;
-  --color-button-secondary-bg: #ffa41c;
-  --color-button-secondary-hover: #ff9900;
   --color-price: #f08804;
   --color-prime: #00a8e1;
   --color-rating-star: #ffa41c;
@@ -64,10 +62,10 @@
 
   --font-family-base: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-size-xs: 0.75rem;
-  --font-size-sm: 0.85rem;
+  --font-size-sm: 0.875rem;
   --font-size-base: 1rem;
-  --font-size-md: 0.95rem;
-  --font-size-lg: 1.1rem;
+  --font-size-md: 1rem;
+  --font-size-lg: 1.125rem;
   --font-size-xl: clamp(1.5rem, 3vw, 2.25rem);
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.75rem;
@@ -96,11 +94,15 @@
   --space-8: 2rem;
   --space-10: 2.5rem;
   --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
   --space-md: var(--space-4);
 
   --space-responsive-sm: clamp(var(--space-2), 3vw, var(--space-4));
   --space-responsive-md: clamp(var(--space-4), 5vw, var(--space-8));
   --space-responsive-lg: clamp(var(--space-6), 7vw, var(--space-12));
+  --space-responsive-xl: clamp(var(--space-8), 8vw, var(--space-20));
 
   --icon-size-sm: 16px;
   --icon-size-md: 20px;
@@ -138,17 +140,27 @@
   --z-index-overlay: 1000;
   --z-index-modal: 1050;
   --z-index-popover: 1100;
+  --z-index-loading: 2000;
   --z-index-tooltip: 1200;
 
   --overlay-opacity-light: 0.5;
   --overlay-opacity-medium: 0.6;
   --overlay-opacity-dark: 0.75;
+
+  // Navbar (dark in both themes)
+  --color-navbar-bg: #0f172a;
+  --color-navbar-text: #f8fafc;
+  --color-navbar-text-secondary: rgba(248, 250, 252, 0.75);
+  --color-navbar-border: rgba(255, 255, 255, 0.1);
+  --color-navbar-surface: rgba(255, 255, 255, 0.08);
+  --color-navbar-surface-hover: rgba(255, 255, 255, 0.12);
 }
 
 // Dark theme mixin to avoid duplication
 @mixin dark-theme {
   --color-surface-primary: #0f172a;
   --color-surface-muted: #1e293b;
+  --color-surface-card: #1e293b;
   --color-surface-inverse: #ffffff;
   --color-surface-placeholder: #334155;
   --color-surface-placeholder-alt: #475569;
@@ -172,6 +184,7 @@
   --color-text-muted: #94a3b8;
   --color-text-tertiary: var(--color-text-muted);
   --color-text-inverse: #0f172a;
+  --color-overlay-backdrop: rgba(0, 0, 0, 0.6);
   --color-text-critical: #ef4444;
   --color-text-success: #10b981;
   --color-text-warning: #fbbf24;
@@ -190,10 +203,6 @@
   --color-bg-base: var(--color-surface-primary);
   --color-surface-critical: rgba(239, 68, 68, 0.12);
   --color-button-text: #0f1111;
-  --color-button-primary-bg: #ffd814;
-  --color-button-primary-hover: #f7ca00;
-  --color-button-secondary-bg: #ffa41c;
-  --color-button-secondary-hover: #ff9900;
   --color-price: #febd69;
   --color-prime: #00a8e1;
   --color-rating-star: #ffa41c;

@@ -6,21 +6,32 @@
   />
 
   @if (featuredCategories().length > 0) {
-    <app-featured-categories [categories]="featuredCategories()" />
+    <app-section-block>
+      <app-featured-categories [categories]="featuredCategories()" />
+    </app-section-block>
   }
 
   @if (featuredProducts().length > 0) {
-    <app-featured-products [products]="featuredProducts()" (addToCart)="onAddToCart($event)" />
+    <app-section-block heading="Trending Products" subtitle="Handpicked favorites just for you">
+      <app-featured-products
+        [products]="featuredProducts()"
+        [displayHeading]="false"
+        (addToCart)="onAddToCart($event)"
+      />
+    </app-section-block>
   }
 
-  <app-product-list-section
-    [products]="products()"
-    [hasMore]="hasMore()"
-    [loadingMore]="loadingMore()"
-    [currentSortValue]="currentSortValue()"
-    [sortOptions]="sortOptions"
-    (loadMore)="onLoadMore()"
-    (addToCart)="onAddToCart($event)"
-    (sortChange)="onSortChange($event)"
-  />
+  <app-section-block [alt]="true">
+    <app-product-list-section
+      [products]="products()"
+      [hasMore]="hasMore()"
+      [loadingMore]="loadingMore()"
+      [heading]="'Explore All Products'"
+      [currentSortValue]="currentSortValue()"
+      [sortOptions]="sortOptions"
+      (loadMore)="onLoadMore()"
+      (addToCart)="onAddToCart($event)"
+      (sortChange)="onSortChange($event)"
+    />
+  </app-section-block>
 </section>

@@ -27,6 +27,10 @@
   position: relative;
   order: -1;
 
+  :host([data-sidebar-position='bottom']) & {
+    order: 0;
+  }
+
   @include media-lg {
     order: 0;
   }

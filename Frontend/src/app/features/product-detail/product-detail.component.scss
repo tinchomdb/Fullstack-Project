@@ -1,5 +1,17 @@
 @use '../../../styles/mixins' as *;
 
+.product-title-mobile {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-tight);
+  margin: 0 0 var(--space-6);
+
+  @include media-lg {
+    display: none;
+  }
+}
+
 .product-layout {
   display: grid;
   grid-template-columns: 1fr;

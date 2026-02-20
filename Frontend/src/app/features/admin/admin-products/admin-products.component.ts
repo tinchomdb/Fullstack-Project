@@ -18,6 +18,7 @@ import { ModalFormComponent } from '../../../shared/ui/modal-form/modal-form.com
 import { DropdownComponent } from '../../../shared/ui/dropdown/dropdown.component';
 import { SearchComponent } from '../../../shared/ui/search/search.component';
 import { LoadingIndicatorComponent } from '../../../shared/ui/loading-indicator/loading-indicator.component';
+import { EmptyStateComponent } from '../../../shared/ui/empty-state/empty-state.component';
 import { IntersectionObserverDirective } from '../../../shared/ui/intersection-observer.directive';
 import {
   AdminProductFormComponent,
@@ -33,6 +34,7 @@ import {
     DropdownComponent,
     SearchComponent,
     LoadingIndicatorComponent,
+    EmptyStateComponent,
     IntersectionObserverDirective,
     AdminProductFormComponent,
   ],

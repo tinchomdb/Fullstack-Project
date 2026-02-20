@@ -6,8 +6,8 @@
     <a class="item-name-link" (click)="onLinkClick()">
       <h3>{{ item().productName }}</h3>
     </a>
-    <p>Unit Price: {{ currency() }} {{ item().unitPrice.toFixed(2) }}</p>
-    <p class="line-total">Total: {{ currency() }} {{ item().lineTotal.toFixed(2) }}</p>
+    <p class="unit-price">{{ item().unitPrice | currency: currency() }}</p>
+    <p class="line-total">{{ item().lineTotal | currency: currency() }}</p>
     <div class="item-actions">
       <app-quantity-selector
         [quantity]="item().quantity"
