@@ -1,6 +1,4 @@
-<div class="checkout-container">
-  <h1>Checkout</h1>
-
+<app-section-block heading="Checkout" [centered]="false">
   <app-sidebar-layout>
     <div main>
       <form (ngSubmit)="processCheckout()" data-testid="checkout-form">
@@ -44,4 +42,4 @@
       />
     </div>
   </app-sidebar-layout>
-</div>
+</app-section-block>

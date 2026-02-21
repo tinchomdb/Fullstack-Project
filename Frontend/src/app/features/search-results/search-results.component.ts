@@ -5,13 +5,13 @@ import { CartService } from '../../core/services/cart.service';
 import { ProductListManager, PRODUCT_LIST_CONFIG } from '../../core/managers/product-list.manager';
 import { SORT_OPTIONS } from '../../core/models/sort-option.model';
 import { Product } from '../../core/models/product.model';
-import { HeadingComponent } from '../../shared/ui/heading/heading.component';
 import { ProductListSectionComponent } from '../../shared/ui/product-list-section/product-list-section.component';
 import { EmptyStateComponent } from '../../shared/ui/empty-state/empty-state.component';
+import { SectionBlockComponent } from '../../shared/ui/section-block/section-block.component';
 
 @Component({
   selector: 'app-search-results',
-  imports: [HeadingComponent, ProductListSectionComponent, EmptyStateComponent],
+  imports: [ProductListSectionComponent, EmptyStateComponent, SectionBlockComponent],
   providers: [
     ProductListManager,
     { provide: PRODUCT_LIST_CONFIG, useValue: { loadFeatured: false } },

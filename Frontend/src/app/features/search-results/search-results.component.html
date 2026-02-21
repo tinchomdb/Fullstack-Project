@@ -1,8 +1,4 @@
-<section class="search-results-page" [attr.aria-labelledby]="headingId">
-  <div class="search-header">
-    <app-heading [content]="pageHeading()" [level]="'h1'" />
-  </div>
-
+<app-section-block [heading]="pageHeading()" [centered]="false">
   <app-product-list-section
     [products]="products()"
     [hasMore]="hasMore()"
@@ -24,4 +20,4 @@
       [description]="'No products found matching your search. Try different keywords or browse our categories.'"
     />
   }
-</section>
+</app-section-block>

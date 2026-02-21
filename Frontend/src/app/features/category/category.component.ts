@@ -8,16 +8,16 @@ import { SORT_OPTIONS } from '../../core/models/sort-option.model';
 import { Product } from '../../core/models/product.model';
 import { FeaturedProductsComponent } from '../../shared/ui/featured-products/featured-products.component';
 import { FeaturedCategoriesComponent } from '../../shared/ui/featured-categories/featured-categories.component';
-import { HeadingComponent } from '../../shared/ui/heading/heading.component';
 import { ProductListSectionComponent } from '../../shared/ui/product-list-section/product-list-section.component';
+import { SectionBlockComponent } from '../../shared/ui/section-block/section-block.component';
 
 @Component({
   selector: 'app-category',
   imports: [
     FeaturedProductsComponent,
     FeaturedCategoriesComponent,
-    HeadingComponent,
     ProductListSectionComponent,
+    SectionBlockComponent,
   ],
   providers: [
     ProductListManager,

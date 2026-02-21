@@ -1,8 +1,1 @@
 @use '../../../styles/mixins' as *;
-
-.category-page {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-responsive-xl);
-  padding-block: var(--space-responsive-lg);
-}

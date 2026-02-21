@@ -1,6 +1,4 @@
-<section class="category-page" [attr.aria-labelledby]="headingId">
-  <app-heading [content]="pageHeading()" [level]="'h1'" />
-
+<app-section-block [heading]="pageHeading()" [centered]="false">
   @if (subcategories().length > 0) {
     <app-featured-categories [categories]="subcategories()" />
   }
@@ -19,4 +17,4 @@
     (addToCart)="onAddToCart($event)"
     (sortChange)="onSortChange($event)"
   />
-</section>
+</app-section-block>

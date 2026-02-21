@@ -8,6 +8,7 @@ import { SidebarLayoutComponent } from '../../shared/layouts/sidebar-layout/side
 import { ShippingInformationFormComponent } from './shipping-information-form/shipping-information-form.component';
 import { ShippingOptionsComponent } from './shipping-options/shipping-options.component';
 import { PaymentMethodComponent } from './payment-method/payment-method.component';
+import { SectionBlockComponent } from '../../shared/ui/section-block/section-block.component';
 
 @Component({
   selector: 'app-checkout',
@@ -18,6 +19,7 @@ import { PaymentMethodComponent } from './payment-method/payment-method.componen
     ShippingInformationFormComponent,
     ShippingOptionsComponent,
     PaymentMethodComponent,
+    SectionBlockComponent,
   ],
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',

@@ -24,13 +24,18 @@
   max-width: 1440px;
   margin-inline: auto;
   width: 100%;
+  padding-inline: var(--space-responsive-sm);
 }
 
 .section-header {
   position: relative;
   z-index: 1;
-  text-align: center;
+  text-align: left;
   margin-bottom: var(--space-8);
+
+  &.centered {
+    text-align: center;
+  }
 
   @include media-md {
     margin-bottom: var(--space-12);
@@ -45,7 +50,7 @@
   margin: 0 0 var(--space-2);
   letter-spacing: var(--letter-spacing-tight);
 
-  &::after {
+  .centered &::after {
     content: '';
     display: block;
     width: 48px;

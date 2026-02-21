@@ -1,6 +1,4 @@
-<div class="cart-container">
-  <h1>Shopping Cart</h1>
-
+<app-section-block heading="Shopping Cart" [centered]="false">
   @if (cart(); as cartData) {
     @if (!isEmpty()) {
       <app-sidebar-layout sidebarMobilePosition="bottom">
@@ -36,10 +34,10 @@
         <div class="empty-cart-icon">
           <app-cart-icon [size]="48" [strokeWidth]="2" />
         </div>
-        <h2>Your cart is empty</h2>
+        <h2 class="empty-cart-title">Your cart is empty</h2>
         <p>Looks like you haven't added anything yet. Start shopping to find something you love!</p>
         <app-button class="cta-button" (click)="goToProducts()">Continue Shopping</app-button>
       </div>
     }
   }
-</div>
+</app-section-block>

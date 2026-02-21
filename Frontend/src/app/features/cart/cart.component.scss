@@ -1,16 +1,5 @@
 @use '../../../styles/mixins' as *;
 
-.cart-container {
-  h1 {
-    @include text-heading-large;
-    margin-bottom: var(--space-6);
-
-    @include media-md {
-      font-size: var(--font-size-2xl);
-    }
-  }
-}
-
 .cart-content {
   display: flex;
   flex-direction: column;

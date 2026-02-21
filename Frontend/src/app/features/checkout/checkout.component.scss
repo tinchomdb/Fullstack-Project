@@ -1,16 +1,5 @@
 @use '../../../styles/mixins' as *;
 
-.checkout-container h1 {
-  font-size: var(--font-size-xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-6);
-
-  @include media-md {
-    font-size: var(--font-size-2xl);
-  }
-}
-
 /* Error Banner */
 .error-banner {
   background-color: var(--color-surface-critical);

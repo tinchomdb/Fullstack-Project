@@ -12,6 +12,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 })
 export class SectionBlockComponent {
   readonly alt = input(false);
+  readonly centered = input(true);
   readonly heading = input<string>();
   readonly subtitle = input<string>();
 }

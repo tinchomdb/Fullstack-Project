@@ -8,6 +8,7 @@ import { ButtonComponent } from '../../shared/ui/button/button.component';
 import { CartItemComponent } from './cart-item/cart-item.component';
 import { OrderSummaryPanelComponent } from '../../shared/ui/order-summary-panel/order-summary-panel.component';
 import { SidebarLayoutComponent } from '../../shared/layouts/sidebar-layout/sidebar-layout.component';
+import { SectionBlockComponent } from '../../shared/ui/section-block/section-block.component';
 import { CartIconComponent } from '../../shared/ui/icons/cart-icon.component';
 
 @Component({
@@ -18,6 +19,7 @@ import { CartIconComponent } from '../../shared/ui/icons/cart-icon.component';
     OrderSummaryPanelComponent,
     SidebarLayoutComponent,
     CartIconComponent,
+    SectionBlockComponent,
   ],
   templateUrl: './cart.component.html',
   styleUrl: './cart.component.scss',

@@ -10,10 +10,16 @@ import { ProductImageGalleryComponent } from './product-image-gallery/product-im
 import { ProductBuyBoxComponent } from './product-buy-box/product-buy-box.component';
 import { ProductInfoComponent } from './product-info/product-info.component';
 import { BreadcrumbService } from '../../core/services/breadcrumb.service';
+import { SectionBlockComponent } from '../../shared/ui/section-block/section-block.component';
 
 @Component({
   selector: 'app-product-detail',
-  imports: [ProductImageGalleryComponent, ProductBuyBoxComponent, ProductInfoComponent],
+  imports: [
+    ProductImageGalleryComponent,
+    ProductBuyBoxComponent,
+    ProductInfoComponent,
+    SectionBlockComponent,
+  ],
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

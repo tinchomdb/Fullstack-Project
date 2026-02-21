@@ -1,6 +1,6 @@
 <div class="section-inner">
   @if (heading()) {
-    <div class="section-header">
+    <div class="section-header" [class.centered]="centered()">
       <h2 class="section-title">{{ heading() }}</h2>
       @if (subtitle()) {
         <p class="section-subtitle">{{ subtitle() }}</p>
