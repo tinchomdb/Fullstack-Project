@@ -29,15 +29,31 @@ describe('BreadcrumbComponent', () => {
   it('should not show breadcrumbs with 0 or 1 items', () => {
     expect(component['showBreadcrumbs']()).toBeFalse();
 
-    breadcrumbs.set([{ label: 'Home', url: '/' }]);
+    breadcrumbs.set([{ label: 'Home', route: '/' }]);
     expect(component['showBreadcrumbs']()).toBeFalse();
   });
 
   it('should show breadcrumbs with 2+ items', () => {
     breadcrumbs.set([
-      { label: 'Home', url: '/' },
-      { label: 'Products', url: '/products' },
+      { label: 'Home', route: '/' },
+      { label: 'Products', route: '/products' },
     ]);
     expect(component['showBreadcrumbs']()).toBeTrue();
+  });
+
+  it('should not render the last item as a link', () => {
+    breadcrumbs.set([
+      { label: 'Home', route: '/products' },
+      { label: 'Electronics', route: '/category/electronics' },
+    ]);
+    fixture.detectChanges();
+
+    const links = fixture.nativeElement.querySelectorAll('a');
+    const spans = fixture.nativeElement.querySelectorAll('span.current');
+
+    expect(links.length).toBe(1);
+    expect(links[0].textContent.trim()).toBe('Home');
+    expect(spans.length).toBe(1);
+    expect(spans[0].textContent.trim()).toBe('Electronics');
   });
 });

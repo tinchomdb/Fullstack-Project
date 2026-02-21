@@ -5,7 +5,7 @@
         @if (!$first) {
           <span class="separator">{{ separator }}</span>
         }
-        @if (item.route) {
+        @if (item.route && !$last) {
           <a [routerLink]="item.route" [queryParams]="item.queryParams">{{ item.label }}</a>
         } @else {
           <span class="current">{{ item.label }}</span>
